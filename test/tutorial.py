@@ -1,5 +1,4 @@
 from testing_base import *
-# Erin Yoo
 
 # Create deck and dealer
 deck = Deck()

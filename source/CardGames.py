@@ -129,13 +129,13 @@ class Player:
     self.hand = []
     self.knownCards = []
   
-  def display(self, returnOutput: bool = False):
-    output = "name: \"%s\"\nmoney: %d\n" % (self.name, self.money)
+  def display(self, returnOutput: bool = False, showHand: bool = True):
+    output = "\nname: \"%s\"\nmoney: %d\n" % (self.name, self.money)
     if len(self.hand) == 0:
       output += "The Player has no cards in their hand."
     else:
-      output += "The Player's hand:\n"
-      self.showHand()
+      if showHand:
+        self.showHand()
     print(output)
     if returnOutput:
       return output

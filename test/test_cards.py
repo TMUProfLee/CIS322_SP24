@@ -1,5 +1,5 @@
 from testing_base import *
-# Justyn Lee
+
 def test_show_hand():
 
     matthew = Player("Matthew")

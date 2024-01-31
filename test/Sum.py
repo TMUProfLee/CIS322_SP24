@@ -1,4 +1,3 @@
-
 import random
 import os
 
@@ -76,15 +75,7 @@ class Deck:
     self.size -= 1
     self.discarded.append(card)
     return card
-
-def getCard( suit, value):
-  deck = Deck()
-  my_card = Card( suit.capitalize(), value, None, None)
-  for card in deck.cards:
-    if card == my_card:
-      return card
-  return None
-
+    
 class Player:
   def __init__(self, name, money: int = 0):
     self.name = name
@@ -109,10 +100,13 @@ class Player:
       self.knownCards.append(True)
     else:
       self.knownCards.append(False)
+    hand = self.hand
+    return str(hand)
 
   def setHand(self, cards: "list[Card]", isKnown: bool = False):
     self.hand = cards
     self.knownCards = [isKnown for _ in self.hand]
+
 
   def showHand(self, printShort: bool = False):
     for idx in range(6):
@@ -128,6 +122,10 @@ class Player:
   def clearHand(self):
     self.hand = []
     self.knownCards = []
+
+  def __str__(self):
+    return str(self.hand)
+
 
 class Dealer:
   def __init__(self, deck: Deck):
@@ -158,9 +156,9 @@ class Dealer:
     self.deck.shuffle()
 
 
-def highestCard(cardList):
-  highestCard = getCard("Spades", 1)
-  for card in cardList:
-    if card.value >= highestCard.value:
-      highestCard = card
-  return highestCard
+def sum(player):
+    summation = 0
+    for card in player.hand:
+      summation += card.value
+    return summation
+  

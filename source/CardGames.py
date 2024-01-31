@@ -156,3 +156,11 @@ class Dealer:
   def resetDeck(self):
     self.deck.reset()
     self.deck.shuffle()
+
+
+def highestCard(cardList):
+  highestCard = getCard("Spades", 1)
+  for card in cardList:
+    if card.value >= highestCard.value:
+      highestCard = card
+  return highestCard

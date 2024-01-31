@@ -157,19 +157,3 @@ class Dealer:
   def resetDeck(self):
     self.deck.reset()
     self.deck.shuffle()
-
-
-# has_pair function---------------------------------------------------------------
-
-def has_pair(player):
-    Hand = player.hand
-    values = [card.value for card in Hand]
-    compare = set()
-    print(values, compare)
-    for i in values:
-        if i in compare:
-            return True
-        compare.add(i)
-    else:
-        return False
-#---------------------------------------------------------------------------------

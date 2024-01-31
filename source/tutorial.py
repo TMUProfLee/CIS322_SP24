@@ -19,6 +19,11 @@ for i in range(1, NumPlayers+1):
 # Deal 5 cards to each player
 dealer.dealCards(5, list(players.values()))
 
+# dealer.printCards(5, list(players.values()))
+
+# peter = players.values()[0]
+# dealer.printCards(peter.hand, showFront = True, printShort = False)
+
 # Show each player's hand
 for player in players.values():
     print(f'{player.name}:')

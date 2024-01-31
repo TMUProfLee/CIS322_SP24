@@ -15,10 +15,10 @@ def find_root_dir():
 
 class Card:
   def __init__(self, suit, value, image, cardBack):
-    self.cardBack = cardBack
+    self.cardBack = cardBack 
     self.suit = suit
     self.value = value
-    self.image = image
+    self.image = image 
     self.shortImage = []
     if self.image:
       for line in self.image:
@@ -77,6 +77,7 @@ class Deck:
     self.discarded.append(card)
     return card
 
+# testing 
 def getCard( suit, value):
   deck = Deck()
   my_card = Card( suit.capitalize(), value, None, None)

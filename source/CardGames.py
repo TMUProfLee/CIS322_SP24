@@ -128,6 +128,18 @@ class Player:
   def clearHand(self):
     self.hand = []
     self.knownCards = []
+  
+  def display(self, returnOutput: bool = False, showHand: bool = True):
+    output = "\nname: \"%s\"\nmoney: %d\n" % (self.name, self.money)
+    if len(self.hand) == 0:
+      output += "The Player has no cards in their hand."
+    else:
+      if showHand:
+        self.showHand()
+    print(output)
+    if returnOutput:
+      return output
+    
 
 class Dealer:
   def __init__(self, deck: Deck):

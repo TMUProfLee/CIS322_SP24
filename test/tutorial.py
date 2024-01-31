@@ -1,5 +1,5 @@
 from testing_base import *
-# Georgio Khachadourian 
+
 # Create deck and dealer
 deck = Deck()
 dealer = Dealer(deck)
@@ -19,8 +19,5 @@ for i in range(1, NumPlayers+1):
 # Deal 5 cards to each player
 dealer.dealCards(5, list(players.values()))
 
-# Show each player's hand
-for player in players.values():
-    print(f'{player.name}:')
-    player.showHand(True)
-    print()
+peter = players['peter']
+dealer.printCards( peter.hand, showFront=True, printShort=False )

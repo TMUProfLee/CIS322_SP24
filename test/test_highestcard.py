@@ -1,7 +1,5 @@
 from testing_base import *
 
-#setup
-
     #First5
 def test_highestCard():
     card1 = getCard("Diamonds", 1)

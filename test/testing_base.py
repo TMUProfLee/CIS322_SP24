@@ -1,4 +1,4 @@
 import sys
-sys.path.append("../")
+sys.path.insert(0, '/software_cards/source/CardGames')
 
-from source.CardGames import *
+import CardGames

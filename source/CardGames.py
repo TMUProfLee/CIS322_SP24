@@ -183,6 +183,10 @@ def character_selection():
         print(str(Player1) + ", you are the Fugitive.")
       else:
         Player2Role = input("Please pick a proper role(Fugitive or Marshall): ")
-
-character_selection()
     
+def highestCard(cardList):
+  highestCard = getCard("Spades", 1)
+  for card in cardList:
+    if card.value >= highestCard.value:
+      highestCard = card
+  return highestCard

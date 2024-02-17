@@ -12,6 +12,7 @@ def find_root_dir():
     cwd = os.path.join( cwd, '..')
   return cwd
 
+#Card class adjusted
 class Card:
   def __init__(self, sprint_value, value, image, cardBack):
     self.cardBack = cardBack
@@ -29,7 +30,7 @@ class Card:
     return self.value == other.value and \
       self.sprint_value == other.sprint_value
 
-
+#Deck class adjusted
 class Deck:
   def __init__(self):
     root_dir = os.path.join( find_root_dir(), 'source')
@@ -79,30 +80,28 @@ class Deck:
     self.discarded.append(card)
     return card
 
-game_deck=Deck()
+#Split deck into 3 piles and escape_card/starting_cards
+def split_card():
+  game_deck=Deck()
 
-escape_card = game_deck.getCard()
+  escape_card = game_deck.getCard()
 
-deck3 = []
-for card in range(13):
-  test_card = game_deck.getCard()
-  deck3.append(test_card)
+  deck3 = []
+  for card in range(13):
+    test_card = game_deck.getCard()
+    deck3.append(test_card)
 
-deck2 = []
-for card in range(14):
-  test_card = game_deck.getCard()
-  deck2.append(test_card)
+  deck2 = []
+  for card in range(14):
+    test_card = game_deck.getCard()
+    deck2.append(test_card)
 
-deck1 = []
-for card in range(11):
-  test_card = game_deck.getCard()
-  deck1.append(test_card)
+  deck1 = []
+  for card in range(11):
+    test_card = game_deck.getCard()
+    deck1.append(test_card)
 
-starting_cards = []
-for i in range(3):
-  test_card = game_deck.getCard()
-  starting_cards.append(test_card)
-
-  
-for i in range(3):
-  print(starting_cards[i].value)
+  starting_cards = []
+  for i in range(3):
+    test_card = game_deck.getCard()
+    starting_cards.append(test_card)

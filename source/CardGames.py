@@ -1,10 +1,9 @@
-
 import random
 import os
 
 cardImages = []
-values = list(range(1,14))
-suits = ["Spades", "Clubs", "Hearts", "Diamonds"]
+values = list(range(1,43))
+sprint_value = [1, 2]
 
 def find_root_dir():
   cwd = os.getcwd()
@@ -178,28 +177,3 @@ def split_card():
   for i in range(3):
     test_card = game_deck.getCard()
     starting_cards.append(test_card)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-def highestCard(cardList):
-  highestCard = getCard("Spades", 1)
-  for card in cardList:
-    if card.value >= highestCard.value:
-      highestCard = card
-  return highestCard

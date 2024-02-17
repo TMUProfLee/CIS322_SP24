@@ -13,10 +13,11 @@ def find_root_dir():
     cwd = os.path.join( cwd, '..')
   return cwd
 
+#Card class adjusted
 class Card:
-  def __init__(self, suit, value, image, cardBack):
+  def __init__(self, sprint_value, value, image, cardBack):
     self.cardBack = cardBack
-    self.suit = suit
+    self.sprint_value = sprint_value
     self.value = value
     self.image = image
     self.shortImage = []
@@ -27,13 +28,14 @@ class Card:
   def __eq__(self, other):
     if not type(other) == Card:
       return False
-    return self.suit == other.suit and \
-      self.value == other.value
+    return self.value == other.value and \
+      self.sprint_value == other.sprint_value
 
+#Deck class adjusted
 class Deck:
   def __init__(self):
     root_dir = os.path.join( find_root_dir(), 'source')
-    cards_file = f'{root_dir}{os.path.sep}playing_cards.txt'
+    cards_file = f'{root_dir}{os.path.sep}new_playing_cards.txt'
     with open(cards_file, "r") as cards:
       cardBack = []
       for _ in range(6):
@@ -53,9 +55,11 @@ class Deck:
     
     deck = []
     index = 0
-    for suit in suits:
-      for value in values:
-        deck.append(Card(suit, value, cardImages[index], cardBack))
+    for value in values:
+        if value % 2 == 0:
+            deck.append(Card(2, value, cardImages[index], cardBack))
+        else:
+            deck.append(Card(1, value, cardImages[index], cardBack))
         index += 1
     
     self.cards = deck
@@ -76,14 +80,6 @@ class Deck:
     self.size -= 1
     self.discarded.append(card)
     return card
-
-def getCard( suit, value):
-  deck = Deck()
-  my_card = Card( suit.capitalize(), value, None, None)
-  for card in deck.cards:
-    if card == my_card:
-      return card
-  return None
 
 class Player:
   def __init__(self, name, money: int = 0):

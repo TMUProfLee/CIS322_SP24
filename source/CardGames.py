@@ -164,3 +164,6 @@ def highestCard(cardList):
     if card.value >= highestCard.value:
       highestCard = card
   return highestCard
+
+testDeck = Deck()
+print(testDeck)

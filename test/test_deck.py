@@ -15,6 +15,7 @@ def test_deck_getCard():
     test_card = test_deck.getCard()
     assert test_card.value == 42
 
+    #Check reset function
 def test_deck_reset():
     test_deck = Deck()
 
@@ -23,5 +24,3 @@ def test_deck_reset():
 
     test_deck.reset()
     assert test_deck.size == 42
-
-test_deck_reset()

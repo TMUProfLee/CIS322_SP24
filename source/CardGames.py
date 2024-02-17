@@ -1,10 +1,9 @@
-
 import random
 import os
 
 cardImages = []
-values = list(range(1,14))
-suits = ["Spades", "Clubs", "Hearts", "Diamonds"]
+values = list(range(1,43))
+sprint_value = [1, 2]
 
 def find_root_dir():
   cwd = os.getcwd()
@@ -178,6 +177,8 @@ def split_card():
   for i in range(3):
     test_card = game_deck.getCard()
     starting_cards.append(test_card)
+
+  return escape_card, deck3, deck2, deck1, starting_cards
 
 
 

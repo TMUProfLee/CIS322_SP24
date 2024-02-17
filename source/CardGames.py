@@ -153,6 +153,31 @@ class Dealer:
     self.deck.reset()
     self.deck.shuffle()
 
+#Split deck into 3 piles and escape_card/starting_cards
+def split_card():
+  game_deck=Deck()
+
+  escape_card = game_deck.getCard()
+
+  deck3 = []
+  for card in range(13):
+    test_card = game_deck.getCard()
+    deck3.append(test_card)
+
+  deck2 = []
+  for card in range(14):
+    test_card = game_deck.getCard()
+    deck2.append(test_card)
+
+  deck1 = []
+  for card in range(11):
+    test_card = game_deck.getCard()
+    deck1.append(test_card)
+
+  starting_cards = []
+  for i in range(3):
+    test_card = game_deck.getCard()
+    starting_cards.append(test_card)
 
 
 

@@ -15,10 +15,10 @@ def find_root_dir():
 
 class Card:
   def __init__(self, suit, value, image, cardBack):
-    self.cardBack = cardBack
+    self.cardBack = cardBack 
     self.suit = suit
     self.value = value
-    self.image = image
+    self.image = image 
     self.shortImage = []
     if self.image:
       for line in self.image:
@@ -77,6 +77,7 @@ class Deck:
     self.discarded.append(card)
     return card
 
+# testing 
 def getCard( suit, value):
   deck = Deck()
   my_card = Card( suit.capitalize(), value, None, None)
@@ -129,6 +130,16 @@ class Player:
     self.hand = []
     self.knownCards = []
 
+  def display(self, returnOutput: bool = False, showHand: bool = True):
+    output = "\nname: \"%s\"\nmoney: %d\n" % (self.name, self.money)
+    if len(self.hand) == 0:
+      output += "The Player has no cards in their hand."
+    else:
+      if showHand:
+        self.showHand()
+    print(output)
+    if returnOutput:
+      return output
 
 class Dealer:
   def __init__(self, deck: Deck):
@@ -157,3 +168,13 @@ class Dealer:
   def resetDeck(self):
     self.deck.reset()
     self.deck.shuffle()
+
+
+class Poker:
+  def __init__(self, players: "list[Player]", dealer: Dealer):
+    self.players = players
+    self.dealer = dealer
+    self.pot = 0
+
+  # Add all functions pertaining to the game of poker below
+  # Add global variables to the __init__ function above

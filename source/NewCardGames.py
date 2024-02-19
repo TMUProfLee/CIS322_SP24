@@ -104,5 +104,5 @@ for i in range(3):
   starting_cards.append(test_card)
 
   
-for i in range(3):
-  print(starting_cards[i].value)
+#for i in range(3):
+  #print(starting_cards[i].value)

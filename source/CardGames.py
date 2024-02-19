@@ -169,3 +169,13 @@ class Dealer:
   def resetDeck(self):
     self.deck.reset()
     self.deck.shuffle()
+
+
+class Poker:
+  def __init__(self, players: "list[Player]", dealer: Dealer):
+    self.players = players
+    self.dealer = dealer
+    self.pot = 0
+
+  # Add all functions pertaining to the game of poker below
+  # Add global variables to the __init__ function above

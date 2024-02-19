@@ -1,4 +1,7 @@
 import sys
-sys.path.insert(0, '/software_cards/source/CardGames')
+import os
 
-import CardGames
+current_dir = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.join(current_dir, "../"))
+
+from source.CardGames import *

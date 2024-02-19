@@ -13,6 +13,25 @@ def find_root_dir():
     cwd = os.path.join( cwd, '..')
   return cwd
 
+
+# Pot class----------------------------------------------------------------------
+class Pot:
+  def __init__(self, pot: int = 0):
+    self.pot = pot
+
+  def add(self, amount: int):
+    self.pot += amount
+    return self.pot
+
+  def subtract(self, amount: int):
+    self.pot -= amount
+    return self.pot
+  
+  def show_pot(self):
+    return self.pot
+
+#------------------------------------------------------------------------------
+
 class Card:
   def __init__(self, suit, value, image, cardBack):
     self.cardBack = cardBack
@@ -96,11 +115,12 @@ class Player:
     self.money += amount
     return self.money
 
-  def makeBet(self, amount: int):
+  def makeBet(self, amount: int, pot: Pot):
     if amount > self.money:
       print("%s does not have enough money to make this bet." % self.name)
       return self.money
     self.money -= amount
+    pot.add(amount)  # Call function implemented here--------------------------------
     return self.money
 
   def addCard(self, card: Card, isKnown: bool = True):
@@ -172,4 +192,12 @@ def has_pair(player):
         compare.add(i)
     else:
         return False
+#---------------------------------------------------------------------------------
+
+
+# call function--------------------------------------------------------------
+
+def Call(player, bet: int, pot):
+  player.makeBet(bet, pot)
+
 #---------------------------------------------------------------------------------

@@ -156,3 +156,16 @@ class Dealer:
   def resetDeck(self):
     self.deck.reset()
     self.deck.shuffle()
+
+
+def highest_card(hand):
+    # Check if the hand is empty
+    if not hand:
+        return None
+
+    # Find the card with the highest value
+    highest_card = max(hand, key=lambda card: card.value)
+    
+    # Return the highest card
+    return highest_card
+

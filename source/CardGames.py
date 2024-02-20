@@ -13,6 +13,82 @@ def find_root_dir():
     cwd = os.path.join( cwd, '..')
   return cwd
 
+
+# Pot class----------------------------------------------------------------------
+class Pot:
+  def __init__(self, pot: int = 0):
+    self.pot = pot
+
+  def add(self, amount: int):
+    self.pot += amount
+    return self.pot
+
+  def subtract(self, amount: int):
+    self.pot -= amount
+    return self.pot
+  
+  def show_pot(self):
+    return self.pot
+
+#------------------------------------------------------------------------------
+
+class Game:
+    def __init__(self, players, dealer, pot):
+        self.players = players
+        self.dealer = dealer
+        self.current_turn = 0  # Index current player's turn
+        self.pot = pot
+
+    def reset_round(self, raising_player, raise_amount):
+        # Notify players of the raise
+        print(f"{raising_player.name} has raised the bet by {raise_amount}.")
+        self.pot.add(raise_amount)  # Assuming we want the raising player to already subtract the amount
+
+        for i, player in enumerate(self.players):
+            # Skip player who made the raise
+            if player == raising_player:
+                continue
+
+            while True:
+                print(f"{player.name}, it's your turn. You have {player.money}. The current pot is {self.pot.show_pot()}.")
+                decision = input("Would you like to 'call', 'raise', or 'fold'? ").lower()
+
+                if decision == 'call':
+                    if player.money < raise_amount:
+                        print(f"{player.name} does not have enough money to call and is automatically folded.")
+                        self.players.remove(player) 
+                    else:
+                        player.makeBet(raise_amount, self.pot)
+                        print(f"{player.name} calls.")
+                    break
+                elif decision == 'raise':
+                    additional_raise = int(input("Enter the additional raise amount: "))
+                    if player.raise_bet(additional_raise + raise_amount, self.pot, self):
+                        print(f"{player.name} raises by {additional_raise}.")
+                        # Reset round again with the new raise but not current player from being prompted again
+                        self.reset_round(player, additional_raise + raise_amount)
+                    else:
+                        print("Not enough money to raise. Try a different action.")
+                    break
+                elif decision == 'fold':
+                    print(f"{player.name} folds.")
+                    self.players.remove(player)  # Assuming we want to remove the player from the game
+                    break
+                else:
+                    print("Invalid decision. Please choose 'call', 'raise', or 'fold'.")
+
+    def next_turn(self):
+        # Advance to next player's turn start again if at the last player
+        self.current_turn = (self.current_turn + 1) % len(self.players)
+
+    def handle_raise(self, player, raise_amount):
+        if player.raise_bet(raise_amount, self.pot, self):
+            self.reset_round(player, raise_amount)
+            print(f"{player.name} raised the bet by {raise_amount}.")
+        else:
+            print("Raise failed.")
+
+
 class Card:
   def __init__(self, suit, value, image, cardBack):
     self.cardBack = cardBack
@@ -96,11 +172,12 @@ class Player:
     self.money += amount
     return self.money
 
-  def makeBet(self, amount: int):
+  def makeBet(self, amount: int, pot: Pot):
     if amount > self.money:
       print("%s does not have enough money to make this bet." % self.name)
       return self.money
     self.money -= amount
+    pot.add(amount)  # Call function implemented here--------------------------------
     return self.money
 
   def addCard(self, card: Card, isKnown: bool = True):
@@ -128,6 +205,7 @@ class Player:
   def clearHand(self):
     self.hand = []
     self.knownCards = []
+
 
 class Dealer:
   def __init__(self, deck: Deck):
@@ -158,6 +236,28 @@ class Dealer:
     self.deck.shuffle()
 
 
+# has_pair function---------------------------------------------------------------
+
+def has_pair(player):
+    Hand = player.hand
+    values = [card.value for card in Hand]
+    compare = set()
+    print(values, compare)
+    for i in values:
+        if i in compare:
+            return True
+        compare.add(i)
+    else:
+        return False
+
+
+# call function--------------------------------------------------------------
+
+def Call(player, bet: int, pot):
+  player.makeBet(bet, pot)
+
+
+
 def highest_card(hand):
     # Check if the hand is empty
     if not hand:
@@ -168,4 +268,5 @@ def highest_card(hand):
     
     # Return the highest card
     return highest_card
+
 

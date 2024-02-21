@@ -175,6 +175,35 @@ class Poker:
     self.players = players
     self.dealer = dealer
     self.pot = 0
+    self.bets = [0 for _ in range(len(players))]
+    self.round = 0
+    self.currentPlayer = 0
+
 
   # Add all functions pertaining to the game of poker below
   # Add global variables to the __init__ function above
+
+  # Keep Track of Pot, Bets, and current round
+  def addMoneyToPot(self, amount: int):
+    self.pot += amount
+    return self.pot
+  
+  def addBet(self, player: Player, amount: int):
+    idx = self.players.index(player)
+    self.bets[idx] += amount
+    return self.bets[idx]
+  
+  # Add all bets to the pot
+  def collectBets(self):
+    for bet in self.bets:
+      self.addMoneyToPot(bet)
+    self.bets = [0 for _ in range(len(self.players))]
+
+  # Check if all bets are equal
+  def checkBets(self):
+    return len(set(self.bets)) == 1
+  
+  # Check how much is needed to call
+  def callAmount(self, player: Player):
+    idx = self.players.index(player)
+    return max(self.bets) - self.bets[idx]

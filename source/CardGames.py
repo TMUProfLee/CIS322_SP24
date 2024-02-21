@@ -153,23 +153,32 @@ class Dealer:
     self.deck.reset()
     self.deck.shuffle()
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+def character_selection():
+  Player1 = input("Player 1, please enter your name: ")
+  Player2 = input("Player 2, please enter your name: ")
+  Player1Role = ""
+  Player2Role = ""
+  rand = random.randint(0,1)
+  if rand == 0:
+    while Player1Role != "Fugitive" and Player1Role != "fugitive" and Player1Role != "Marshall" and Player1Role != "marshall":
+      Player1Role = input(str(Player1) + ", please pick your role(Fugitive or Marshall): ")
+      if Player1Role == "Fugitive" or Player1Role == "fugitive":
+        print(str(Player1) + ", you are the Fugitive.")
+        print(str(Player2) + ", you are the Marshall.")
+      elif Player1Role == "Marshall" or Player1Role == "marshall":
+        print(str(Player1) + ", you are the Marshall.")
+        print(str(Player2) + ", you are the Fugitive.")
+  else:
+    while Player2Role != "Fugitive" and Player2Role != "fugitive" and Player2Role != "Marshall" and Player2Role != "marshall":
+      Player2Role = input(str(Player2) + ", please pick your role(Fugitive or Marshall): ")
+      if Player2Role == "Fugitive" or Player2Role == "fugitive":
+        print(str(Player2) + ", you are the Fugitive.")
+        print(str(Player1) + ", you are the Marshall.")
+      elif Player2Role == "Marshall" or Player2Role == "marshall":
+        print(str(Player2) + ", you are the Marshall.")
+        print(str(Player1) + ", you are the Fugitive.")
+      else:
+        Player2Role = input("Please pick a proper role(Fugitive or Marshall): ")
 
 
 def highestCard(cardList):

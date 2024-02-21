@@ -29,6 +29,7 @@ class GameSetup:
                 print(f"{self.fugitive_name} please choose a hideout to pick.")
                 #Marshall draws 2 cards; chooses which deck to draw from
                 print(f"{self.marshall_name} please choose which deck to draw your cards from.")
+                return
             #Outside of first turn
             #Fugitive draws 1 card from any deck. 
             #Can choose to place 1 new hideout, or pass
@@ -36,7 +37,7 @@ class GameSetup:
             #Marshall draws 1 card from any deck.
             #Makes a singular guess to find a hideout (possible expand into guessing multiple hideouts)
         
-                return
+                
             #Fugitive's Win Condition --> Fugitive plays card with value 42.
             #Marshall's Win Condition --> Wins by guessing all cards (hideouts) currently in play
             return

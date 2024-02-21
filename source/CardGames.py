@@ -179,7 +179,7 @@ def character_selection():
         print(str(Player1) + ", you are the Fugitive.")
       else:
         Player2Role = input("Please pick a proper role(Fugitive or Marshall): ")
-
+  return Player1, Player2, Player1Role, Player2Role
 
 def highestCard(cardList):
   highestCard = getCard("Spades", 1)

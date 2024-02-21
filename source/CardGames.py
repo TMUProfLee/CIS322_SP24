@@ -3,8 +3,7 @@ import random
 import os
 
 cardImages = []
-values = list(range(1,14))
-suits = ["Spades", "Clubs", "Hearts", "Diamonds"]
+values = list(range(1,43))
 
 def find_root_dir():
   cwd = os.getcwd()
@@ -14,10 +13,10 @@ def find_root_dir():
   return cwd
 
 class Card:
-  def __init__(self, suit, value, image, cardBack):
+  def __init__(self, value, burn, image, cardBack):
     self.cardBack = cardBack
-    self.suit = suit
     self.value = value
+    self.burn = burn
     self.image = image
     self.shortImage = []
     if self.image:
@@ -27,8 +26,8 @@ class Card:
   def __eq__(self, other):
     if not type(other) == Card:
       return False
-    return self.suit == other.suit and \
-      self.value == other.value
+    return self.value == other.value and \
+      self.burn == other.burn
 
 class Deck:
   def __init__(self):
@@ -53,10 +52,10 @@ class Deck:
     
     deck = []
     index = 0
-    for suit in suits:
-      for value in values:
-        deck.append(Card(suit, value, cardImages[index], cardBack))
-        index += 1
+    for value in values:
+      burn = 2 if value % 2 == 0 else 1
+      deck.append(Card(value, burn, cardImages[index], cardBack))
+      index += 1
     
     self.cards = deck
     self.size = len(deck)
@@ -77,9 +76,9 @@ class Deck:
     self.discarded.append(card)
     return card
 
-def getCard( suit, value):
+def getCard(value, burn):
   deck = Deck()
-  my_card = Card( suit.capitalize(), value, None, None)
+  my_card = Card(value, burn, None, None)
   for card in deck.cards:
     if card == my_card:
       return card
@@ -117,13 +116,19 @@ class Player:
   def showHand(self, printShort: bool = False):
     for idx in range(6):
       for i, card in enumerate(self.hand):
+        """
         if printShort and i < len(self.hand)-1:
           image = card.shortImage[idx]  if self.knownCards[i] else card.cardBack[idx]
           print(image, end="")
         else:
-          image = card.image[idx] if self.knownCards[i] else card.cardBack[idx]
-          print(image, end="")
+        """
+        image = card.image[idx] if self.knownCards[i] else card.cardBack[idx]
+        print(image, end="")
+      
       print()
+    if self.name == "Fugitive":
+      input("\nPress enter to hide hand...")
+      os.system('cls')
 
   def clearHand(self):
     self.hand = []

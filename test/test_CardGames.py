@@ -21,7 +21,7 @@ def test_Poker():
     
     # Test collectBets() function:
     poker.collectBets()
-    assert poker.pot == 50
+    assert poker.pot == 150
     
     # Test checkBets() function:
     assert poker.checkBets() == True

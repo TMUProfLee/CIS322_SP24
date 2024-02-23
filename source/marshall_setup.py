@@ -43,7 +43,7 @@ def marshall_first_turn():
         elif guess_all == 'n' or guess_all == 'no':
             while True:
                 try:
-                    guess = int(input("Enter futitive location..."))
+                    guess = int(input("Enter fugitive location..."))
                 except:
                     ValueError
                     print("Invalid input, try again")

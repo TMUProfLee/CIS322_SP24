@@ -16,8 +16,8 @@ def marshall_first_turn():
     #Display board
     
     while(True):
-        guess_all = input("Would you like to guess all fugitive locations? (y/n)")
-        if guess_all.lower() == 'y' or guess_all.lower() == 'yes':
+        guess_all = input("Would you like to guess all fugitive locations? (y/n)").lower()
+        if guess_all == 'y' or guess_all == 'yes':
             while(True):
                 guess = input("Enter locations separated only by a comma (1,2,3...)").split(',')
                 """
@@ -40,7 +40,7 @@ def marshall_first_turn():
                     continue
                 break
             break
-        elif guess_all.lower() == 'n' or guess_all.lower() == 'no':
+        elif guess_all == 'n' or guess_all == 'no':
             while True:
                 try:
                     guess = int(input("Enter futitive location..."))

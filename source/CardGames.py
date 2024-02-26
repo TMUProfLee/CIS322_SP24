@@ -64,7 +64,7 @@ class Game:
                 continue  # Skip the player who made the raise
 
             print(f"{player.name}, you need to match the raise of {self.current_raise} or fold.")
-            
+          
 
     def match_raise(self, player_index):
         # Assume a method where players can match the current raise
@@ -237,35 +237,35 @@ class Dealer:
 
 # has_pair function---------------------------------------------------------------
 
-def has_pair(player):
-    Hand = player.hand
-    values = [card.value for card in Hand]
-    compare = set()
-    print(values, compare)
-    for i in values:
-        if i in compare:
-            return True
-        compare.add(i)
-    else:
-        return False
+  def has_pair(player):
+      Hand = player.hand
+      values = [card.value for card in Hand]
+      compare = set()
+      print(values, compare)
+      for i in values:
+          if i in compare:
+              return True
+          compare.add(i)
+      else:
+          return False
 
 
 # call function--------------------------------------------------------------
 
-def Call(player, bet: int, pot):
-  player.makeBet(bet, pot)
+  def Call(player, bet: int, pot):
+    player.makeBet(bet, pot)
 
 
 
-def highest_card(hand):
+  def highest_card(hand):
     # Check if the hand is empty
-    if not hand:
-        return None
+      if not hand:
+          return None
 
     # Find the card with the highest value
-    highest_card = max(hand, key=lambda card: card.value)
+      highest_card = max(hand, key=lambda card: card.value)
     
     # Return the highest card
-    return highest_card
+      return highest_card
 
 

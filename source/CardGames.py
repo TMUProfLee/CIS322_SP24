@@ -24,7 +24,10 @@ class Pot:
     return self.pot
 
   def subtract(self, amount: int):
-    self.pot -= amount
+    if (self.pot - amount) >= 0:
+      self.pot -= amount
+    else:
+      print("Not enough money in the pot.")
     return self.pot
   
   def show_pot(self):
@@ -119,9 +122,10 @@ class Player:
     if amount > self.money:
       print("%s does not have enough money to make this bet." % self.name)
       return self.money
-    self.money -= amount
-    pot.add(amount)  # Call function implemented here--------------------------------
-    return self.money
+    else:
+      self.money -= amount
+      pot.add(amount)  # Call function implemented here--------------------------------
+      return self.money
 
   def addCard(self, card: Card, isKnown: bool = True):
     self.hand.append(card)

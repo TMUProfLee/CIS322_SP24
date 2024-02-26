@@ -1,7 +1,7 @@
 from testing_base import *
 
 
-def test_pot():
+def test_pot1():
     billy = Player("Billy")
     casey = Player("Casey")
     pot = Pot()
@@ -47,3 +47,18 @@ def test_casey():
 
     assert casey.money == 50
   
+def test_pot():
+    billy = Player("Billy")
+    casey = Player("Casey")
+    pot = Pot()
+
+    billy.addMoney(50)
+    print(pot.show_pot())
+    Call(billy, 60, pot)
+    print(pot.show_pot())
+    casey.addMoney(60)
+    Call(casey, 10, pot)
+    print(pot.show_pot())
+
+
+test_pot()

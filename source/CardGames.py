@@ -13,6 +13,81 @@ def find_root_dir():
     cwd = os.path.join( cwd, '..')
   return cwd
 
+
+# Pot class----------------------------------------------------------------------
+class Pot:
+  def __init__(self, pot: int = 0):
+    self.pot = pot
+
+  def add(self, amount: int):
+    self.pot += amount
+    return self.pot
+
+  def subtract(self, amount: int):
+    self.pot -= amount
+    return self.pot
+  
+  def show_pot(self):
+    return self.pot
+
+#------------------------------------------------------------------------------
+
+class Game:
+    def __init__(self, players, pot):
+        self.players = players  # Assuming players is a list of Player objects
+        self.pot = pot  # Pot object
+        self.current_turn = 0  # Index of the current player's turn
+        self.current_raise = 0  # Track the current raise amount
+
+    def next_turn(self):
+        # Advance to the next player's turn, wrapping around to the first player if necessary
+        self.current_turn = (self.current_turn + 1) % len(self.players)
+        print(f"It's now {self.players[self.current_turn].name}'s turn.")
+
+    def raise_bet(self, player_index, amount):
+        player = self.players[player_index]
+        if player.money < amount:
+            print(f"{player.name} does not have enough money to raise.")
+            return False
+        player.money -= amount
+        self.pot.add(amount)
+        self.current_raise = amount
+        print(f"{player.name} raises the bet by {amount}. The pot is now {self.pot.show_pot()}.")
+        self.reset_round(player_index)
+        self.next_turn()  # Automatically advance to the next turn
+        return True
+
+    def reset_round(self, raising_player_index):
+        # Make other players match the raise or fold
+        for index, player in enumerate(self.players):
+            if index == raising_player_index:
+                continue  # Skip the player who made the raise
+
+            print(f"{player.name}, you need to match the raise of {self.current_raise} or fold.")
+          
+
+    def match_raise(self, player_index):
+        # Assume a method where players can match the current raise
+        player = self.players[player_index]
+        if player.money < self.current_raise:
+            print(f"{player.name} doesn't have enough money to match the raise and is folded.")
+        else:
+            player.money -= self.current_raise
+            self.pot.add(self.current_raise)
+            print(f"{player.name} matches the raise. The pot is now {self.pot.show_pot()}.")
+
+    def player_action(self, player_index, action, amount=0):
+        # This method can be expanded to handle different player actions (raise, call, fold)
+        if action == "raise":
+            self.raise_bet(player_index, amount)
+        elif action == "call":
+            self.match_raise(player_index)
+        # Add more actions as needed
+        self.next_turn()  # Move to the next turn after the action
+
+
+
+
 class Card:
   def __init__(self, suit, value, image, cardBack):
     self.cardBack = cardBack 
@@ -107,12 +182,13 @@ class Player:
     return self.money
 
   # removes money from player only if player has at least the bet amount currently 
-  def makeBet(self, amount: int): # amount - integer number of money to remove from player
+  def makeBet(self, amount: int, pot: Pot): # amount - integer number of money to remove from player
     if amount > self.money:
       print("%s does not have enough money to make this bet." % self.name)
       return self.money
     self.money -= amount
-    return self.money # new amount of money the player has
+    pot.add(amount)  # Call function implemented here--------------------------------
+    return self.money
 
   # adds one card to player's hand
   def addCard(self, card: Card, isKnown: bool = True):
@@ -190,6 +266,40 @@ class Dealer:
   def resetDeck(self):
     self.deck.reset()
     self.deck.shuffle()
+
+
+# has_pair function---------------------------------------------------------------
+
+  def has_pair(player):
+      Hand = player.hand
+      values = [card.value for card in Hand]
+      compare = set()
+      print(values, compare)
+      for i in values:
+          if i in compare:
+              return True
+          compare.add(i)
+      else:
+          return False
+
+
+# call function--------------------------------------------------------------
+
+  def Call(player, bet: int, pot):
+    player.makeBet(bet, pot)
+
+
+
+  def highest_card(hand):
+    # Check if the hand is empty
+      if not hand:
+          return None
+
+    # Find the card with the highest value
+      highest_card = max(hand, key=lambda card: card.value)
+    
+    # Return the highest card
+      return highest_card
 
 
 class Poker:

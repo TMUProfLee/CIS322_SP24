@@ -1,10 +1,9 @@
-
 import random
 import os
 
 cardImages = []
-values = list(range(1,14))
-suits = ["Spades", "Clubs", "Hearts", "Diamonds"]
+values = list(range(1,43))
+sprint_value = [1, 2]
 
 def find_root_dir():
   cwd = os.getcwd()
@@ -153,28 +152,28 @@ class Dealer:
     self.deck.reset()
     self.deck.shuffle()
 
+#Split deck into 3 piles and escape_card/starting_cards
+def split_card():
+  game_deck=Deck()
 
+  escape_card = game_deck.getCard()
 
+  deck3 = []
+  for card in range(13):
+    test_card = game_deck.getCard()
+    deck3.append(test_card)
 
+  deck2 = []
+  for card in range(14):
+    test_card = game_deck.getCard()
+    deck2.append(test_card)
 
+  deck1 = []
+  for card in range(11):
+    test_card = game_deck.getCard()
+    deck1.append(test_card)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-def highestCard(cardList):
-  highestCard = getCard("Spades", 1)
-  for card in cardList:
-    if card.value >= highestCard.value:
-      highestCard = card
-  return highestCard
+  starting_cards = []
+  for i in range(3):
+    test_card = game_deck.getCard()
+    starting_cards.append(test_card)

@@ -2,8 +2,7 @@ import random
 import os
 
 cardImages = []
-values = list(range(1,14))
-suits = ["Spades", "Clubs", "Hearts", "Diamonds"]
+
 values = list(range(1,43))
 sprint_value = [1, 2]
 
@@ -13,6 +12,7 @@ def find_root_dir():
     os.chdir('..')
     cwd = os.path.join( cwd, '..')
   return cwd
+
 #Card class adjusted
 class Card:
   def __init__(self, sprint_value, value, image, cardBack):
@@ -29,6 +29,7 @@ class Card:
       return False
     return self.value == other.value and \
       self.sprint_value == other.sprint_value
+
 #Deck class adjusted
 class Deck:
   def __init__(self):
@@ -75,6 +76,7 @@ class Deck:
     self.size -= 1
     self.discarded.append(card)
     return card
+
 class Player:
   def __init__(self, name, money: int = 0):
     self.name = name
@@ -196,3 +198,35 @@ def marshall_first_turn():
     else:
         print("Incorrect guess.")
     """
+
+#Split deck into 3 piles and escape_card/starting_cards
+def split_card():
+  game_deck=Deck()
+  #Get card 42
+  escape_card = game_deck.getCard()
+  #Get cards 41 - 29
+  HighRangeDeck = []
+  for card in range(13):
+    test_card = game_deck.getCard()
+    HighRangeDeck.append(test_card)
+
+  #Get cards 28 - 15
+  MidRangeDeck = []
+  for card in range(14):
+    test_card = game_deck.getCard()
+    MidRangeDeck.append(test_card)
+
+  #Get cards 14 - 4
+  LowRangeDeck = []
+  for card in range(11):
+    test_card = game_deck.getCard()
+    LowRangeDeck.append(test_card)
+
+  #Get cards 3 - 1
+  starting_cards = []
+  for i in range(3):
+    test_card = game_deck.getCard()
+    starting_cards.append(test_card)
+
+  return escape_card, HighRangeDeck, MidRangeDeck, LowRangeDeck, starting_cards
+

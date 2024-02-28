@@ -28,7 +28,7 @@ def test_highestCard_random():
     card3 = getCard("Diamonds", 11)
     card4 = getCard("Diamonds", 1)
     card5 = getCard("Diamonds", 4)
-    testCardValues = [card1, card2, card3, card4, card5]
+    rd1, card2, card3, card4, card5]
     assert highestCard(testCardValues).value == 12
 
     #samevalues

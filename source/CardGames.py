@@ -315,3 +315,13 @@ class Poker:
 
   # Add all functions pertaining to the game of poker below
   # Add global variables to the __init__ function above
+
+
+
+# Card Identification Class
+
+class CardIdentification:
+   def __init__(self, hand: "list[Card]"):
+      self.hand = hand
+      self.values = [card.value for card in hand]
+      self.suits = [card.suit for card in hand]

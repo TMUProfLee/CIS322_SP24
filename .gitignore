@@ -2,3 +2,4 @@
 */.cache/**
 TEMPDEV/*
 **/.DS_Store
+*.DS_Store

@@ -288,11 +288,6 @@ def has_pair(player):
 #---------------------------------------------------------------------------------
 
 
-# call function--------------------------------------------------------------
-
-def Call(player, bet: int, pot):
-    player.makeBet(bet, pot)
-
 
 
 def highest_card(hand):
@@ -308,10 +303,10 @@ def highest_card(hand):
 
 
 class Poker:
-  def __init__(self, players: "list[Player]", dealer: Dealer):
+  def __init__(self, players: "list[Player]", dealer: Dealer, pot: Pot):
     self.players = players
     self.dealer = dealer
-    self.pot = 0
+    self.pot = pot
     self.bets = [0 for _ in range(len(players))]
     self.round = 0
     self.currentPlayer = 0
@@ -322,7 +317,7 @@ class Poker:
 
   # Keep Track of Pot, Bets, and current round
   def addMoneyToPot(self, amount: int):
-    self.pot += amount
+    self.pot.add(amount)
     return self.pot
   
   def addBet(self, player: Player, amount: int):
@@ -344,3 +339,10 @@ class Poker:
   def callAmount(self, player: Player):
     idx = self.players.index(player)
     return max(self.bets) - self.bets[idx]
+  
+  # call function--------------------------------------------------------------
+
+  def Call(self, player: Player, pot: Pot):
+    amount = self.callAmount(player)
+    player.makeBet(amount, pot)
+

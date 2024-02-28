@@ -229,4 +229,39 @@ def split_card():
     starting_cards.append(test_card)
 
   return escape_card, HighRangeDeck, MidRangeDeck, LowRangeDeck, starting_cards
+    
+def character_selection():
+  Player1 = input("Player 1, please enter your name: ")
+  Player2 = input("Player 2, please enter your name: ")
+  Player1Role = ""
+  Player2Role = ""
+  rand = random.randint(0,1)
+  if rand == 0:
+    while Player1Role != "fugitive" and Player1Role != "marshall":
+      Player1Role = input(str(Player1) + ", please pick your role(Fugitive or Marshall): ").lower()
+      if Player1Role == "fugitive":
+        print(str(Player1) + ", you are the Fugitive.")
+        print(str(Player2) + ", you are the Marshall.")
+      elif Player1Role == "marshall":
+        print(str(Player1) + ", you are the Marshall.")
+        print(str(Player2) + ", you are the Fugitive.")
+  else:
+    while Player2Role != "fugitive" and Player2Role != "marshall":
+      Player2Role = input(str(Player2) + ", please pick your role(Fugitive or Marshall): ").lower()
+      if Player2Role == "fugitive":
+        print(str(Player2) + ", you are the Fugitive.")
+        print(str(Player1) + ", you are the Marshall.")
+      elif Player2Role == "marshall":
+        print(str(Player2) + ", you are the Marshall.")
+        print(str(Player1) + ", you are the Fugitive.")
 
+character_selection()
+    
+
+
+def highestCard(cardList):
+  highestCard = getCard("Spades", 1)
+  for card in cardList:
+    if card.value >= highestCard.value:
+      highestCard = card
+  return highestCard

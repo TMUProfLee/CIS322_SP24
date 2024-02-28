@@ -170,7 +170,6 @@ class Dealer:
     self.deck.reset()
     self.deck.shuffle()
 
-
 # *-------- New addition: --------* 
     # To be implemented in the Poker Class.
   
@@ -185,3 +184,4 @@ def turn_hist(players):
         current_statement = f"Current player: {current_player}\n{current_player} raises/calls/folds.\n" 
         turn_table.append(current_statement)
     return turn_table
+

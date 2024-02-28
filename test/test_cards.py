@@ -1,7 +1,7 @@
-from testing_base import *
+from testing_base import Player, getCard, GoFishGame
 
 def test_show_hand():
-
+    game_instance = GoFishGame()
     matthew = Player("Matthew")
 
     five_spades = getCard("spades", 5)
@@ -12,4 +12,6 @@ def test_show_hand():
     cards = [ five_spades, four_spades, three_spades, two_spades, one_spades ]
     
     matthew.setHand( cards, isKnown=True )
+    matthew.sum_hand()
     assert matthew.showHand() == None
+    

@@ -24,7 +24,10 @@ class Pot:
     return self.pot
 
   def subtract(self, amount: int):
-    self.pot -= amount
+    if (self.pot - amount) >= 0:
+      self.pot -= amount
+    else:
+      print("Not enough money in the pot.")
     return self.pot
   
   def show_pot(self):
@@ -186,9 +189,10 @@ class Player:
     if amount > self.money:
       print("%s does not have enough money to make this bet." % self.name)
       return self.money
-    self.money -= amount
-    pot.add(amount)  # Call function implemented here--------------------------------
-    return self.money
+    else:
+      self.money -= amount
+      pot.add(amount)  # Call function implemented here--------------------------------
+      return self.money
 
   # adds one card to player's hand
   def addCard(self, card: Card, isKnown: bool = True):
@@ -270,27 +274,28 @@ class Dealer:
 
 # has_pair function---------------------------------------------------------------
 
-  def has_pair(player):
-      Hand = player.hand
-      values = [card.value for card in Hand]
-      compare = set()
-      print(values, compare)
-      for i in values:
-          if i in compare:
-              return True
-          compare.add(i)
-      else:
-          return False
+def has_pair(player):
+    Hand = player.hand
+    values = [card.value for card in Hand]
+    compare = set()
+    print(values, compare)
+    for i in values:
+        if i in compare:
+            return True
+        compare.add(i)
+    else:
+        return False
+#---------------------------------------------------------------------------------
 
 
 # call function--------------------------------------------------------------
 
-  def Call(player, bet: int, pot):
+def Call(player, bet: int, pot):
     player.makeBet(bet, pot)
 
 
 
-  def highest_card(hand):
+def highest_card(hand):
     # Check if the hand is empty
       if not hand:
           return None

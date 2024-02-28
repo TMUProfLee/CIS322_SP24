@@ -183,27 +183,3 @@ def split_card():
 
   return escape_card, HighRangeDeck, MidRangeDeck, LowRangeDeck, starting_cards
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-def highestCard(cardList):
-  highestCard = getCard("Spades", 1)
-  for card in cardList:
-    if card.value >= highestCard.value:
-      highestCard = card
-  return highestCard

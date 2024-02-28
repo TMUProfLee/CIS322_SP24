@@ -156,3 +156,67 @@ class Dealer:
   def resetDeck(self):
     self.deck.reset()
     self.deck.shuffle()
+    
+
+def DisplayHands():
+  P1 = Player("Nick", 100)
+  five_spades = getCard("spades", 5)
+  four_spades = getCard("Spades", 4)
+  two_hearts = getCard("Hearts", 2)
+  two_spades = getCard("Spades", 2)
+  one_spades = getCard("Spades", 1)
+  cards = [ five_spades, four_spades, two_hearts, two_spades, one_spades ]
+
+  P2 = Player("Logan", 300)
+  nine_spades = getCard("spades", 9)
+  eight_spades = getCard("Spades", 8)
+  seven_spades = getCard("spades", 7)
+  six_spades = getCard("Spades", 6)
+  five_hearts = getCard("Hearts", 5)
+  cards2 = [ nine_spades, eight_spades, seven_spades, six_spades, five_hearts ]
+
+  P1.setHand( cards, isKnown=True )
+  assert P1.showHand() == None
+  
+  P2.setHand( cards2, isKnown=True )
+  assert P2.showHand() == None
+
+  #print(Detect_Pair(P1.hand))
+
+def Detect_Pair(hand):
+    
+    count = 0
+    cardlist = []
+    #create list of card numbers
+    for i in hand:
+      cardlist.append(hand[count].value)
+      count = count + 1
+    #create list stripped of duplicates
+    cardlistset=set(cardlist)
+    #check if lists length are the same and return Boolean value
+    if len(cardlistset) != len(cardlist):
+      #print("True")
+      return True  
+    else:
+      #print("False")
+      return False
+
+def Num_players():
+  while True:
+    num_players_str = input("Enter number of players:")
+    if num_players_str.isdigit():
+        num_players_int = int(num_players_str)
+        if num_players_int > 0:
+            break
+        else:
+            print("Please enter a positive number")
+    else:
+        print("Please enter a valid number")
+  
+
+#def main():
+  #DisplayHands()
+  #Num_players()
+
+#if __name__ == '__main__':
+  #main()

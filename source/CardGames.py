@@ -2,6 +2,7 @@ import random
 import os
 
 cardImages = []
+
 values = list(range(1,43))
 sprint_value = [1, 2]
 
@@ -23,7 +24,6 @@ class Card:
     if self.image:
       for line in self.image:
         self.shortImage.append(line[:4])
-
   def __eq__(self, other):
     if not type(other) == Card:
       return False
@@ -65,15 +65,12 @@ class Deck:
     self.size = len(deck)
     self.cardBack = cardBack
     self.discarded = []
-
   def reset(self):
     self.cards += self.discarded
     self.discarded = []
     self.size = len(self.cards)
-
   def shuffle(self):
     random.shuffle(self.cards)
-
   def getCard(self):
     card = self.cards.pop()
     self.size -= 1
@@ -86,29 +83,24 @@ class Player:
     self.hand = []
     self.knownCards = []
     self.money = money
-
   def addMoney(self, amount: int):
     self.money += amount
     return self.money
-
   def makeBet(self, amount: int):
     if amount > self.money:
       print("%s does not have enough money to make this bet." % self.name)
       return self.money
     self.money -= amount
     return self.money
-
   def addCard(self, card: Card, isKnown: bool = True):
     self.hand.append(card)
     if isKnown:
       self.knownCards.append(True)
     else:
       self.knownCards.append(False)
-
   def setHand(self, cards: "list[Card]", isKnown: bool = False):
     self.hand = cards
     self.knownCards = [isKnown for _ in self.hand]
-
   def showHand(self, printShort: bool = False):
     for idx in range(6):
       for i, card in enumerate(self.hand):
@@ -119,16 +111,13 @@ class Player:
           image = card.image[idx] if self.knownCards[i] else card.cardBack[idx]
           print(image, end="")
       print()
-
   def clearHand(self):
     self.hand = []
     self.knownCards = []
-
 class Dealer:
   def __init__(self, deck: Deck):
     self.deck = deck
     self.deck.shuffle()
-
   def printCards(self, cards: "list[Card]", showFront: bool, printShort: bool = True):
     for idx in range(6):
       for i, card in enumerate(cards):
@@ -139,7 +128,6 @@ class Dealer:
           image = card.image[idx] if showFront else card.cardBack[idx]
           print(image, end="")
       print()
-
   def dealCards(self, numCards: int, players: "list[Player]"):
     if numCards * len(players) > self.deck.size:
       return False
@@ -147,10 +135,69 @@ class Dealer:
       for _ in range(numCards):
         player.addCard(self.deck.getCard())
     return True
-
   def resetDeck(self):
     self.deck.reset()
     self.deck.shuffle()
+
+def marshall_first_turn():
+    # Waiting for deck to be divided into three groups
+    input("Select which deck to draw two cards from ['1' (1-14), '2' (15-28), '3' (29-42)] and press enter...")
+
+    for i in range(2):
+        draw_card = deck.getCard()
+        marshall.addCard(draw_card, isKnown=True)
+
+    marshall.showHand()
+
+    #Display board
+
+    while(True):
+        guess_all = input("Would you like to guess all fugitive locations? (y/n)").lower()
+        if guess_all == 'y' or guess_all == 'yes':
+            while(True):
+                guess = input("Enter locations separated only by a comma (1,2,3...)").split(',')
+                """
+                if len_list < placed_locations:
+                    print("Must guess all locations")
+                    guess = input("Enter locations separated only by a comma (1,2,3...)").split(',')
+                    continue
+                """
+                # Check that input is a valid list of ints
+                bad = False
+                for ele in guess:
+                    try:
+                        ele = int(ele)
+                    except:
+                        TypeError
+                        print("Invalid input, try again")
+                        bad = True
+                        break
+                if bad:
+                    continue
+                break
+            break
+        elif guess_all == 'n' or guess_all == 'no':
+            while True:
+                try:
+                    guess = int(input("Enter fugitive location..."))
+                except:
+                    ValueError
+                    print("Invalid input, try again")
+                    continue
+                break
+            break
+        else:
+            print("Invalid input, try again")
+
+    #marshall.add_guess(guess)
+    print("Guesses added")
+    """
+    if check_location(marshall_current_idx, guess):
+        print("Correct location!")
+        reveal_location(marshall_current_idx)
+    else:
+        print("Incorrect guess.")
+    """
 
 #Split deck into 3 piles and escape_card/starting_cards
 def split_card():

@@ -18,6 +18,9 @@ def find_root_dir():
 class Pot:
   def __init__(self, pot: int = 0):
     self.pot = pot
+  
+  def __str__(self):
+    return f"The pot is currently {self.pot}."
 
   def add(self, amount: int):
     self.pot += amount

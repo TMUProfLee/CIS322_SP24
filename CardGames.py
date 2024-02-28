@@ -170,18 +170,10 @@ class Dealer:
     self.deck.reset()
     self.deck.shuffle()
 
-# *-------- New addition: --------* 
-    # To be implemented in the Poker Class.
-  
-    # Keep track of player turns.
-def turn_hist(players):
-        # Inital values
-    current_player = ""
-    turn_table = []
-        # Define the current player, store turns.
-    for x in players:
-        current_player = x.name                               # Replace with calling game state with player interactive functions.
-        current_statement = f"Current player: {current_player}\n{current_player} raises/calls/folds.\n" 
-        turn_table.append(current_statement)
-    return turn_table
 
+class Identification:
+  def __init__(self):
+    self.hand = [] # Hold values of cards in hand
+    self.name = "" # Name defined by the rank definition functions
+
+  # Include functions that return what defines the various poker hand ranks.

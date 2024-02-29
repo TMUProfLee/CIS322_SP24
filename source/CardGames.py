@@ -20,12 +20,10 @@ class Card:
     self.cardBack = cardBack
     self.sprint_value = sprint_value
     self.value = value
-    self.burn = burn
+    #self.burn = burn
     self.image = image
     self.shortImage = []
-    if self.image:
-      for line in self.image:
-        self.shortImage.append(line[:4])
+    self.revealed = False
 
   def __eq__(self, other):
     if not type(other) == Card:
@@ -297,7 +295,6 @@ def character_selection():
         print(str(Player2) + ", you are the Marshall.")
         print(str(Player1) + ", you are the Fugitive.")
 
-character_selection()
     
 
 
@@ -307,3 +304,38 @@ def highestCard(cardList):
     if card.value >= highestCard.value:
       highestCard = card
   return highestCard
+
+
+
+def display_board_general(cards_in_play):
+  sprints = [stack for stack in cards_in_play if type(stack) == list]
+  has_sprints = False
+  for idx in range(6):
+      for stack in cards_in_play:     
+        if type(stack) == list:
+          has_sprints = True
+          card = stack[0]
+        else:
+          card = stack
+        image = card.image[idx] if card.revealed else card.cardBack[idx]
+        print(image, end="")
+      print()
+  if has_sprints:
+    spacing = len([s for s in cards_in_play if type(s) != list])
+    
+    for i in range(1, max([len(stack) for stack in sprints])):
+      for idx in range(2, 6):
+        print(' ' * 7 * spacing, end="")
+        for stack in sprints:  
+          if len(stack) > i:
+            if idx == 5:
+              print('|_____|', end="")
+            else:
+              card = stack[i]
+              image = card.image[idx]
+              print(image, end="")
+          else:
+            print(' ' * 7, end="")
+        print()
+      
+    

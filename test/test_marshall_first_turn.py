@@ -1,4 +1,10 @@
-from testing_base import *
-from source.marshall_setup import *
+import sys
+sys.path.append("../")
 
-marshall_first_turn()
+from source.CardGames import *
+
+def test_first_turn():
+    setup = GameSetup()
+    setup.marshall_first_turn()
+    
+test_first_turn()

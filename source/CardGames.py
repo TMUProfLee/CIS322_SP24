@@ -20,7 +20,7 @@ class Card:
     self.cardBack = cardBack
     self.sprint_value = sprint_value
     self.value = value
-    self.burn = burn
+    #self.burn = burn
     self.image = image
     self.shortImage = []
     if self.image:
@@ -164,82 +164,95 @@ class Dealer:
     self.deck.reset()
     self.deck.shuffle()
 
-def marshall_first_turn():
-    # Get deck choice
-    while True:
-      try:
-        deck = int(input("Select which deck to draw two cards from ['1' (1-14), '2' (15-28), '3' (29-42)] and press enter..."))
-      except ValueError:
-        print("Invalid input, try again.")
-        continue
-      if deck in [1, 2, 3]:
-        break
+class GameSetup():
+  def __init__(self):
+        self.escape_card, self.HighRangeDeck, self.MidRangeDeck, self.LowRangeDeck, self.starting_cards = split_card()
+        self.cards_in_play = []
+        self.marshall = Player('joe')
 
-    # Draw two cards from the chosen deck
-    for _ in range(2):
-        draw_card = deck.getCard()
-        self.marshall.addCard(draw_card, isKnown=True)
+  def marshall_first_turn(self):
+      # Get deck choice
+      while True:
+        try:
+          deck = int(input("Select which deck to draw two cards from ['1' (1-14), '2' (15-28), '3' (29-42)] and press enter... "))
+        except ValueError:
+          print("Invalid input, try again.")
+          continue
+        if deck in [1, 2, 3]:
+          break
 
-    # Show the cards marshall drew
-    self.marshall.showHand()
-    # Display the two cards the fugitive has placed, face down
-    self.display_board_general()
+      if deck == 1:
+        deck = self.LowRangeDeck
+      elif deck == 2:
+        deck = self.MidRangeDeck
+      else:
+        deck = self.HighRangeDeck
 
-    # Main guessing loop
-    while(True):
-        # Choose to guess single or all cards
-        guess_all = input("Would you like to guess all fugitive locations? (y/n)").lower()
-        # Guessing all cards
-        if guess_all == 'y' or guess_all == 'yes':
-            # Loop until input is valid
-            while(True):
-                guess = input("Enter locations separated only by a comma (1,2,3...)").split(',')
-                if len(guess) < len(all(card for card in self.cards_in_play if card.revealed)):
-                    print("Must guess all locations")
-                    guess = input("Enter locations separated only by a comma (1,2,3...)").split(',')
-                    continue
-                bad = False
-                for ele in guess:
-                    try:
-                        ele = int(ele)
-                    except:
-                        TypeError
-                        print("Invalid input, try again")
-                        bad = True
-                        break
-                if bad:
-                    continue
-                break
-            break
-        # Guessing single card
-        elif guess_all == 'n' or guess_all == 'no':
-            # Loop until input is valid
-            while True:
-                try:
-                    guess = int(input("Enter fugitive location..."))
-                except:
-                    ValueError
-                    print("Invalid input, try again")
-                    continue
-                break
-            break
-        else:
-            print("Invalid input, try again")
+      # Draw two cards from the chosen deck
+      for _ in range(2):
+          draw_card = deck.pop()
+          self.marshall.addCard(draw_card, isKnown=True)
+
+      # Show the cards marshall drew
+      self.marshall.showHand()
+      # Display the two cards the fugitive has placed, face down
+      self.display_board_general()
+
+      # Main guessing loop
+      while(True):
+          # Choose to guess single or all cards
+          guess_all = input("Would you like to guess all fugitive locations? (y/n)").lower()
+          # Guessing all cards
+          if guess_all == 'y' or guess_all == 'yes':
+              # Loop until input is valid
+              while(True):
+                  guess = input("Enter locations separated only by a comma (1,2,3...)").split(',')
+                  if len(guess) < len(all(card for card in self.cards_in_play if card.revealed)):
+                      print("Must guess all locations")
+                      guess = input("Enter locations separated only by a comma (1,2,3...)").split(',')
+                      continue
+                  bad = False
+                  for ele in guess:
+                      try:
+                          ele = int(ele)
+                      except:
+                          TypeError
+                          print("Invalid input, try again")
+                          bad = True
+                          break
+                  if bad:
+                      continue
+                  break
+              break
+          # Guessing single card
+          elif guess_all == 'n' or guess_all == 'no':
+              # Loop until input is valid
+              while True:
+                  try:
+                      guess = int(input("Enter fugitive location..."))
+                  except:
+                      ValueError
+                      print("Invalid input, try again")
+                      continue
+                  break
+              break
+          else:
+              print("Invalid input, try again")
+      
+      # Add guesses to a tracker variable
+      self.marshall.add_guess(guess)
+      print("Guesses added")
+      
+      # Check if guess was correct or not
+      if self.check_location(marshall_current_idx, guess):
+          print("Correct location!")
+          self.reveal_cards(marshall_current_idx)
+      else:
+          print("Incorrect guess.")
+
+      # Print the board at the end of turn
+      self.display_board_general()
     
-    # Add guesses to a tracker variable
-    self.marshall.add_guess(guess)
-    print("Guesses added")
-    
-    # Check if guess was correct or not
-    if self.check_location(marshall_current_idx, guess):
-        print("Correct location!")
-        self.reveal_cards(marshall_current_idx)
-    else:
-        print("Incorrect guess.")
-
-    # Print the board at the end of turn
-    self.display_board_general()
-  
 
 #Split deck into 3 piles and escape_card/starting_cards
 def split_card():
@@ -297,7 +310,6 @@ def character_selection():
         print(str(Player2) + ", you are the Marshall.")
         print(str(Player1) + ", you are the Fugitive.")
 
-character_selection()
     
 
 

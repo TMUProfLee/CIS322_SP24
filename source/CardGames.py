@@ -23,6 +23,7 @@ class Card:
     #self.burn = burn
     self.image = image
     self.shortImage = []
+    self.revealed = False
     if self.image:
       for line in self.image:
         self.shortImage.append(line[:4])
@@ -97,6 +98,7 @@ class Player:
     self.hand = []
     self.knownCards = []
     self.money = money
+    self.guesses = []
 
   def addMoney(self, amount: int):
     self.money += amount
@@ -136,6 +138,13 @@ class Player:
     self.hand = []
     self.knownCards = []
 
+  def add_guess(self, guess):
+    if type(guess) == list:
+      for each in guess:
+        self.guesses.append(each)
+    else:
+      self.guesses.append(guess)
+
 class Dealer:
   def __init__(self, deck: Deck):
     self.deck = deck
@@ -170,6 +179,43 @@ class GameSetup():
         self.cards_in_play = []
         self.marshall = Player('joe')
 
+  def display_board_general(self):
+    sprints = [stack for stack in self.cards_in_play if type(stack) == list]
+    has_sprints = False
+    for idx in range(6):
+        for stack in self.cards_in_play:     
+          if type(stack) == list:
+            has_sprints = True
+            card = stack[0]
+          else:
+            card = stack
+          image = card.image[idx] if card.revealed else card.cardBack[idx]
+          print(image, end="")
+        print()
+    if has_sprints:
+      spacing = len([s for s in self.cards_in_play if type(s) != list])
+      
+      for i in range(1, max([len(stack) for stack in sprints])):
+        for idx in range(2, 6):
+          print(' ' * 7 * spacing, end="")
+          for stack in sprints:  
+            if len(stack) > i:
+              if idx == 5:
+                print('|_____|', end="")
+              else:
+                card = stack[i]
+                image = card.image[idx]
+                print(image, end="")
+            else:
+              print(' ' * 7, end="")
+          print()
+
+  def check_location(self, guess, marshall_current_idx):
+    return True
+  
+  def reveal_cards(self, marshall_current_idx):
+    self.cards_in_play[marshall_current_idx].revealed = True
+
   def marshall_first_turn(self):
       # Get deck choice
       while True:
@@ -201,15 +247,15 @@ class GameSetup():
       # Main guessing loop
       while(True):
           # Choose to guess single or all cards
-          guess_all = input("Would you like to guess all fugitive locations? (y/n)").lower()
+          guess_all = input("Would you like to guess all fugitive locations? (y/n) ").lower()
           # Guessing all cards
           if guess_all == 'y' or guess_all == 'yes':
               # Loop until input is valid
               while(True):
-                  guess = input("Enter locations separated only by a comma (1,2,3...)").split(',')
-                  if len(guess) < len(all(card for card in self.cards_in_play if card.revealed)):
+                  guess = input("Enter locations separated only by a comma (1,2,3...) ").split(',')
+                  if len(guess) < len([card for card in self.cards_in_play if card.revealed]):
                       print("Must guess all locations")
-                      guess = input("Enter locations separated only by a comma (1,2,3...)").split(',')
+                      guess = input("Enter locations separated only by a comma (1,2,3...) ").split(',')
                       continue
                   bad = False
                   for ele in guess:
@@ -229,7 +275,7 @@ class GameSetup():
               # Loop until input is valid
               while True:
                   try:
-                      guess = int(input("Enter fugitive location..."))
+                      guess = int(input("Enter fugitive location... "))
                   except:
                       ValueError
                       print("Invalid input, try again")
@@ -244,7 +290,8 @@ class GameSetup():
       print("Guesses added")
       
       # Check if guess was correct or not
-      if self.check_location(marshall_current_idx, guess):
+      marshall_current_idx = 0
+      if self.check_location(guess, marshall_current_idx):
           print("Correct location!")
           self.reveal_cards(marshall_current_idx)
       else:
@@ -319,3 +366,5 @@ def highestCard(cardList):
     if card.value >= highestCard.value:
       highestCard = card
   return highestCard
+
+

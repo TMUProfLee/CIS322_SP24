@@ -259,7 +259,7 @@ def character_selection():
         print(str(Player2) + ", you are the Marshall.")
         print(str(Player1) + ", you are the Fugitive.")
 
-character_selection()
+#character_selection()
     
 
 

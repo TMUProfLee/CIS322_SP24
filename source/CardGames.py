@@ -265,3 +265,24 @@ def highestCard(cardList):
     if card.value >= highestCard.value:
       highestCard = card
   return highestCard
+
+def FugitiveFirst():
+  escape_card, HighRangeDeck, MidRangeDeck, LowRangeDeck, starting_cards = split_card()
+  fugitive_deck = starting_cards
+  fugitive_deck.append(escape_card)
+  for x in range(3):
+    fugitive_deck.append(LowRangeDeck.pop())
+                    
+  for x in range(2):
+    fugitive_deck.append(MidRangeDeck.pop())
+        
+  string = ""
+  for i in fugitive_deck:
+    string += str(i.value)
+    string += ", "
+    string = string[:len(string)-2]
+    print("Here is your starting hand: " + string)
+    burn = input("Enter which cards to burn separated only by a comma (1,2,3...)").split(',')
+    hideouts = input("Select two viable cards you want to place as hideouts separated only by a comma (1,2,3...): ").split(',')
+    
+FugitiveFirst()

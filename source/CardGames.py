@@ -209,19 +209,21 @@ def split_card():
   for card in range(13):
     test_card = game_deck.getCard()
     HighRangeDeck.append(test_card)
+  random.shuffle(HighRangeDeck)
 
   #Get cards 28 - 15
   MidRangeDeck = []
   for card in range(14):
     test_card = game_deck.getCard()
     MidRangeDeck.append(test_card)
+  random.shuffle(MidRangeDeck)
 
   #Get cards 14 - 4
   LowRangeDeck = []
   for card in range(11):
     test_card = game_deck.getCard()
     LowRangeDeck.append(test_card)
-
+  random.shuffle(LowRangeDeck)
   #Get cards 3 - 1
   starting_cards = []
   for i in range(3):
@@ -255,10 +257,6 @@ def character_selection():
         print(str(Player2) + ", you are the Marshall.")
         print(str(Player1) + ", you are the Fugitive.")
 
-character_selection()
-    
-
-
 def highestCard(cardList):
   highestCard = getCard("Spades", 1)
   for card in cardList:
@@ -281,8 +279,10 @@ def FugitiveFirst():
   for i in fugitive_deck:
     string += str(i.value)
     string += ", "
-    string = string[:len(string)-2]
-    print("Here is your starting hand: " + string)
-    burn = input("Enter which cards to burn separated only by a comma (1,2,3...)").split(',')
-    hideouts = input("Select two viable cards you want to place as hideouts separated only by a comma (1,2,3...): ").split(',')
-    
+  string = string[:len(string)-2]
+  print("Here is your starting hand: " + string)
+  burn = input("Enter which cards to burn separated only by a comma (1,2,3...): ").split(',')
+  #Burn function goes here with the burn variable as a parameter
+  starting_hideouts = input("Select two viable cards you want to place as hideouts separated only by a comma (1,2,3...): ").split(',')
+  #Georgio's function to check if the hideouts are valid goes here with starting_hideouts as a parameter
+  return fugitive_deck

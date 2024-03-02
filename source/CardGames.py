@@ -270,6 +270,7 @@ def FugitiveFirst():
   escape_card, HighRangeDeck, MidRangeDeck, LowRangeDeck, starting_cards = split_card()
   fugitive_deck = starting_cards
   fugitive_deck.append(escape_card)
+  
   for x in range(3):
     fugitive_deck.append(LowRangeDeck.pop())
                     
@@ -285,4 +286,3 @@ def FugitiveFirst():
     burn = input("Enter which cards to burn separated only by a comma (1,2,3...)").split(',')
     hideouts = input("Select two viable cards you want to place as hideouts separated only by a comma (1,2,3...): ").split(',')
     
-FugitiveFirst()

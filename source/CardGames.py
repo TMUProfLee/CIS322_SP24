@@ -2,6 +2,7 @@
 import random
 import os
 
+
 cardImages = []
 values = list(range(1,14))
 suits = ["Spades", "Clubs", "Hearts", "Diamonds"]

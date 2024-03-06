@@ -78,11 +78,12 @@ class Deck:
     return card
 
 class Player:
-  def __init__(self, name, money: int = 0):
+  def __init__(self, name, role, money: int = 0):
     self.name = name
     self.hand = []
     self.knownCards = []
     self.money = money
+    self.role = role  #This would be to distinguish whether the object is either acting as Marshall or Fugitive
   def addMoney(self, amount: int):
     self.money += amount
     return self.money
@@ -114,6 +115,7 @@ class Player:
   def clearHand(self):
     self.hand = []
     self.knownCards = []
+
 class Dealer:
   def __init__(self, deck: Deck):
     self.deck = deck
@@ -138,66 +140,6 @@ class Dealer:
   def resetDeck(self):
     self.deck.reset()
     self.deck.shuffle()
-
-def marshall_first_turn():
-    # Waiting for deck to be divided into three groups
-    input("Select which deck to draw two cards from ['1' (1-14), '2' (15-28), '3' (29-42)] and press enter...")
-
-    for i in range(2):
-        draw_card = deck.getCard()
-        marshall.addCard(draw_card, isKnown=True)
-
-    marshall.showHand()
-
-    #Display board
-
-    while(True):
-        guess_all = input("Would you like to guess all fugitive locations? (y/n)").lower()
-        if guess_all == 'y' or guess_all == 'yes':
-            while(True):
-                guess = input("Enter locations separated only by a comma (1,2,3...)").split(',')
-                """
-                if len_list < placed_locations:
-                    print("Must guess all locations")
-                    guess = input("Enter locations separated only by a comma (1,2,3...)").split(',')
-                    continue
-                """
-                # Check that input is a valid list of ints
-                bad = False
-                for ele in guess:
-                    try:
-                        ele = int(ele)
-                    except:
-                        TypeError
-                        print("Invalid input, try again")
-                        bad = True
-                        break
-                if bad:
-                    continue
-                break
-            break
-        elif guess_all == 'n' or guess_all == 'no':
-            while True:
-                try:
-                    guess = int(input("Enter fugitive location..."))
-                except:
-                    ValueError
-                    print("Invalid input, try again")
-                    continue
-                break
-            break
-        else:
-            print("Invalid input, try again")
-
-    #marshall.add_guess(guess)
-    print("Guesses added")
-    """
-    if check_location(marshall_current_idx, guess):
-        print("Correct location!")
-        reveal_location(marshall_current_idx)
-    else:
-        print("Incorrect guess.")
-    """
 
 #Split deck into 3 piles and escape_card/starting_cards
 def split_card():
@@ -254,9 +196,8 @@ def character_selection():
       elif Player2Role == "marshall":
         print(str(Player2) + ", you are the Marshall.")
         print(str(Player1) + ", you are the Fugitive.")
-
-character_selection()
-    
+  
+  return Player1, Player1Role, Player2, Player2Role
 
 
 def highestCard(cardList):
@@ -266,23 +207,135 @@ def highestCard(cardList):
       highestCard = card
   return highestCard
 
-def FugitiveFirst():
-  escape_card, HighRangeDeck, MidRangeDeck, LowRangeDeck, starting_cards = split_card()
-  fugitive_deck = starting_cards
-  fugitive_deck.append(escape_card)
-  for x in range(3):
-    fugitive_deck.append(LowRangeDeck.pop())
-                    
-  for x in range(2):
-    fugitive_deck.append(MidRangeDeck.pop())
-        
-  string = ""
-  for i in fugitive_deck:
-    string += str(i.value)
-    string += ", "
-    string = string[:len(string)-2]
-    print("Here is your starting hand: " + string)
-    burn = input("Enter which cards to burn separated only by a comma (1,2,3...)").split(',')
-    hideouts = input("Select two viable cards you want to place as hideouts separated only by a comma (1,2,3...): ").split(',')
+  
+
+
+class GameSetup:
+    def __init__(self):
+        #Initialize the objects that need to be initialized
+        self.escape_card, self.HighRangeDeck, self.MidRangeDeck, self.LowRangeDeck, self.starting_cards = split_card()
+        self.cards_in_play = []
+        self.fugitive = Player("", "Fugitive", 0)
+        self.marshall = Player("", "Marshall", 0)
+        self.done = False
     
-FugitiveFirst()
+    def start_game(self):
+        Player1, Player1Role, Player2, Player2Role = character_selection()
+        if (Player1Role == "fugitive"):
+           self.fugitive.name = Player1
+           self.marshall.name = Player2
+        else:
+           self.fugitive.name = Player2
+           self.marshall.name = Player1
+        first_turn = True
+
+        print(f"\n\n***LET THE GAME BEGIN!***\n\n{self.fugitive.name} shall go first!")
+
+        while self.done != True:
+            #Different rule sequence for first turn
+            while first_turn:
+                #Fugitive places 1 or 2 new hideouts
+                fugitive_choices = self.fugitive_first_turn()
+                #Marshall draws 2 cards; chooses which deck to draw from
+                print(f"{self.marshall.name} is next!")
+                marshall_choices = self.marshall_first_turn()
+                
+            #Outside of first turn
+            #Fugitive draws 1 card from any deck. 
+            #Can choose to place 1 new hideout, or pass
+            
+            #Marshall draws 1 card from any deck.
+            #Makes a singular guess to find a hideout (possible expand into guessing multiple hideouts)
+        
+                
+            #Fugitive's Win Condition --> Fugitive plays card with value 42.
+            #Marshall's Win Condition --> Wins by guessing all cards (hideouts) currently in play
+            return
+    
+    def fugitive_first_turn(self):
+      fugitive_deck = self.starting_cards
+      fugitive_deck.append(self.escape_card)
+      for x in range(3):
+        fugitive_deck.append(self.LowRangeDeck.pop())
+                        
+      for x in range(2):
+        fugitive_deck.append(self.MidRangeDeck.pop())
+      
+      string = ""
+      for i in fugitive_deck:
+        string += str(i.value) + ", "
+        string = string[:len(string)-2]
+
+      print("Here is your starting hand: " + string) 
+
+      #May have to check if burn is empty string in case fugitive does not want to burn anything
+      burn = input("Enter which cards to burn separated only by a comma (1,2,3...)").split(',')
+      hideouts = input("Select two viable cards you want to place as hideouts separated only by a comma (1,2,3...): ").split(',')
+      #Would probably call function to check if hideouts are viable here. If hideouts aren't viable, reprompt fugitive
+      
+      return burn, hideouts
+      
+
+  
+    def marshall_first_turn(self):
+     
+      # Waiting for deck to be divided into three groups
+      input("Select which deck to draw two cards from ['1' (1-14), '2' (15-28), '3' (29-42)] and press enter...")
+      for i in range(2):
+          draw_card = deck.getCard()
+          marshall.addCard(draw_card, isKnown=True)
+
+      marshall.showHand()
+
+      #Display board
+
+      while(True):
+          guess_all = input("Would you like to guess all fugitive locations? (y/n)").lower()
+          if guess_all == 'y' or guess_all == 'yes':
+              while(True):
+                  guess = input("Enter locations separated only by a comma (1,2,3...)").split(',')
+                  """
+                  if len_list < placed_locations:
+                      print("Must guess all locations")
+                      guess = input("Enter locations separated only by a comma (1,2,3...)").split(',')
+                      continue
+                  """
+                  # Check that input is a valid list of ints
+                  bad = False
+                  for ele in guess:
+                      try:
+                          ele = int(ele)
+                      except:
+                          TypeError
+                          print("Invalid input, try again")
+                          bad = True
+                          break
+                  if bad:
+                      continue
+                  break
+              break
+          elif guess_all == 'n' or guess_all == 'no':
+              while True:
+                  try:
+                      guess = int(input("Enter fugitive location..."))
+                  except:
+                      ValueError
+                      print("Invalid input, try again")
+                      continue
+                  break
+              break
+          else:
+              print("Invalid input, try again")
+
+      #marshall.add_guess(guess)
+      print("Guesses added")
+      """
+      if check_location(marshall_current_idx, guess):
+          print("Correct location!")
+          reveal_location(marshall_current_idx)
+      else:
+          print("Incorrect guess.")
+      """
+
+game = GameSetup()
+game.start_game()

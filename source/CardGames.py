@@ -114,6 +114,7 @@ class Player:
   def clearHand(self):
     self.hand = []
     self.knownCards = []
+
 class Dealer:
   def __init__(self, deck: Deck):
     self.deck = deck
@@ -209,18 +210,21 @@ def split_card():
   for card in range(13):
     test_card = game_deck.getCard()
     HighRangeDeck.append(test_card)
+  random.shuffle(HighRangeDeck)
 
   #Get cards 28 - 15
   MidRangeDeck = []
   for card in range(14):
     test_card = game_deck.getCard()
     MidRangeDeck.append(test_card)
+  random.shuffle(MidRangeDeck)
 
   #Get cards 14 - 4
   LowRangeDeck = []
   for card in range(11):
     test_card = game_deck.getCard()
     LowRangeDeck.append(test_card)
+  random.shuffle(LowRangeDeck)
 
   #Get cards 3 - 1
   starting_cards = []
@@ -255,7 +259,7 @@ def character_selection():
         print(str(Player2) + ", you are the Marshall.")
         print(str(Player1) + ", you are the Fugitive.")
 
-character_selection()
+#character_selection()
     
 
 

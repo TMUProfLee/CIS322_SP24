@@ -212,11 +212,35 @@ def Num_players():
             print("Please enter a positive number")
     else:
         print("Please enter a valid number")
-  
 
-#def main():
-  #DisplayHands()
-  #Num_players()
+def Win_screen(win_player):
+    if len(win_player) >= 1:
+      print("""
+===============================================================
+            
 
-#if __name__ == '__main__':
-  #main()
+                        ———GAME OVER——— 
+            
+
+===============================================================
+            """)
+
+      print("""Congratuations to """, " & ".join(win_player))
+      return True
+    
+    else:
+      return False
+
+    
+
+    
+    
+
+
+def main():
+  win_player = ["nick", "logan"]
+  Win_screen(win_player)
+ 
+
+if __name__ == '__main__':
+  main()

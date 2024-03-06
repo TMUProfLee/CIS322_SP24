@@ -31,6 +31,21 @@ class Card:
       return False
     return self.suit == other.suit and \
       self.value == other.value
+      
+# Added by yoda-dev1
+def highestcard(cards):
+    card_counts = {}
+    highestcardcount = 0
+    highestcard = None
+    for card in cards:
+        if card in card_counts:
+            card_counts[card] += 1
+        else:
+            card_counts[card] =1
+        if card_counts[card] > highestcardcount:
+            highestcardcount =card_counts[card]
+            highestcard = card
+    return highestcardcount
 
 class Deck:
   def __init__(self):
@@ -159,6 +174,20 @@ class Dealer:
     self.deck.reset()
     self.deck.shuffle()
 
+# made by yoda dev2
+# this will allow the played to access the shuffled deck once the game starts. 
+class Game:
+  def __init__(self):
+    self.deck.shuffle()
+
+  def four_of_a_kind(self, showHand):
+    card_kind = [card[0] for card in showHand]
+    for card_kind in card_kinds:
+      if card_kinds.count(card_kind) == 4:
+        return True
+      return False
+
+
 #This will hopefully be my function location. -Logan C.
 def DisplayPlayerInfo(PlayerIn):
   print(PlayerIn.name, "Has $", PlayerIn.money, '$ left')
@@ -211,3 +240,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+

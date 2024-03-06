@@ -12,4 +12,5 @@ def test_show_hand():
     cards = [ five_spades, four_spades, three_spades, two_spades, one_spades ]
     
     matthew.setHand( cards, isKnown=True )
+    matthew.showHand()
     assert matthew.showHand() == None

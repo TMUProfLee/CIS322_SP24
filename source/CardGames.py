@@ -205,17 +205,20 @@ class Poker:
     # Check if the given hand is a flush
     suits_count = {'Spades': 0, 'Clubs': 0, 'Hearts': 0, 'Diamonds': 0}
     for card in hand:
-      suits_count[card.suit] += 1
+        suits_count[card.suit] += 1
 
     # Check if any suit has 5 or more cards
     for count in suits_count.values():
-      if count >= 5:
-        return True
+        if count >= 5:
+            return True
     return False
+
   
   def evaluate_hands(self):
-    for player in self.players:
-      if self.check_flush(player.hand):
-        print(f"{player.name} has a flush!")
-      else:
-        print(f"{player.name} does not have a flush.")
+      for player in self.players:
+        if self.check_flush(player.hand):
+          print(f"{player.name} has a flush!")
+        else:
+          print(f"{player.name} does not have a flush.")
+
+

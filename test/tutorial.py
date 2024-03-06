@@ -1,5 +1,5 @@
 from testing_base import *
-#Logan Crotts
+
 # Create deck and dealer
 deck = Deck()
 dealer = Dealer(deck)

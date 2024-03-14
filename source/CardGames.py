@@ -110,6 +110,9 @@ class Card:
       
   def __str__(self):
     return f"{self.value} of {self.suit}"
+  
+  def __repr__(self) -> str:
+    return f"Card(suit='{self.suit}', value={self.value})"
 
 class Deck:
   def __init__(self): # builds a deck of cards
@@ -344,3 +347,31 @@ class Poker:
   def callAmount(self, player: Player):
     idx = self.players.index(player)
     return max(self.bets) - self.bets[idx]
+  
+class Identification:
+  def __init__(self):
+    self.hand = [] # Hold values of cards in hand
+    self.name = "" # Name defined by the rank definition functions
+
+  # Include functions that return what defines the various poker hand ranks.
+  
+  def twoPair(self):
+    # iterate through the hand to count occurrences of each card value
+    count = {} # dictionary to count the occurences
+    
+    # make dictionary
+    for card in self.hand: 
+      if card.value in count:
+        count[card.value] += 1
+      else:
+        count[card.value] = 1
+    
+    pairs = [value for value,freq in count.items() if freq == 2]
+        
+    if len(pairs) == 2:
+      # return this list that contains the values of cards that form 2 pairs in paired_values.
+      pair_cards = [card for card in self.hand if card.value in pairs]
+      return pair_cards
+    else:
+      #return empty list since it's not exactly two pairs.
+      return []

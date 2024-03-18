@@ -253,7 +253,7 @@ class GameSetup():
               # Loop until input is valid
               while(True):
                   guess = input("Enter locations separated only by a comma (1,2,3...) ").split(',')
-                  if len(guess) < len([card for card in self.cards_in_play if card.revealed]):
+                  if len(guess) < len([card for card in self.cards_in_play if not card.revealed]):
                       print("Must guess all locations")
                       guess = input("Enter locations separated only by a comma (1,2,3...) ").split(',')
                       continue

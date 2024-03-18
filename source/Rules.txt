@@ -14,7 +14,7 @@ The Marshal wins by identifying all the Fugitive's hide­ outs to find and arres
 
 The hideout cards are sorted into three decks: 4-14, 15-28, and 29-41. Each deck is shuffled separately.
 
-The fugitive recieves a starting hand. (the marshal has no starting hand). The fugitive starts with the hideout cards numbered 1, 2, 3, and 42.
+The fugitive receives a starting hand. (the marshal has no starting hand). The fugitive starts with the hideout cards numbered 1, 2, 3, and 42.
 
 The fugitive draws additional cards from the three sorted hideout decks (THIS IS DONE FOR YOU):
 

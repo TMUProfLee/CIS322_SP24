@@ -79,12 +79,19 @@ class Game:
             self.pot.add(self.current_raise)
             print(f"{player.name} matches the raise. The pot is now {self.pot.show_pot()}.")
 
+    def fold(self, player_index):
+      #fold method that passes over player
+      pass
+      
+
     def player_action(self, player_index, action, amount=0):
         # This method can be expanded to handle different player actions (raise, call, fold)
         if action == "raise":
             self.raise_bet(player_index, amount)
         elif action == "call":
             self.match_raise(player_index)
+        elif action == "fold":
+          self.fold(player_index)
         # Add more actions as needed
         self.next_turn()  # Move to the next turn after the action
 

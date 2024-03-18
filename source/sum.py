@@ -1,4 +1,4 @@
-from CardGames import *
+from CardGames_test import *
 # Write a function that can sum the value of a player’s hand.
 
 # Input: Player object or list of cards (player’s hand)

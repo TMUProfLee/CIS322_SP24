@@ -182,18 +182,22 @@ def character_selection():
     while Player1Role != "fugitive" and Player1Role != "marshall":
       Player1Role = input(str(Player1) + ", please pick your role(Fugitive or Marshall): ").lower()
       if Player1Role == "fugitive":
+        Player2Role = "marshall"
         print(str(Player1) + ", you are the Fugitive.")
         print(str(Player2) + ", you are the Marshall.")
       elif Player1Role == "marshall":
+        Player2Role = "fugitive"
         print(str(Player1) + ", you are the Marshall.")
         print(str(Player2) + ", you are the Fugitive.")
   else:
     while Player2Role != "fugitive" and Player2Role != "marshall":
       Player2Role = input(str(Player2) + ", please pick your role(Fugitive or Marshall): ").lower()
       if Player2Role == "fugitive":
+        Player1Role = "marshall"
         print(str(Player2) + ", you are the Fugitive.")
         print(str(Player1) + ", you are the Marshall.")
       elif Player2Role == "marshall":
+        Player1Role = "fugitive"
         print(str(Player2) + ", you are the Marshall.")
         print(str(Player1) + ", you are the Fugitive.")
   
@@ -220,7 +224,7 @@ class GameSetup:
         self.done = False
     
     def start_game(self):
-        Player1, Player1Role, Player2, Player2Role = character_selection()
+        Player1, Player1Role, Player2, _ = character_selection()
         if (Player1Role == "fugitive"):
            self.fugitive.name = Player1
            self.marshall.name = Player2
@@ -264,8 +268,8 @@ class GameSetup:
       string = ""
       for i in fugitive_deck:
         string += str(i.value) + ", "
-        string = string[:len(string)-2]
-
+      
+      string = string[:len(string)-2]
       print("Here is your starting hand: " + string) 
 
       #May have to check if burn is empty string in case fugitive does not want to burn anything

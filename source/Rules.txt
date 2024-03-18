@@ -24,14 +24,14 @@ The fugitive draws additional cards from the three sorted hideout decks (THIS IS
 
 Each card has 2 values: a hideout number (#0*42) and a sprint number indicated by footprints (+1 or +2).
 
-The fugitive uses cards by placing them as hideouts and by sacrificing them to sprint. the marshal uses cards to deduce where the fugitive is hiding and, by holding them, to decrease the number of options avail able to the fugitive.
+The fugitive uses cards by placing them as hideouts and by sacrificing them to sprint. The marshal uses cards to deduce where the fugitive is hiding and, by holding them, to decrease the number of options avail able to the fugitive.
 
 
 
 
 **MAIN GAMEPLAY**
 
-The fugitive and marshal alternate turns throughout the game. on the fugitive's turn, he may move to a new hideout as part of his path to escape. on the marshal's turn, she attempts to catch the fugitive by uncovering the fugitive's hideouts.
+The fugitive and marshal alternate turns throughout the game. on the fugitive's turn, he may move to a new hideout as part of his path to escape. On the marshal's turn, she attempts to catch the fugitive by uncovering the fugitive's hideouts.
 
 The fugitive always takes the first turn.
 
@@ -76,7 +76,7 @@ The fugitive may always choose to place more sprint cards than necessary, even i
 For example: if the previous hideout had the hideout number 4, the fugitive could normally play only the 5, 6, or 7. If the fugitive wants to play the 10 as the next hideout, he must add cards with a total sprint value of at least +3 (because 10 is 3 higher than the fugitive's normal range).
 
 2.Pass
-The fugitive can choose to pass his turn and play no cards. this lets him build up cards in his hand for later turns, but it gives the marshal a chance to catch up.
+The fugitive can choose to pass his turn and play no cards. This lets him build up cards in his hand for later turns, but it gives the marshal a chance to catch up.
 
 
 

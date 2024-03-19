@@ -219,8 +219,8 @@ class GameSetup:
         #Initialize the objects that need to be initialized
         self.escape_card, self.HighRangeDeck, self.MidRangeDeck, self.LowRangeDeck, self.starting_cards = split_card()
         self.cards_in_play = []
-        self.fugitive = Player("", "Fugitive", 0)
-        self.marshall = Player("", "Marshall", 0)
+        self.fugitive = Player("", "Fugitive")
+        self.marshall = Player("", "Marshall")
         self.done = False
     
     def start_game(self):

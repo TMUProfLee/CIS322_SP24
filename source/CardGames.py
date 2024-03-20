@@ -25,6 +25,7 @@ class Card:
     self.shortImage = []
     self.revealed = False
 
+
   def __eq__(self, other):
     if not type(other) == Card:
       return False
@@ -95,6 +96,7 @@ class Player:
     self.hand = []
     self.knownCards = []
     self.money = money
+    self.guesses = []
     self.role = role  #This would be to distinguish whether the object is either acting as Marshall or Fugitive
 
   def addMoney(self, amount: int):
@@ -135,6 +137,13 @@ class Player:
     self.hand = []
     self.knownCards = []
 
+  def add_guess(self, guess):
+    if type(guess) == list:
+      for each in guess:
+        self.guesses.append(each)
+    else:
+      self.guesses.append(guess)
+
 class Dealer:
   def __init__(self, deck: Deck):
     self.deck = deck
@@ -164,79 +173,13 @@ class Dealer:
     self.deck.shuffle()
 
 
-#Split deck into 3 piles and escape_card/starting_cards
-def split_card():
-  game_deck=Deck()
-  #Get card 42
-  escape_card = game_deck.getCard()
-  #Get cards 41 - 29
-  HighRangeDeck = []
-  for card in range(13):
-    test_card = game_deck.getCard()
-    HighRangeDeck.append(test_card)
-  random.shuffle(HighRangeDeck)
+  def highestCard(cardList):
+    highestCard = getCard("Spades", 1)
+    for card in cardList:
+      if card.value >= highestCard.value:
+        highestCard = card
+    return highestCard
 
-  #Get cards 28 - 15
-  MidRangeDeck = []
-  for card in range(14):
-    test_card = game_deck.getCard()
-    MidRangeDeck.append(test_card)
-  random.shuffle(MidRangeDeck)
-
-  #Get cards 14 - 4
-  LowRangeDeck = []
-  for card in range(11):
-    test_card = game_deck.getCard()
-    LowRangeDeck.append(test_card)
-  random.shuffle(LowRangeDeck)
-
-  #Get cards 3 - 1
-  starting_cards = []
-  for i in range(3):
-    test_card = game_deck.getCard()
-    starting_cards.append(test_card)
-
-  return escape_card, HighRangeDeck, MidRangeDeck, LowRangeDeck, starting_cards
-    
-def character_selection():
-  Player1 = input("Player 1, please enter your name: ")
-  Player2 = input("Player 2, please enter your name: ")
-  Player1Role = ""
-  Player2Role = ""
-  rand = random.randint(0,1)
-  if rand == 0:
-    while Player1Role != "fugitive" and Player1Role != "marshall":
-      Player1Role = input(str(Player1) + ", please pick your role(Fugitive or Marshall): ").lower()
-      if Player1Role == "fugitive":
-        Player2Role = "marshall"
-        print(str(Player1) + ", you are the Fugitive.")
-        print(str(Player2) + ", you are the Marshall.")
-      elif Player1Role == "marshall":
-        Player2Role = "fugitive"
-        print(str(Player1) + ", you are the Marshall.")
-        print(str(Player2) + ", you are the Fugitive.")
-  else:
-    while Player2Role != "fugitive" and Player2Role != "marshall":
-      Player2Role = input(str(Player2) + ", please pick your role(Fugitive or Marshall): ").lower()
-      if Player2Role == "fugitive":
-        Player1Role = "marshall"
-        print(str(Player2) + ", you are the Fugitive.")
-        print(str(Player1) + ", you are the Marshall.")
-      elif Player2Role == "marshall":
-        Player1Role = "fugitive"
-        print(str(Player2) + ", you are the Marshall.")
-        print(str(Player1) + ", you are the Fugitive.")
-
-  return Player1, Player1Role, Player2, Player2Role
-
-def highestCard(cardList):
-  highestCard = getCard("Spades", 1)
-  for card in cardList:
-    if card.value >= highestCard.value:
-      highestCard = card
-  return highestCard
-
-  
 
 
 class GameSetup:
@@ -276,9 +219,78 @@ class GameSetup:
             #Marshall draws 1 card from any deck.
             #Makes a singular guess to find a hideout (possible expand into guessing multiple hideouts)
 
+    #Split deck into 3 piles and escape_card/starting_cards
+    def split_card():
+      game_deck=Deck()
+      #Get card 42
+      escape_card = game_deck.getCard()
+      #Get cards 41 - 29
+      HighRangeDeck = []
+      for card in range(13):
+        test_card = game_deck.getCard()
+        HighRangeD  eck.append(test_card)
+      random.shuffle(HighRangeDeck)
 
+      #Get cards 28 - 15
+      MidRangeDeck = []
+      for card in range(14):
+        test_card = game_deck.getCard()
+        MidRangeDeck.append(test_card)
+      random.shuffle(MidRangeDeck)
 
+      #Get cards 14 - 4
+      LowRangeDeck = []
+      for card in range(11):
+        test_card = game_deck.getCard()
+        LowRangeDeck.append(test_card)
+      random.shuffle(LowRangeDeck)
 
+      #Get cards 3 - 1
+      starting_cards = []
+      for i in range(3):
+        test_card = game_deck.getCard()
+        starting_cards.append(test_card)
+
+      return escape_card, HighRangeDeck, MidRangeDeck, LowRangeDeck, starting_cards
+
+    def character_selection():
+      Player1 = input("Player 1, please enter your name: ")
+      Player2 = input("Player 2, please enter your name: ")
+      Player1Role = ""
+      Player2Role = ""
+      rand = random.randint(0,1)
+      if rand == 0:
+        while Player1Role != "fugitive" and Player1Role != "marshall":
+          Player1Role = input(str(Player1) + ", please pick your role(Fugitive or Marshall): ").lower()
+          if Player1Role == "fugitive":
+            Player2Role = "marshall"
+            print(str(Player1) + ", you are the Fugitive.")
+            print(str(Player2) + ", you are the Marshall.")
+          elif Player1Role == "marshall":
+            Player2Role = "fugitive"
+            print(str(Player1) + ", you are the Marshall.")
+            print(str(Player2) + ", you are the Fugitive.")
+      else:
+        while Player2Role != "fugitive" and Player2Role != "marshall":
+          Player2Role = input(str(Player2) + ", please pick your role(Fugitive or Marshall): ").lower()
+          if Player2Role == "fugitive":
+            Player1Role = "marshall"
+            print(str(Player2) + ", you are the Fugitive.")
+            print(str(Player1) + ", you are the Marshall.")
+          elif Player2Role == "marshall":
+            Player1Role = "fugitive"
+            print(str(Player2) + ", you are the Marshall.")
+            print(str(Player1) + ", you are the Fugitive.")
+      return Player1, Player1Role, Player2, Player2Role
+
+  
+    # Filler function until we implement the function to check if the guess is correct
+    def check_location(self, guess, marshall_current_idx):
+      return True
+
+    def reveal_cards(self, marshall_current_idx):
+      self.cards_in_play[marshall_current_idx].revealed = True
+    
     def display_board_general(cards_in_play):
       sprints = [stack for stack in cards_in_play if type(stack) == list]
       has_sprints = False
@@ -337,29 +349,46 @@ class GameSetup:
 
   
     def marshall_first_turn(self):
-     
-      # Waiting for deck to be divided into three groups
-      input("Select which deck to draw two cards from ['1' (1-14), '2' (15-28), '3' (29-42)] and press enter...")
-      for i in range(2):
-          draw_card = deck.getCard()
-          marshall.addCard(draw_card, isKnown=True)
+      # Get deck choice
+      while True:
+        try:
+          deck = int(input("Select which deck to draw two cards from ['1' (1-14), '2' (15-28), '3' (29-42)] and press enter... "))
+        except ValueError:
+          print("Invalid input, try again.")
+          continue
+        if deck in [1, 2, 3]:
+          break
 
-      marshall.showHand()
+      if deck == 1:
+        deck = self.LowRangeDeck
+      elif deck == 2:
+        deck = self.MidRangeDeck
+      else:
+        deck = self.HighRangeDeck
 
-      #Display board
+      # Draw two cards from the chosen deck
+      for _ in range(2):
+          draw_card = deck.pop()
+          self.marshall.addCard(draw_card, isKnown=True)
 
+      # Show the cards marshall drew
+      self.marshall.showHand()
+      # Display the two cards the fugitive has placed, face down
+      self.display_board_general()
+
+      # Main guessing loop
       while(True):
-          guess_all = input("Would you like to guess all fugitive locations? (y/n)").lower()
+          # Choose to guess single or all cards
+          guess_all = input("Would you like to guess all fugitive locations? (y/n) ").lower()
+          # Guessing all cards
           if guess_all == 'y' or guess_all == 'yes':
+              # Loop until input is valid
               while(True):
-                  guess = input("Enter locations separated only by a comma (1,2,3...)").split(',')
-                  """
-                  if len_list < placed_locations:
+                  guess = input("Enter locations separated only by a comma (1,2,3...) ").split(',')
+                  if len(guess) < len([card for card in self.cards_in_play if not card.revealed]):
                       print("Must guess all locations")
-                      guess = input("Enter locations separated only by a comma (1,2,3...)").split(',')
+                      guess = input("Enter locations separated only by a comma (1,2,3...) ").split(',')
                       continue
-                  """
-                  # Check that input is a valid list of ints
                   bad = False
                   for ele in guess:
                       try:
@@ -373,10 +402,12 @@ class GameSetup:
                       continue
                   break
               break
+          # Guessing single card
           elif guess_all == 'n' or guess_all == 'no':
+              # Loop until input is valid
               while True:
                   try:
-                      guess = int(input("Enter fugitive location..."))
+                      guess = int(input("Enter fugitive location... "))
                   except:
                       ValueError
                       print("Invalid input, try again")
@@ -385,16 +416,21 @@ class GameSetup:
               break
           else:
               print("Invalid input, try again")
-
-      #marshall.add_guess(guess)
+      
+      # Add guesses to a tracker variable
+      self.marshall.add_guess(guess)
       print("Guesses added")
-      """
-      if check_location(marshall_current_idx, guess):
+      
+      # Check if guess was correct or not
+      marshall_current_idx = 0
+      if self.check_location(guess, marshall_current_idx):
           print("Correct location!")
-          reveal_location(marshall_current_idx)
+          self.reveal_cards(marshall_current_idx)
       else:
           print("Incorrect guess.")
-      """
+
+      # Print the board at the end of turn
+      self.display_board_general()
 
 game = GameSetup()
 game.start_game()

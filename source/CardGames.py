@@ -1,3 +1,4 @@
+
 import random
 import os
 
@@ -19,11 +20,11 @@ class Card:
     self.cardBack = cardBack
     self.sprint_value = sprint_value
     self.value = value
+    #self.burn = burn
     self.image = image
     self.shortImage = []
-    if self.image:
-      for line in self.image:
-        self.shortImage.append(line[:4])
+    self.revealed = False
+
   def __eq__(self, other):
     if not type(other) == Card:
       return False
@@ -65,17 +66,28 @@ class Deck:
     self.size = len(deck)
     self.cardBack = cardBack
     self.discarded = []
+
   def reset(self):
     self.cards += self.discarded
     self.discarded = []
     self.size = len(self.cards)
+
   def shuffle(self):
     random.shuffle(self.cards)
+
   def getCard(self):
     card = self.cards.pop()
     self.size -= 1
     self.discarded.append(card)
     return card
+
+def getCard(value, burn):
+  deck = Deck()
+  my_card = Card(value, burn, None, None)
+  for card in deck.cards:
+    if card == my_card:
+      return card
+  return None
 
 class Player:
   def __init__(self, name, role, money: int = 0):
@@ -84,24 +96,29 @@ class Player:
     self.knownCards = []
     self.money = money
     self.role = role  #This would be to distinguish whether the object is either acting as Marshall or Fugitive
+
   def addMoney(self, amount: int):
     self.money += amount
     return self.money
+
   def makeBet(self, amount: int):
     if amount > self.money:
       print("%s does not have enough money to make this bet." % self.name)
       return self.money
     self.money -= amount
     return self.money
+
   def addCard(self, card: Card, isKnown: bool = True):
     self.hand.append(card)
     if isKnown:
       self.knownCards.append(True)
     else:
       self.knownCards.append(False)
+
   def setHand(self, cards: "list[Card]", isKnown: bool = False):
     self.hand = cards
     self.knownCards = [isKnown for _ in self.hand]
+
   def showHand(self, printShort: bool = False):
     for idx in range(6):
       for i, card in enumerate(self.hand):
@@ -112,6 +129,8 @@ class Player:
           image = card.image[idx] if self.knownCards[i] else card.cardBack[idx]
           print(image, end="")
       print()
+  
+
   def clearHand(self):
     self.hand = []
     self.knownCards = []
@@ -120,6 +139,7 @@ class Dealer:
   def __init__(self, deck: Deck):
     self.deck = deck
     self.deck.shuffle()
+
   def printCards(self, cards: "list[Card]", showFront: bool, printShort: bool = True):
     for idx in range(6):
       for i, card in enumerate(cards):
@@ -130,6 +150,7 @@ class Dealer:
           image = card.image[idx] if showFront else card.cardBack[idx]
           print(image, end="")
       print()
+
   def dealCards(self, numCards: int, players: "list[Player]"):
     if numCards * len(players) > self.deck.size:
       return False
@@ -137,9 +158,11 @@ class Dealer:
       for _ in range(numCards):
         player.addCard(self.deck.getCard())
     return True
+
   def resetDeck(self):
     self.deck.reset()
     self.deck.shuffle()
+
 
 #Split deck into 3 piles and escape_card/starting_cards
 def split_card():
@@ -151,18 +174,21 @@ def split_card():
   for card in range(13):
     test_card = game_deck.getCard()
     HighRangeDeck.append(test_card)
+  random.shuffle(HighRangeDeck)
 
   #Get cards 28 - 15
   MidRangeDeck = []
   for card in range(14):
     test_card = game_deck.getCard()
     MidRangeDeck.append(test_card)
+  random.shuffle(MidRangeDeck)
 
   #Get cards 14 - 4
   LowRangeDeck = []
   for card in range(11):
     test_card = game_deck.getCard()
     LowRangeDeck.append(test_card)
+  random.shuffle(LowRangeDeck)
 
   #Get cards 3 - 1
   starting_cards = []
@@ -200,9 +226,8 @@ def character_selection():
         Player1Role = "fugitive"
         print(str(Player2) + ", you are the Marshall.")
         print(str(Player1) + ", you are the Fugitive.")
-  
-  return Player1, Player1Role, Player2, Player2Role
 
+  return Player1, Player1Role, Player2, Player2Role
 
 def highestCard(cardList):
   highestCard = getCard("Spades", 1)
@@ -250,25 +275,55 @@ class GameSetup:
             
             #Marshall draws 1 card from any deck.
             #Makes a singular guess to find a hideout (possible expand into guessing multiple hideouts)
-        
-                
-            #Fugitive's Win Condition --> Fugitive plays card with value 42.
-            #Marshall's Win Condition --> Wins by guessing all cards (hideouts) currently in play
-            return
-    
+
+
+
+
+    def display_board_general(cards_in_play):
+      sprints = [stack for stack in cards_in_play if type(stack) == list]
+      has_sprints = False
+      for idx in range(6):
+          for stack in cards_in_play:     
+            if type(stack) == list:
+              has_sprints = True
+              card = stack[0]
+            else:
+              card = stack
+            image = card.image[idx] if card.revealed else card.cardBack[idx]
+            print(image, end="")
+          print()
+      if has_sprints:
+        spacing = len([s for s in cards_in_play if type(s) != list])
+
+        for i in range(1, max([len(stack) for stack in sprints])):
+          for idx in range(2, 6):
+            print(' ' * 7 * spacing, end="")
+            for stack in sprints:  
+              if len(stack) > i:
+                if idx == 5:
+                  print('|_____|', end="")
+                else:
+                  card = stack[i]
+                  image = card.image[idx]
+                  print(image, end="")
+              else:
+                print(' ' * 7, end="")
+            print()
+
+
     def fugitive_first_turn(self):
       fugitive_deck = self.starting_cards
       fugitive_deck.append(self.escape_card)
       for x in range(3):
         fugitive_deck.append(self.LowRangeDeck.pop())
-                        
+
       for x in range(2):
         fugitive_deck.append(self.MidRangeDeck.pop())
-      
+
       string = ""
       for i in fugitive_deck:
         string += str(i.value) + ", "
-      
+
       string = string[:len(string)-2]
       print("Here is your starting hand: " + string) 
 
@@ -276,7 +331,7 @@ class GameSetup:
       burn = input("Enter which cards to burn separated only by a comma (1,2,3...)").split(',')
       hideouts = input("Select two viable cards you want to place as hideouts separated only by a comma (1,2,3...): ").split(',')
       #Would probably call function to check if hideouts are viable here. If hideouts aren't viable, reprompt fugitive
-      
+
       return burn, hideouts
       
 
@@ -343,3 +398,11 @@ class GameSetup:
 
 game = GameSetup()
 game.start_game()
+
+def ReadRules():
+  rules = open("source/Rules.txt", "r")
+  content = rules.read()
+  print(content)
+  rules.close()
+
+

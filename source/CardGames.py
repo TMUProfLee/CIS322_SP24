@@ -220,7 +220,7 @@ class GameSetup:
             #Makes a singular guess to find a hideout (possible expand into guessing multiple hideouts)
 
     #Split deck into 3 piles and escape_card/starting_cards
-    def split_card():
+    def split_card(self):
       game_deck=Deck()
       #Get card 42
       escape_card = game_deck.getCard()
@@ -253,7 +253,7 @@ class GameSetup:
 
       return escape_card, HighRangeDeck, MidRangeDeck, LowRangeDeck, starting_cards
 
-    def character_selection():
+    def character_selection(self):
       Player1 = input("Player 1, please enter your name: ")
       Player2 = input("Player 2, please enter your name: ")
       Player1Role = ""
@@ -291,7 +291,7 @@ class GameSetup:
     def reveal_cards(self, marshall_current_idx):
       self.cards_in_play[marshall_current_idx].revealed = True
     
-    def display_board_general(cards_in_play):
+    def display_board_general(self, cards_in_play):
       sprints = [stack for stack in cards_in_play if type(stack) == list]
       has_sprints = False
       for idx in range(6):

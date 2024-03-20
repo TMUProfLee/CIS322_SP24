@@ -185,14 +185,14 @@ class Dealer:
 class GameSetup:
     def __init__(self):
         #Initialize the objects that need to be initialized
-        self.escape_card, self.HighRangeDeck, self.MidRangeDeck, self.LowRangeDeck, self.starting_cards = split_card()
+        self.escape_card, self.HighRangeDeck, self.MidRangeDeck, self.LowRangeDeck, self.starting_cards = self.split_card()
         self.cards_in_play = []
         self.fugitive = Player("", "Fugitive")
         self.marshall = Player("", "Marshall")
         self.done = False
     
     def start_game(self):
-        Player1, Player1Role, Player2, _ = character_selection()
+        Player1, Player1Role, Player2, _ = self.character_selection()
         if (Player1Role == "fugitive"):
            self.fugitive.name = Player1
            self.marshall.name = Player2
@@ -228,7 +228,7 @@ class GameSetup:
       HighRangeDeck = []
       for card in range(13):
         test_card = game_deck.getCard()
-        HighRangeD  eck.append(test_card)
+        HighRangeDeck.append(test_card)
       random.shuffle(HighRangeDeck)
 
       #Get cards 28 - 15

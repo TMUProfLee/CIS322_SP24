@@ -362,5 +362,11 @@ def FugitiveFirst():
     burn = input("Enter which cards to burn separated only by a comma (1,2,3...)").split(',')
     hideouts = input("Select two viable cards you want to place as hideouts separated only by a comma (1,2,3...): ").split(',')
     
-FugitiveFirst()
+
+
+def ReadRules():
+  rules = open("source/Rules.txt", "r")
+  content = rules.read()
+  print(content)
+  rules.close()
 

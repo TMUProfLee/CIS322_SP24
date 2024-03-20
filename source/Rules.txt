@@ -1,0 +1,107 @@
+**OBJECT OF THE GAME**
+
+Fugitive is a quick 2 player game where one player is the Fugitive moving from hideout to hideout on his escape route, and the other player is the Marshal trying to catch him before he escapes.
+
+The main deck is composed of 43 Hideout cards, which represent places the Fugitive can hide. 
+
+The Fugitive wins by playing cards until he can eventu­ally play the #42 Hideout card to escape the Marshal.
+
+The Marshal wins by identifying all the Fugitive's hide­ outs to find and arrest the Fugitive.
+
+
+
+**SETUP**
+
+The hideout cards are sorted into three decks: 4-14, 15-28, and 29-41. Each deck is shuffled separately.
+
+The fugitive receives a starting hand. (the marshal has no starting hand). The fugitive starts with the hideout cards numbered 1, 2, 3, and 42.
+
+The fugitive draws additional cards from the three sorted hideout decks (THIS IS DONE FOR YOU):
+
+*Deck 1 (4-14): draw 3 cards.
+*Deck 2 (15-28): Draw 2 Cards.
+*Deck 3 (29-41): Draw 0 Cards.
+
+Each card has 2 values: a hideout number (#0*42) and a sprint number indicated by footprints (+1 or +2).
+
+The fugitive uses cards by placing them as hideouts and by sacrificing them to sprint. The marshal uses cards to deduce where the fugitive is hiding and, by holding them, to decrease the number of options avail able to the fugitive.
+
+
+
+
+**MAIN GAMEPLAY**
+
+The fugitive and marshal alternate turns throughout the game. on the fugitive's turn, he may move to a new hideout as part of his path to escape. On the marshal's turn, she attempts to catch the fugitive by uncovering the fugitive's hideouts.
+
+The fugitive always takes the first turn.
+
+
+*Fugitive's First Turn*
+The fugitive places 1 or 2 new hideouts.
+
+*Marshal's First Turn*
+The marshal draws 2 cards total, either from the same deck or from different decks. The marshal makes a guess to find one or more hideouts.
+
+*Fugitive's Subsequent Turns*
+The fugitive draws 1 card from any deck. The fugitive may place 1 new hideout (or pass).
+
+*Marshal's Normal Turn*
+The marshal draws 1 card from any deck. The marshal makes a guess to find one or more hideouts.
+
+Continue Taking Turns Until One Player Wins:
+
+*Winning Conditions*
+The fugitive wins by playing card *42 (and escaping the manhunt, if necessary!).
+
+The marshal wins by guessing all the fugitive's hide­ outs, either during her normal turn or by starting a manhunt.
+
+
+
+
+**The Fugitive's Options**
+
+1. Place A New Hideout:
+The fugitive places a card face-down to the right of the previous hideout, establishing a new hideout. Hide­outs are any face-down or face-up cards in the center row. the fugitive can look at any face-down cards at any time to help him remember what's been played.
+
+Normally, the fugitive can place a hideout card if its hideout number is up to 3 higher than the previous hideout. The fugitive cannot place a new hideout with a lower number than his previous hideout.
+
+For example: if the previous hideout was card 4, the fugitive could choose to play a card with the hideout numbers 5, 6, or 7 card, but not a card with the hide­ out numbers 3 (because that's lower than the previous hideout number) or 15 (because that's more than 3 higher than the previous hideout number).
+
+The fugitive may extend the normal range of 3 by placing the new hideout with one or more extra cards underneath it, face-down. These extra cards are used as sprint cards, and they extend the fugitive's range by the sum of their sprint numbers.
+
+When using cards as sprint cards, the fugitive must place them so that the marshal can see how many sprint cards have been played (but not their sprint numbers).
+
+The fugitive may always choose to place more sprint cards than necessary, even if no sprinting is required.
+
+For example: if the previous hideout had the hideout number 4, the fugitive could normally play only the 5, 6, or 7. If the fugitive wants to play the 10 as the next hideout, he must add cards with a total sprint value of at least +3 (because 10 is 3 higher than the fugitive's normal range).
+
+2.Pass
+The fugitive can choose to pass his turn and play no cards. This lets him build up cards in his hand for later turns, but it gives the marshal a chance to catch up.
+
+
+
+
+
+**The Marshal's Options**
+
+1.Guess A Single Hideout:
+The marshal guesses a number between 1 and 41. If that number matches any of the face-down hideouts in the center row, the fugitive reveals the hideout card and any sprint cards under it.
+
+The marshal doesn't need to select a specific face­ down card when guessing, and the marshal never needs to guess sprint cards.
+
+2.Guess A Series Of Hideouts:
+The marshal guesses multiple numbers.
+
+if all of her guessed numbers match face-down hideouts in the center row, the fugitive reveals all the guessed hideout cards and any sprint cards under them.
+
+if any of her guessed numbers are wrong, the fugitive does not reveal any cards-even if one or more guessed numbers are correct.
+
+The marshal doesn't have to select specific face-down cards when guessing, and she never has to guess sprint cards.
+
+3.Start A Manhunt:
+As a last effort to catch the fugitive, the marshal can start a manhunt, which happens separately from the normal sequence of turns. The marshal can start a manhunt only when the fugitive plays the hideout card numbered *42 while the highest revealed hideout number is *29 or lower.
+
+In a manhunt, the marshal guesses a single hideout (as above): if she guesses correctly, she continues to guess an­ other single hideout. If the marshal guesses all hide­ outs, the manhunt was successful. She catches the fugitive at the last second, and the marshal wins!
+
+If she guesses incorrectly at any point, the manhunt failed. the fugitive escapes, and the marshal loses!
+

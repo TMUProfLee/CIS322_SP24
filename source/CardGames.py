@@ -24,9 +24,7 @@ class Card:
     self.image = image
     self.shortImage = []
     self.revealed = False
-    if self.image:
-      for line in self.image:
-        self.shortImage.append(line[:4])
+
 
   def __eq__(self, other):
     if not type(other) == Card:
@@ -93,12 +91,13 @@ def getCard(value, burn):
   return None
 
 class Player:
-  def __init__(self, name, money: int = 0):
+  def __init__(self, name, role, money: int = 0):
     self.name = name
     self.hand = []
     self.knownCards = []
     self.money = money
     self.guesses = []
+    self.role = role  #This would be to distinguish whether the object is either acting as Marshall or Fugitive
 
   def addMoney(self, amount: int):
     self.money += amount
@@ -173,50 +172,183 @@ class Dealer:
     self.deck.reset()
     self.deck.shuffle()
 
-class GameSetup():
-  def __init__(self):
+
+  def highestCard(cardList):
+    highestCard = getCard("Spades", 1)
+    for card in cardList:
+      if card.value >= highestCard.value:
+        highestCard = card
+    return highestCard
+
+
+
+class GameSetup:
+    def __init__(self):
+        #Initialize the objects that need to be initialized
         self.escape_card, self.HighRangeDeck, self.MidRangeDeck, self.LowRangeDeck, self.starting_cards = split_card()
         self.cards_in_play = []
-        self.marshall = Player('joe')
+        self.fugitive = Player("", "Fugitive")
+        self.marshall = Player("", "Marshall")
+        self.done = False
+    
+    def start_game(self):
+        Player1, Player1Role, Player2, _ = character_selection()
+        if (Player1Role == "fugitive"):
+           self.fugitive.name = Player1
+           self.marshall.name = Player2
+        else:
+           self.fugitive.name = Player2
+           self.marshall.name = Player1
+        first_turn = True
 
-  def display_board_general(self):
-    sprints = [stack for stack in self.cards_in_play if type(stack) == list]
-    has_sprints = False
-    for idx in range(6):
-        for stack in self.cards_in_play:     
-          if type(stack) == list:
-            has_sprints = True
-            card = stack[0]
-          else:
-            card = stack
-          image = card.image[idx] if card.revealed else card.cardBack[idx]
-          print(image, end="")
-        print()
-    if has_sprints:
-      spacing = len([s for s in self.cards_in_play if type(s) != list])
-      
-      for i in range(1, max([len(stack) for stack in sprints])):
-        for idx in range(2, 6):
-          print(' ' * 7 * spacing, end="")
-          for stack in sprints:  
-            if len(stack) > i:
-              if idx == 5:
-                print('|_____|', end="")
-              else:
-                card = stack[i]
-                image = card.image[idx]
-                print(image, end="")
-            else:
-              print(' ' * 7, end="")
-          print()
-  # Filler function until we implement the function to check if the guess is correct
-  def check_location(self, guess, marshall_current_idx):
-    return True
+        print(f"\n\n***LET THE GAME BEGIN!***\n\n{self.fugitive.name} shall go first!")
+
+        while self.done != True:
+            #Different rule sequence for first turn
+            while first_turn:
+                #Fugitive places 1 or 2 new hideouts
+                fugitive_choices = self.fugitive_first_turn()
+                #Marshall draws 2 cards; chooses which deck to draw from
+                print(f"{self.marshall.name} is next!")
+                marshall_choices = self.marshall_first_turn()
+                
+            #Outside of first turn
+            #Fugitive draws 1 card from any deck. 
+            #Can choose to place 1 new hideout, or pass
+            
+            #Marshall draws 1 card from any deck.
+            #Makes a singular guess to find a hideout (possible expand into guessing multiple hideouts)
+
+    #Split deck into 3 piles and escape_card/starting_cards
+    def split_card():
+      game_deck=Deck()
+      #Get card 42
+      escape_card = game_deck.getCard()
+      #Get cards 41 - 29
+      HighRangeDeck = []
+      for card in range(13):
+        test_card = game_deck.getCard()
+        HighRangeD  eck.append(test_card)
+      random.shuffle(HighRangeDeck)
+
+      #Get cards 28 - 15
+      MidRangeDeck = []
+      for card in range(14):
+        test_card = game_deck.getCard()
+        MidRangeDeck.append(test_card)
+      random.shuffle(MidRangeDeck)
+
+      #Get cards 14 - 4
+      LowRangeDeck = []
+      for card in range(11):
+        test_card = game_deck.getCard()
+        LowRangeDeck.append(test_card)
+      random.shuffle(LowRangeDeck)
+
+      #Get cards 3 - 1
+      starting_cards = []
+      for i in range(3):
+        test_card = game_deck.getCard()
+        starting_cards.append(test_card)
+
+      return escape_card, HighRangeDeck, MidRangeDeck, LowRangeDeck, starting_cards
+
+    def character_selection():
+      Player1 = input("Player 1, please enter your name: ")
+      Player2 = input("Player 2, please enter your name: ")
+      Player1Role = ""
+      Player2Role = ""
+      rand = random.randint(0,1)
+      if rand == 0:
+        while Player1Role != "fugitive" and Player1Role != "marshall":
+          Player1Role = input(str(Player1) + ", please pick your role(Fugitive or Marshall): ").lower()
+          if Player1Role == "fugitive":
+            Player2Role = "marshall"
+            print(str(Player1) + ", you are the Fugitive.")
+            print(str(Player2) + ", you are the Marshall.")
+          elif Player1Role == "marshall":
+            Player2Role = "fugitive"
+            print(str(Player1) + ", you are the Marshall.")
+            print(str(Player2) + ", you are the Fugitive.")
+      else:
+        while Player2Role != "fugitive" and Player2Role != "marshall":
+          Player2Role = input(str(Player2) + ", please pick your role(Fugitive or Marshall): ").lower()
+          if Player2Role == "fugitive":
+            Player1Role = "marshall"
+            print(str(Player2) + ", you are the Fugitive.")
+            print(str(Player1) + ", you are the Marshall.")
+          elif Player2Role == "marshall":
+            Player1Role = "fugitive"
+            print(str(Player2) + ", you are the Marshall.")
+            print(str(Player1) + ", you are the Fugitive.")
+      return Player1, Player1Role, Player2, Player2Role
+
   
-  def reveal_cards(self, marshall_current_idx):
-    self.cards_in_play[marshall_current_idx].revealed = True
+    # Filler function until we implement the function to check if the guess is correct
+    def check_location(self, guess, marshall_current_idx):
+      return True
 
-  def marshall_first_turn(self):
+    def reveal_cards(self, marshall_current_idx):
+      self.cards_in_play[marshall_current_idx].revealed = True
+    
+    def display_board_general(cards_in_play):
+      sprints = [stack for stack in cards_in_play if type(stack) == list]
+      has_sprints = False
+      for idx in range(6):
+          for stack in cards_in_play:     
+            if type(stack) == list:
+              has_sprints = True
+              card = stack[0]
+            else:
+              card = stack
+            image = card.image[idx] if card.revealed else card.cardBack[idx]
+            print(image, end="")
+          print()
+      if has_sprints:
+        spacing = len([s for s in cards_in_play if type(s) != list])
+
+        for i in range(1, max([len(stack) for stack in sprints])):
+          for idx in range(2, 6):
+            print(' ' * 7 * spacing, end="")
+            for stack in sprints:  
+              if len(stack) > i:
+                if idx == 5:
+                  print('|_____|', end="")
+                else:
+                  card = stack[i]
+                  image = card.image[idx]
+                  print(image, end="")
+              else:
+                print(' ' * 7, end="")
+            print()
+
+
+    def fugitive_first_turn(self):
+      fugitive_deck = self.starting_cards
+      fugitive_deck.append(self.escape_card)
+      for x in range(3):
+        fugitive_deck.append(self.LowRangeDeck.pop())
+
+      for x in range(2):
+        fugitive_deck.append(self.MidRangeDeck.pop())
+
+      string = ""
+      for i in fugitive_deck:
+        string += str(i.value) + ", "
+
+      string = string[:len(string)-2]
+      print("Here is your starting hand: " + string) 
+
+      #May have to check if burn is empty string in case fugitive does not want to burn anything
+      burn = input("Enter which cards to burn separated only by a comma (1,2,3...)").split(',')
+      hideouts = input("Select two viable cards you want to place as hideouts separated only by a comma (1,2,3...): ").split(',')
+      #Would probably call function to check if hideouts are viable here. If hideouts aren't viable, reprompt fugitive
+
+      return burn, hideouts
+      
+
+  
+    def marshall_first_turn(self):
       # Get deck choice
       while True:
         try:
@@ -299,72 +431,14 @@ class GameSetup():
 
       # Print the board at the end of turn
       self.display_board_general()
-    
 
-#Split deck into 3 piles and escape_card/starting_cards
-def split_card():
-  game_deck=Deck()
-  #Get card 42
-  escape_card = game_deck.getCard()
-  #Get cards 41 - 29
-  HighRangeDeck = []
-  for card in range(13):
-    test_card = game_deck.getCard()
-    HighRangeDeck.append(test_card)
+game = GameSetup()
+game.start_game()
 
-  #Get cards 28 - 15
-  MidRangeDeck = []
-  for card in range(14):
-    test_card = game_deck.getCard()
-    MidRangeDeck.append(test_card)
-
-  #Get cards 14 - 4
-  LowRangeDeck = []
-  for card in range(11):
-    test_card = game_deck.getCard()
-    LowRangeDeck.append(test_card)
-
-  #Get cards 3 - 1
-  starting_cards = []
-  for i in range(3):
-    test_card = game_deck.getCard()
-    starting_cards.append(test_card)
-
-  return escape_card, HighRangeDeck, MidRangeDeck, LowRangeDeck, starting_cards
-    
-def character_selection():
-  Player1 = input("Player 1, please enter your name: ")
-  Player2 = input("Player 2, please enter your name: ")
-  Player1Role = ""
-  Player2Role = ""
-  rand = random.randint(0,1)
-  if rand == 0:
-    while Player1Role != "fugitive" and Player1Role != "marshall":
-      Player1Role = input(str(Player1) + ", please pick your role(Fugitive or Marshall): ").lower()
-      if Player1Role == "fugitive":
-        print(str(Player1) + ", you are the Fugitive.")
-        print(str(Player2) + ", you are the Marshall.")
-      elif Player1Role == "marshall":
-        print(str(Player1) + ", you are the Marshall.")
-        print(str(Player2) + ", you are the Fugitive.")
-  else:
-    while Player2Role != "fugitive" and Player2Role != "marshall":
-      Player2Role = input(str(Player2) + ", please pick your role(Fugitive or Marshall): ").lower()
-      if Player2Role == "fugitive":
-        print(str(Player2) + ", you are the Fugitive.")
-        print(str(Player1) + ", you are the Marshall.")
-      elif Player2Role == "marshall":
-        print(str(Player2) + ", you are the Marshall.")
-        print(str(Player1) + ", you are the Fugitive.")
-
-    
-
-
-def highestCard(cardList):
-  highestCard = getCard("Spades", 1)
-  for card in cardList:
-    if card.value >= highestCard.value:
-      highestCard = card
-  return highestCard
+def ReadRules():
+  rules = open("source/Rules.txt", "r")
+  content = rules.read()
+  print(content)
+  rules.close()
 
 

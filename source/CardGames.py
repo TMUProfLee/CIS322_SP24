@@ -356,6 +356,7 @@ class Identification:
   # Include functions that return what defines the various poker hand ranks.
   
   def twoPair(self):
+    """function that identifies 2 sets of 2 same cards through use of dictionary. Returns empty list if fail to identify 2 pairs of the 2 same cards."""
     # iterate through the hand to count occurrences of each card value
     count = {} # dictionary to count the occurences
     

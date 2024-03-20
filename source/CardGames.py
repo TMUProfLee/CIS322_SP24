@@ -209,7 +209,7 @@ class GameSetup():
             else:
               print(' ' * 7, end="")
           print()
-
+  # Filler function until we implement the function to check if the guess is correct
   def check_location(self, guess, marshall_current_idx):
     return True
   

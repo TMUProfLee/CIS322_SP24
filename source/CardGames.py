@@ -285,4 +285,5 @@ def FugitiveFirst():
   #Burn function goes here with the burn variable as a parameter
   starting_hideouts = input("Select two viable cards you want to place as hideouts separated only by a comma (1,2,3...): ").split(',')
   #Georgio's function to check if the hideouts are valid goes here with starting_hideouts as a parameter
-  return fugitive_deck
+  return fugitive_deck, burn, starting_hideouts
+

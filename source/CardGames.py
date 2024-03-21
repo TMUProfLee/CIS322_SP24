@@ -284,9 +284,25 @@ class GameSetup:
       return Player1, Player1Role, Player2, Player2Role
 
   
-    # Filler function until we implement the function to check if the guess is correct
     def check_location(self, guess, marshall_current_idx):
-      return True
+      # Loop if guessing multiple locations
+      if type(guess) == list:
+        for i in range(marshall_current_idx, len(self.cards_in_play)):
+          guess_idx = i - marshall_current_idx
+          item = self.cards_in_play[i]
+          # Get top card if current location has burns
+          card = item[0] if type(item) == list else item
+          
+          # If one is wrong return false
+          if not guess[guess_idx] == card.value:
+            return False
+        return True
+      # No loop for single guess
+      item = self.cards_in_play[marshall_current_idx]
+      
+      # Get top card if current location has burns
+      card = item[0] if type(item) == list else item
+      return card.value == guess
 
     def reveal_cards(self, marshall_current_idx):
       self.cards_in_play[marshall_current_idx].revealed = True
@@ -432,8 +448,8 @@ class GameSetup:
       # Print the board at the end of turn
       self.display_board_general()
 
-game = GameSetup()
-game.start_game()
+#game = GameSetup()
+#game.start_game()
 
 def ReadRules():
   rules = open("source/Rules.txt", "r")

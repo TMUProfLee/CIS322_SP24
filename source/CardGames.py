@@ -256,6 +256,11 @@ def character_selection():
       elif Player2Role == "marshall":
         print(str(Player2) + ", you are the Marshall.")
         print(str(Player1) + ", you are the Fugitive.")
+<<<<<<< Updated upstream
+=======
+    
+
+>>>>>>> Stashed changes
 
 def highestCard(cardList):
   highestCard = getCard("Spades", 1)
@@ -264,8 +269,7 @@ def highestCard(cardList):
       highestCard = card
   return highestCard
 
-def FugitiveFirst():
-  escape_card, HighRangeDeck, MidRangeDeck, LowRangeDeck, starting_cards = split_card()
+def FugitiveFirst(escape_card, HighRangeDeck, MidRangeDeck, LowRangeDeck, starting_cards):
   fugitive_deck = starting_cards
   fugitive_deck.append(escape_card)
   
@@ -281,9 +285,15 @@ def FugitiveFirst():
     string += ", "
   string = string[:len(string)-2]
   print("Here is your starting hand: " + string)
+<<<<<<< Updated upstream
   burn = input("Enter which cards to burn separated only by a comma (1,2,3...): ").split(',')
   #Burn function goes here with the burn variable as a parameter
   starting_hideouts = input("Select two viable cards you want to place as hideouts separated only by a comma (1,2,3...): ").split(',')
   #Georgio's function to check if the hideouts are valid goes here with starting_hideouts as a parameter
   return fugitive_deck, burn, starting_hideouts
+=======
+  burn = input("Enter which cards to burn separated only by a comma (1,2,3...):").split(',')
+  hideouts = input("Select two viable cards you want to place as hideouts separated only by a comma (1,2,3...): ").split(',')
+  return burn,hideouts
+>>>>>>> Stashed changes
 

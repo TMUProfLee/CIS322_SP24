@@ -1,10 +1,10 @@
-
 import random
 import os
 
 cardImages = []
-values = list(range(1,14))
-suits = ["Spades", "Clubs", "Hearts", "Diamonds"]
+
+values = list(range(1,43))
+sprint_value = [1, 2]
 
 def find_root_dir():
   cwd = os.getcwd()
@@ -13,105 +13,28 @@ def find_root_dir():
     cwd = os.path.join( cwd, '..')
   return cwd
 
-
-# Pot class----------------------------------------------------------------------
-class Pot:
-  def __init__(self, pot: int = 0):
-    self.pot = pot
-
-  def add(self, amount: int):
-    self.pot += amount
-    return self.pot
-
-  def subtract(self, amount: int):
-    self.pot -= amount
-    return self.pot
-  
-  def show_pot(self):
-    return self.pot
-
-#------------------------------------------------------------------------------
-
-class Game:
-    def __init__(self, players, pot):
-        self.players = players  # Assuming players is a list of Player objects
-        self.pot = pot  # Pot object
-        self.current_turn = 0  # Index of the current player's turn
-        self.current_raise = 0  # Track the current raise amount
-
-    def next_turn(self):
-        # Advance to the next player's turn, wrapping around to the first player if necessary
-        self.current_turn = (self.current_turn + 1) % len(self.players)
-        print(f"It's now {self.players[self.current_turn].name}'s turn.")
-
-    def raise_bet(self, player_index, amount):
-        player = self.players[player_index]
-        if player.money < amount:
-            print(f"{player.name} does not have enough money to raise.")
-            return False
-        player.money -= amount
-        self.pot.add(amount)
-        self.current_raise = amount
-        print(f"{player.name} raises the bet by {amount}. The pot is now {self.pot.show_pot()}.")
-        self.reset_round(player_index)
-        self.next_turn()  # Automatically advance to the next turn
-        return True
-
-    def reset_round(self, raising_player_index):
-        # Make other players match the raise or fold
-        for index, player in enumerate(self.players):
-            if index == raising_player_index:
-                continue  # Skip the player who made the raise
-
-            print(f"{player.name}, you need to match the raise of {self.current_raise} or fold.")
-          
-
-    def match_raise(self, player_index):
-        # Assume a method where players can match the current raise
-        player = self.players[player_index]
-        if player.money < self.current_raise:
-            print(f"{player.name} doesn't have enough money to match the raise and is folded.")
-        else:
-            player.money -= self.current_raise
-            self.pot.add(self.current_raise)
-            print(f"{player.name} matches the raise. The pot is now {self.pot.show_pot()}.")
-
-    def player_action(self, player_index, action, amount=0):
-        # This method can be expanded to handle different player actions (raise, call, fold)
-        if action == "raise":
-            self.raise_bet(player_index, amount)
-        elif action == "call":
-            self.match_raise(player_index)
-        # Add more actions as needed
-        self.next_turn()  # Move to the next turn after the action
-
-
-
-
+#Card class adjusted
 class Card:
-  def __init__(self, suit, value, image, cardBack):
-    self.cardBack = cardBack 
-    self.suit = suit
+  def __init__(self, sprint_value, value, image, cardBack):
+    self.cardBack = cardBack
+    self.sprint_value = sprint_value
     self.value = value
-    self.image = image 
+    self.image = image
     self.shortImage = []
     if self.image:
       for line in self.image:
         self.shortImage.append(line[:4])
-
   def __eq__(self, other):
     if not type(other) == Card:
       return False
-    return self.suit == other.suit and \
-      self.value == other.value
-      
-  def __str__(self):
-    return f"{self.value} of {self.suit}"
+    return self.value == other.value and \
+      self.sprint_value == other.sprint_value
 
+#Deck class adjusted
 class Deck:
-  def __init__(self): # builds a deck of cards
+  def __init__(self):
     root_dir = os.path.join( find_root_dir(), 'source')
-    cards_file = f'{root_dir}{os.path.sep}playing_cards.txt'
+    cards_file = f'{root_dir}{os.path.sep}new_playing_cards.txt'
     with open(cards_file, "r") as cards:
       cardBack = []
       for _ in range(6):
@@ -131,77 +54,53 @@ class Deck:
     
     deck = []
     index = 0
-    for suit in suits:
-      for value in values:
-        deck.append(Card(suit, value, cardImages[index], cardBack))
+    for value in values:
+        if value % 2 == 0:
+            deck.append(Card(2, value, cardImages[index], cardBack))
+        else:
+            deck.append(Card(1, value, cardImages[index], cardBack))
         index += 1
     
     self.cards = deck
     self.size = len(deck)
     self.cardBack = cardBack
     self.discarded = []
-
   def reset(self):
     self.cards += self.discarded
     self.discarded = []
     self.size = len(self.cards)
-
-  def shuffle(self): # randomizes self.cards
+  def shuffle(self):
     random.shuffle(self.cards)
-# removes first card from self.cards and puts it at the end of self.discarded, returns first card in self.cards
-  def getCard(self): 
+  def getCard(self):
     card = self.cards.pop()
     self.size -= 1
     self.discarded.append(card)
     return card
 
-# testing 
-def getCard( suit, value):
-  deck = Deck()
-  my_card = Card( suit.capitalize(), value, None, None)
-  for card in deck.cards:
-    if card == my_card:
-      return card
-  return None
-
 class Player:
   def __init__(self, name, money: int = 0):
     self.name = name
-    self.hand = [] # list of Card objects representiing the player's cards
+    self.hand = []
     self.knownCards = []
-    self.money = money # integer for amount of money the player currently has
-    
-  def sum_cards(self):
-      sum = 0
-      for card in self.hand:
-          sum += card.value
-      return sum
-
-  def addMoney(self, amount: int): # adds more money to the player
+    self.money = money
+  def addMoney(self, amount: int):
     self.money += amount
     return self.money
-
-  # removes money from player only if player has at least the bet amount currently 
-  def makeBet(self, amount: int, pot: Pot): # amount - integer number of money to remove from player
+  def makeBet(self, amount: int):
     if amount > self.money:
       print("%s does not have enough money to make this bet." % self.name)
       return self.money
     self.money -= amount
-    pot.add(amount)  # Call function implemented here--------------------------------
     return self.money
-
-  # adds one card to player's hand
   def addCard(self, card: Card, isKnown: bool = True):
-    self.hand.append(card) # Card object to add to self.hand
-    if isKnown: # whether card is known to everyone
+    self.hand.append(card)
+    if isKnown:
       self.knownCards.append(True)
     else:
       self.knownCards.append(False)
-
   def setHand(self, cards: "list[Card]", isKnown: bool = False):
     self.hand = cards
     self.knownCards = [isKnown for _ in self.hand]
-
   def showHand(self, printShort: bool = False):
     for idx in range(6):
       for i, card in enumerate(self.hand):
@@ -212,33 +111,16 @@ class Player:
           image = card.image[idx] if self.knownCards[i] else card.cardBack[idx]
           print(image, end="")
       print()
-
-  # removes all cards from the player's hand 
   def clearHand(self):
     self.hand = []
     self.knownCards = []
-
-  def display(self, returnOutput: bool = False, showHand: bool = True):
-    output = "\nname: \"%s\"\nmoney: %d\n" % (self.name, self.money)
-    if len(self.hand) == 0:
-      output += "The Player has no cards in their hand."
-    else:
-      if showHand:
-        self.showHand()
-    print(output)
-    if returnOutput:
-      return output
-
 class Dealer:
-  def __init__(self, deck: Deck): 
+  def __init__(self, deck: Deck):
     self.deck = deck
     self.deck.shuffle()
-    self.hand = [self.deck.getCard()] # intialize dealer's hand default amount to 1
-
-  # displays a list of cards, either face up or face down. showFront - whether to show front of card (Value). printShort - whether to show only part of the card.
-  def printCards(self, cards: "list[Card]", showFront: bool, printShort: bool = True): 
+  def printCards(self, cards: "list[Card]", showFront: bool, printShort: bool = True):
     for idx in range(6):
-      for i, card in enumerate(cards): # list of Card objects to display
+      for i, card in enumerate(cards):
         if printShort and i < len(cards)-1:
           image = card.shortImage[idx] if showFront else card.cardBack[idx]
           print(image, end="")
@@ -246,7 +128,6 @@ class Dealer:
           image = card.image[idx] if showFront else card.cardBack[idx]
           print(image, end="")
       print()
-
   def dealCards(self, numCards: int, players: "list[Player]"):
     if numCards * len(players) > self.deck.size:
       return False
@@ -254,88 +135,155 @@ class Dealer:
       for _ in range(numCards):
         player.addCard(self.deck.getCard())
     return True
-  
-  def addCardsToDealer(self, amount=1):
-    for _ in range(amount):
-      if len(self.deck.cards) > 0:
-        self.hand.append(self.deck.getCard())
-      else:
-        print("No more cards left in deck to add.")
-        break
-
   def resetDeck(self):
     self.deck.reset()
     self.deck.shuffle()
 
+def marshall_first_turn():
+    # Waiting for deck to be divided into three groups
+    input("Select which deck to draw two cards from ['1' (1-14), '2' (15-28), '3' (29-42)] and press enter...")
 
-# has_pair function---------------------------------------------------------------
+    for i in range(2):
+        draw_card = deck.getCard()
+        marshall.addCard(draw_card, isKnown=True)
 
-  def has_pair(player):
-      Hand = player.hand
-      values = [card.value for card in Hand]
-      compare = set()
-      print(values, compare)
-      for i in values:
-          if i in compare:
-              return True
-          compare.add(i)
-      else:
-          return False
+    marshall.showHand()
 
+    #Display board
 
-# call function--------------------------------------------------------------
+    while(True):
+        guess_all = input("Would you like to guess all fugitive locations? (y/n)").lower()
+        if guess_all == 'y' or guess_all == 'yes':
+            while(True):
+                guess = input("Enter locations separated only by a comma (1,2,3...)").split(',')
+                """
+                if len_list < placed_locations:
+                    print("Must guess all locations")
+                    guess = input("Enter locations separated only by a comma (1,2,3...)").split(',')
+                    continue
+                """
+                # Check that input is a valid list of ints
+                bad = False
+                for ele in guess:
+                    try:
+                        ele = int(ele)
+                    except:
+                        TypeError
+                        print("Invalid input, try again")
+                        bad = True
+                        break
+                if bad:
+                    continue
+                break
+            break
+        elif guess_all == 'n' or guess_all == 'no':
+            while True:
+                try:
+                    guess = int(input("Enter fugitive location..."))
+                except:
+                    ValueError
+                    print("Invalid input, try again")
+                    continue
+                break
+            break
+        else:
+            print("Invalid input, try again")
 
-  def Call(player, bet: int, pot):
-    player.makeBet(bet, pot)
+    #marshall.add_guess(guess)
+    print("Guesses added")
+    """
+    if check_location(marshall_current_idx, guess):
+        print("Correct location!")
+        reveal_location(marshall_current_idx)
+    else:
+        print("Incorrect guess.")
+    """
 
+#Split deck into 3 piles and escape_card/starting_cards
+def split_card():
+  game_deck=Deck()
+  #Get card 42
+  escape_card = game_deck.getCard()
+  #Get cards 41 - 29
+  HighRangeDeck = []
+  for card in range(13):
+    test_card = game_deck.getCard()
+    HighRangeDeck.append(test_card)
+  random.shuffle(HighRangeDeck)
 
+  #Get cards 28 - 15
+  MidRangeDeck = []
+  for card in range(14):
+    test_card = game_deck.getCard()
+    MidRangeDeck.append(test_card)
+  random.shuffle(MidRangeDeck)
 
-  def highest_card(hand):
-    # Check if the hand is empty
-      if not hand:
-          return None
+  #Get cards 14 - 4
+  LowRangeDeck = []
+  for card in range(11):
+    test_card = game_deck.getCard()
+    LowRangeDeck.append(test_card)
+  random.shuffle(LowRangeDeck)
+  #Get cards 3 - 1
+  starting_cards = []
+  for i in range(3):
+    test_card = game_deck.getCard()
+    starting_cards.append(test_card)
 
-    # Find the card with the highest value
-      highest_card = max(hand, key=lambda card: card.value)
+  return escape_card, HighRangeDeck, MidRangeDeck, LowRangeDeck, starting_cards
     
-    # Return the highest card
-      return highest_card
+def character_selection():
+  Player1 = input("Player 1, please enter your name: ")
+  Player2 = input("Player 2, please enter your name: ")
+  Player1Role = ""
+  Player2Role = ""
+  rand = random.randint(0,1)
+  if rand == 0:
+    while Player1Role != "fugitive" and Player1Role != "marshall":
+      Player1Role = input(str(Player1) + ", please pick your role(Fugitive or Marshall): ").lower()
+      if Player1Role == "fugitive":
+        print(str(Player1) + ", you are the Fugitive.")
+        print(str(Player2) + ", you are the Marshall.")
+      elif Player1Role == "marshall":
+        print(str(Player1) + ", you are the Marshall.")
+        print(str(Player2) + ", you are the Fugitive.")
+  else:
+    while Player2Role != "fugitive" and Player2Role != "marshall":
+      Player2Role = input(str(Player2) + ", please pick your role(Fugitive or Marshall): ").lower()
+      if Player2Role == "fugitive":
+        print(str(Player2) + ", you are the Fugitive.")
+        print(str(Player1) + ", you are the Marshall.")
+      elif Player2Role == "marshall":
+        print(str(Player2) + ", you are the Marshall.")
+        print(str(Player1) + ", you are the Fugitive.")
 
+def highestCard(cardList):
+  highestCard = getCard("Spades", 1)
+  for card in cardList:
+    if card.value >= highestCard.value:
+      highestCard = card
+  return highestCard
 
-class Poker:
-  def __init__(self, players: "list[Player]", dealer: Dealer):
-    self.players = players
-    self.dealer = dealer
-    self.pot = 0
-    self.bets = [0 for _ in range(len(players))]
-    self.round = 0
-    self.currentPlayer = 0
-
-
-  # Add all functions pertaining to the game of poker below
-  # Add global variables to the __init__ function above
-
-  # Keep Track of Pot, Bets, and current round
-  def addMoneyToPot(self, amount: int):
-    self.pot += amount
-    return self.pot
+def FugitiveFirst(escape_card, HighRangeDeck, MidRangeDeck, LowRangeDeck, starting_cards):
+  fugitive_deck = starting_cards
+  fugitive_deck.append(escape_card)
   
-  def addBet(self, player: Player, amount: int):
-    idx = self.players.index(player)
-    self.bets[idx] += amount
-    return self.bets[idx]
-  
-  # Add all bets to the pot
-  def collectBets(self):
-    for bet in self.bets:
-      self.addMoneyToPot(bet)
-    self.bets = [0 for _ in range(len(self.players))]
+  for x in range(3):
+    fugitive_deck.append(LowRangeDeck.pop())
+                    
+  for x in range(2):
+    fugitive_deck.append(MidRangeDeck.pop())
+        
+  string = ""
+  for i in fugitive_deck:
+    string += str(i.value)
+    string += ", "
+  string = string[:len(string)-2]
+  print("Here is your starting hand: " + string)
+  burn = input("Enter which cards to burn separated only by a comma (1,2,3...): ").split(',')
+  #Burn function goes here with the burn variable as a parameter
+  starting_hideouts = input("Select two viable cards you want to place as hideouts separated only by a comma (1,2,3...): ").split(',')
+  #Georgio's function to check if the hideouts are valid goes here with starting_hideouts as a parameter
+  return fugitive_deck, burn, starting_hideouts
 
-  # Check if all bets are equal
-  def checkBets(self):
-    return len(set(self.bets)) == 1
-  
-  # Check how much is needed to call
-  def callAmount(self, player: Player):
-    idx = self.players.index(player)
-    return max(self.bets) - self.bets[idx]
+eee

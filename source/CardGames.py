@@ -286,4 +286,63 @@ def FugitiveFirst(escape_card, HighRangeDeck, MidRangeDeck, LowRangeDeck, starti
   #Georgio's function to check if the hideouts are valid goes here with starting_hideouts as a parameter
   return fugitive_deck, burn, starting_hideouts
 
-eee
+def FugitiveRepeating(fugitive_deck,LowRangeDeck,MidRangeDeck,HighRangeDeck):
+  draw = 0
+  NewHideouts = []
+  while draw != 1 and draw != 2 and draw != 3:
+    try:
+      draw = int(input("Select which deck to draw a card from ['1' (1-14), '2' (15-28), '3' (29-42)]: ").strip())
+    except:
+      ValueError
+  if draw == 1:
+    fugitive_deck.append(LowRangeDeck.pop())
+  elif draw == 2:
+    fugitive_deck.append(MidRangeDeck.pop())
+  elif draw == 3:
+    fugitive_deck.append(HighRangeDeck.pop())
+  turn = ""
+  while turn != "hideout" and turn != "pass":
+    turn = input("Select if you want to place a hideout(s) or pass ['hideout' for hideout or 'pass' for pass]: ").strip().lower()
+  if turn == "hideout":
+    check = 2
+    while check != 0:
+      try:
+        backup = NewHideouts[:]
+        check = int(input("If you no longer want to place hideouts, type 0 otherwise type 1: ").strip())
+      except:
+        ValueError
+      good = True
+      if check == 1:
+        good = False
+      while good == False:
+          bad = False
+          NewHideouts += [input("Select which card you want to place as a hideout followed by the cards you want to burn separated only by a comma (1,2,3...): ").strip().split(',')]
+          print(NewHideouts)
+          for y in NewHideouts:
+            for z in y:
+              print(z)
+              if z not in "123456789101112131415161718192021222324252627282930313233343536373839404142":
+                print("Please input a valid hideout.")
+                bad = True
+                good = False
+                break
+              try:
+                if int(z) > 42 or int(z) < 1:
+                  print("Please input a valid hideout.")
+                  bad = True
+                  good = False
+                  break
+              except:
+                ValueError
+                NewHideouts = backup
+                break
+            if bad == True:
+              NewHideouts = backup
+              break
+          good = True
+          #Functions to check for illegally placed hideouts and burns would go here
+  elif turn == "pass":
+    print("Passing...")
+  return NewHideouts
+
+

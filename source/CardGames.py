@@ -300,6 +300,11 @@ def FugitiveRepeating(fugitive_deck,LowRangeDeck,MidRangeDeck,HighRangeDeck):
     fugitive_deck.append(MidRangeDeck.pop())
   elif draw == 3:
     fugitive_deck.append(HighRangeDeck.pop())
+
+  card_value = fugitive_deck[-1].value
+  sprint_value = fugitive_deck[-1].sprint_value
+  print("You drew " + str(card_value) + " with a sprint value of " + str(sprint_value) + ".")
+
   turn = ""
   while turn != "hideout" and turn != "pass":
     turn = input("Select if you want to place a hideout(s) or pass ['hideout' for hideout or 'pass' for pass]: ").strip().lower()
@@ -311,31 +316,35 @@ def FugitiveRepeating(fugitive_deck,LowRangeDeck,MidRangeDeck,HighRangeDeck):
         check = int(input("If you no longer want to place hideouts, type 0 otherwise type 1: ").strip())
       except:
         ValueError
+        continue
       good = True
       if check == 1:
         good = False
       while good == False:
           bad = False
           NewHideouts += [input("Select which card you want to place as a hideout followed by the cards you want to burn separated only by a comma (1,2,3...): ").strip().split(',')]
-          print(NewHideouts)
           for y in NewHideouts:
             for z in y:
-              print(z)
-              if z not in "123456789101112131415161718192021222324252627282930313233343536373839404142":
+              try:
+                  if int(z) > 42 or int(z) < 1:
+                    print("Please input a valid hideout.")
+                    bad = True
+                    good = False
+                    break
+              except:
+                ValueError
                 print("Please input a valid hideout.")
                 bad = True
                 good = False
-                break
-              try:
-                if int(z) > 42 or int(z) < 1:
-                  print("Please input a valid hideout.")
-                  bad = True
-                  good = False
-                  break
-              except:
-                ValueError
-                NewHideouts = backup
-                break
+                NewHideouts = backup   
+                break      
+              if len(z) > 1:
+                for i in z:
+                  if i not in "123456789101112131415161718192021222324252627282930313233343536373839404142":
+                    print("Please input a valid hideout.")
+                    bad = True
+                    good = False
+                    break
             if bad == True:
               NewHideouts = backup
               break
@@ -343,6 +352,5 @@ def FugitiveRepeating(fugitive_deck,LowRangeDeck,MidRangeDeck,HighRangeDeck):
           #Functions to check for illegally placed hideouts and burns would go here
   elif turn == "pass":
     print("Passing...")
-  return NewHideouts
-
+  return fugitive_deck, NewHideouts
 

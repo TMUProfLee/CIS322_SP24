@@ -350,7 +350,7 @@ class GameSetup:
       #return fugitive_deck, hideouts
       return fugitive_deck, hideouts
 
-    #check if selected hideout is valid for first turn
+    #check if selected hideout is valid for first turncd
     def check_illegal_card(self, fugitive_deck, hideouts):
       previous_hideout = 0
       number_of_cards_placed = len(hideouts)

@@ -84,7 +84,7 @@ class Deck:
 
 def getCard(value, burn):
   deck = Deck()
-  my_card = Card(value, burn, None, None)
+  my_card = Card(burn, value, None, None)
   for card in deck.cards:
     if card == my_card:
       return card
@@ -347,30 +347,36 @@ class GameSetup:
       hideouts = input("Select two viable cards you want to place as hideouts separated only by a comma (1,2,3...): ").split(',')
       #Would probably call function to check if hideouts are viable here. If hideouts aren't viable, reprompt fugitive
 
-      #return burn, hideouts
+      #return fugitive_deck, hideouts
       return fugitive_deck, hideouts
 
+    #check if selected hideout is valid for first turn
     def check_illegal_card(self, fugitive_deck, hideouts):
       previous_hideout = 0
       number_of_cards_placed = len(hideouts)
       idx = 0
       fugitive_card_values = []
 
+      #pull value of owned cards and add them to list
       for fug_card in fugitive_deck:
         fugitive_card_values.append(fug_card.value)
 
+      #for number of hideouts placed
       while idx < number_of_cards_placed:
+        #convert input string to int
         card = int(hideouts[idx])
+        #check if the hideout placed is a card the player owns
         if card not in fugitive_card_values:
           print("You do not have this card to place!")
           return False
         else:
-          if (card - previous_hideout) <= 3:
+          #Check if hideout 
+          if ((card - previous_hideout) <= 3) and ((card - previous_hideout) != 0):
             self.cards_in_play.append(card)
             previous_hideout = card
             idx += 1
           else:
-            print("Incorrect value, hideout must be a maximum of three spaces away.")
+            print("Incorrect value, hideout must be greater than 1 and a maximum of three spaces away.")
             return False
       return True
         
@@ -460,8 +466,8 @@ class GameSetup:
       # Print the board at the end of turn
       self.display_board_general()
 
-game = GameSetup()
-game.start_game()
+#game = GameSetup()
+#game.start_game()
 
 def ReadRules():
   rules = open("source/Rules.txt", "r")

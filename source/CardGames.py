@@ -193,6 +193,7 @@ class GameSetup:
     
     def start_game(self):
         Player1, Player1Role, Player2, _ = self.character_selection()
+        validity_check = False
         if (Player1Role == "fugitive"):
            self.fugitive.name = Player1
            self.marshall.name = Player2
@@ -207,7 +208,9 @@ class GameSetup:
             #Different rule sequence for first turn
             while first_turn:
                 #Fugitive places 1 or 2 new hideouts
-                fugitive_choices = self.fugitive_first_turn()
+                while validity_check == False:
+                  fugitive_deck, hideouts = self.fugitive_first_turn()
+                  validity_check = self.check_illegal_card(fugitive_deck, hideouts)
                 #Marshall draws 2 cards; chooses which deck to draw from
                 print(f"{self.marshall.name} is next!")
                 marshall_choices = self.marshall_first_turn()
@@ -340,12 +343,37 @@ class GameSetup:
       print("Here is your starting hand: " + string) 
 
       #May have to check if burn is empty string in case fugitive does not want to burn anything
-      burn = input("Enter which cards to burn separated only by a comma (1,2,3...)").split(',')
+      #burn = input("Enter which cards to burn separated only by a comma (1,2,3...)").split(',')
       hideouts = input("Select two viable cards you want to place as hideouts separated only by a comma (1,2,3...): ").split(',')
       #Would probably call function to check if hideouts are viable here. If hideouts aren't viable, reprompt fugitive
 
-      return burn, hideouts
-      
+      #return burn, hideouts
+      return fugitive_deck, hideouts
+
+    def check_illegal_card(self, fugitive_deck, hideouts):
+      previous_hideout = 0
+      number_of_cards_placed = len(hideouts)
+      idx = 0
+      fugitive_card_values = []
+
+      for fug_card in fugitive_deck:
+        fugitive_card_values.append(fug_card.value)
+
+      while idx < number_of_cards_placed:
+        card = int(hideouts[idx])
+        if card not in fugitive_card_values:
+          print("You do not have this card to place!")
+          return False
+        else:
+          if (card - previous_hideout) <= 3:
+            self.cards_in_play.append(card)
+            previous_hideout = card
+            idx += 1
+          else:
+            print("Incorrect value, hideout must be a maximum of three spaces away.")
+            return False
+      return True
+        
 
   
     def marshall_first_turn(self):

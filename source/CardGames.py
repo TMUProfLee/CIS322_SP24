@@ -186,7 +186,7 @@ class GameSetup:
     def __init__(self):
         #Initialize the objects that need to be initialized
         self.escape_card, self.HighRangeDeck, self.MidRangeDeck, self.LowRangeDeck, self.starting_cards = self.split_card()
-        self.cards_in_play = []
+        self.cards_in_play = [1,3]
         self.fugitive = Player("", "Fugitive")
         self.marshall = Player("", "Marshall")
         self.done = False
@@ -351,8 +351,14 @@ class GameSetup:
 
     #check if selected hideout is valid for first turncd
     def check_illegal_card(self, fugitive_deck):
+      if len(self.cards_in_play) == 0:
+        previous_hideout = 0
+      else:
+        previous_hideout = self.cards_in_play[-1]
+
+      print(previous_hideout)
       hideouts = input("Select two viable cards you want to place as hideouts separated only by a comma (1,2,3...): ").split(',')
-      previous_hideout = 0
+
       number_of_cards_placed = len(hideouts)
       idx = 0
       fugitive_card_values = []

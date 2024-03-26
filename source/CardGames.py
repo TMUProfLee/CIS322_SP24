@@ -172,7 +172,7 @@ class Dealer:
     self.deck = deck
     self.deck.shuffle()
     self.hand = [self.deck.getCard()] # intialize dealer's hand default amount to 1
-
+    self.community_cards = []  # Initialize community_cards as an empty list
 # New method to deal community cards and make them public to all players
   def deal_community_cards(self, num_cards: int, players: "list[Player]"):
       if len(self.deck.cards) < num_cards:

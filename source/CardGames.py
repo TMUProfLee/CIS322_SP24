@@ -186,8 +186,9 @@ class GameSetup:
     def __init__(self):
         #Initialize the objects that need to be initialized
         self.escape_card, self.HighRangeDeck, self.MidRangeDeck, self.LowRangeDeck, self.starting_cards = self.split_card()
-        self.cards_in_play = [1,3]
+        self.cards_in_play = []
         self.fugitive = Player("", "Fugitive")
+        self.fugitive_deck = []
         self.marshall = Player("", "Marshall")
         self.done = False
     
@@ -327,16 +328,16 @@ class GameSetup:
 
 
     def fugitive_first_turn(self):
-      fugitive_deck = self.starting_cards
-      fugitive_deck.append(self.escape_card)
+      self.fugitive_deck = self.starting_cards
+      self.fugitive_deck.append(self.escape_card)
       for x in range(3):
-        fugitive_deck.append(self.LowRangeDeck.pop())
+        self.fugitive_deck.append(self.LowRangeDeck.pop())
 
       for x in range(2):
-        fugitive_deck.append(self.MidRangeDeck.pop())
+        self.fugitive_deck.append(self.MidRangeDeck.pop())
 
       string = ""
-      for i in fugitive_deck:
+      for i in self.fugitive_deck:
         string += str(i.value) + ", "
 
       string = string[:len(string)-2]
@@ -347,16 +348,14 @@ class GameSetup:
       #Would probably call function to check if hideouts are viable here. If hideouts aren't viable, reprompt fugitive
 
       #return fugitive_deck, hideouts
-      return fugitive_deck
+      print(self.fugitive_deck)
 
     #check if selected hideout is valid for first turncd
-    def check_illegal_card(self, fugitive_deck):
+    def check_illegal_card(self):
       if len(self.cards_in_play) == 0:
         previous_hideout = 0
       else:
         previous_hideout = self.cards_in_play[-1]
-
-      print(previous_hideout)
       hideouts = input("Select two viable cards you want to place as hideouts separated only by a comma (1,2,3...): ").split(',')
 
       number_of_cards_placed = len(hideouts)
@@ -364,7 +363,7 @@ class GameSetup:
       fugitive_card_values = []
 
       #pull value of owned cards and add them to list
-      for fug_card in fugitive_deck:
+      for fug_card in self.fugitive_deck:
         fugitive_card_values.append(fug_card.value)
 
       #for number of hideouts placed

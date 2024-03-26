@@ -95,7 +95,21 @@ class Player:
     self.hand = [] # list of Card objects representiing the player's cards
     self.knownCards = []
     self.money = money # integer for amount of money the player currently has
-    
+  
+  def reveal_cards(self, number_of_cards: int):
+    for i in range(min(number_of_cards, len(self.hand))):
+        self.knownCards[i] = True
+
+  def showHand(self, printShort: bool = False):
+    for idx in range(6):
+        for i, card in enumerate(self.hand):
+            if printShort and i < len(self.hand) - 1:
+                image = card.shortImage[idx] if self.knownCards[i] else card.cardBack[idx]
+                print(image, end="")
+            else:
+                image = card.image[idx] if self.knownCards[i] else card.cardBack[idx]
+                print(image, end="")
+            print()
   def sum_cards(self):
       sum = 0
       for card in self.hand:
@@ -159,8 +173,29 @@ class Dealer:
     self.deck.shuffle()
     self.hand = [self.deck.getCard()] # intialize dealer's hand default amount to 1
 
-  # displays a list of cards, either face up or face down. showFront - whether to show front of card (Value). printShort - whether to show only part of the card.
-  def printCards(self, cards: "list[Card]", showFront: bool, printShort: bool = True): 
+# New method to deal community cards and make them public to all players
+  def deal_community_cards(self, num_cards: int, players: "list[Player]"):
+      if len(self.deck.cards) < num_cards:
+          print("Not enough cards in deck to deal community cards.")
+          return
+
+      for _ in range(num_cards):
+          card = self.deck.getCard()
+          self.community_cards.append(card)
+
+        # Make community cards known to all players
+      for player in players:
+          player.hand.extend(self.community_cards)
+          player.knownCards.extend([True] * len(self.community_cards))
+
+  def print_community_cards(self):
+      print("Community Cards:")
+      for card in self.community_cards:
+          print(f"{card}", end=" ")
+      print()
+  
+  # displays a list of cards, either face up or face down. showFront - whether to show front of card (Value)
+  def printCards(self, cards: "list[Card]", showFront: bool, printShort: bool = True):  
     for idx in range(6):
       for i, card in enumerate(cards): # list of Card objects to display
         if printShort and i < len(cards)-1:

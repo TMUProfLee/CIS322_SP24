@@ -34,9 +34,14 @@ def player_action():
     amount = int(request.form['amount'])
     player = players.copy()[game.currentPlayer]
     # Perform the player action in the game
-    Call(player, amount, pot)
-    # Return a response to the HTML page
-    return render_template('result.html', players=players, pot=pot.show_pot())
+
+    bet_result = Call(player, amount, pot)
+    if isinstance(bet_result, str):
+        error_message = bet_result  # Store the error message
+    else:
+        error_message = None  # No error message
+
+    return render_template('game.html', players=players, pot=pot.show_pot(), error=error_message)
 
 if __name__ == '__main__':
     app.run(debug=True)

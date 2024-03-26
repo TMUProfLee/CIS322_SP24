@@ -1,5 +1,5 @@
 from flask import Flask, request, render_template
-from CardGames import *
+from source.CardGames import *
 
 app = Flask(__name__)
 
@@ -42,6 +42,6 @@ def player_action():
         error_message = None  # No error message
 
     return render_template('game.html', players=players, pot=pot.show_pot(), error=error_message)
-
+    
 if __name__ == '__main__':
     app.run(debug=True)

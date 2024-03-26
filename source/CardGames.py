@@ -193,7 +193,6 @@ class GameSetup:
     
     def start_game(self):
         Player1, Player1Role, Player2, _ = self.character_selection()
-        validity_check = False
         if (Player1Role == "fugitive"):
            self.fugitive.name = Player1
            self.marshall.name = Player2
@@ -208,9 +207,10 @@ class GameSetup:
             #Different rule sequence for first turn
             while first_turn:
                 #Fugitive places 1 or 2 new hideouts
+                validity_check = False
+                fugitive_deck = self.fugitive_first_turn()
                 while validity_check == False:
-                  fugitive_deck, hideouts = self.fugitive_first_turn()
-                  validity_check = self.check_illegal_card(fugitive_deck, hideouts)
+                  validity_check = self.check_illegal_card(fugitive_deck)
                 #Marshall draws 2 cards; chooses which deck to draw from
                 print(f"{self.marshall.name} is next!")
                 marshall_choices = self.marshall_first_turn()
@@ -344,14 +344,14 @@ class GameSetup:
 
       #May have to check if burn is empty string in case fugitive does not want to burn anything
       #burn = input("Enter which cards to burn separated only by a comma (1,2,3...)").split(',')
-      hideouts = input("Select two viable cards you want to place as hideouts separated only by a comma (1,2,3...): ").split(',')
       #Would probably call function to check if hideouts are viable here. If hideouts aren't viable, reprompt fugitive
 
       #return fugitive_deck, hideouts
-      return fugitive_deck, hideouts
+      return fugitive_deck
 
     #check if selected hideout is valid for first turncd
-    def check_illegal_card(self, fugitive_deck, hideouts):
+    def check_illegal_card(self, fugitive_deck):
+      hideouts = input("Select two viable cards you want to place as hideouts separated only by a comma (1,2,3...): ").split(',')
       previous_hideout = 0
       number_of_cards_placed = len(hideouts)
       idx = 0
@@ -466,8 +466,8 @@ class GameSetup:
       # Print the board at the end of turn
       self.display_board_general()
 
-#game = GameSetup()
-#game.start_game()
+game = GameSetup()
+game.start_game()
 
 def ReadRules():
   rules = open("source/Rules.txt", "r")

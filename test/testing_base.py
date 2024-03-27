@@ -6,4 +6,4 @@ sys.path.append(os.path.join(current_dir, "../"))
 
 from CardGames_test import *
 #from sum import sum_cards
-from Connection import Server
+#from Connection import Server

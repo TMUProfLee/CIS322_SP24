@@ -28,20 +28,27 @@ def process_form():
         if not found:
             session.pop('player_id', None)
             return render_template('create_player.html')
+        print('Player ID:', session['player_id'])
     else:
         # Get the input data from the form
-        input_name = request.form['input_name']
-        input_money = int(request.form['input_money'])
+        if request.method == 'POST':
+            input_name = request.form['input_name']
+            input_money = int(request.form['input_money'])
 
-        # Create a new player and add them to the game
-        new_player = Player(input_name, input_money)
-        players.append(new_player)
+            # Create a new player and add them to the game
+            new_player = Player(input_name, input_money)
+            players.append(new_player)
 
-        # Generate a unique identifier for this player
-        session['player_id'] = new_player.id
+            # Generate a unique identifier for this player
+            session['player_id'] = new_player.id
+
+            # DEBUG
+            print('Player ID:', session['player_id'])
+        else:
+            return render_template('create_player.html')
 
     # Return a response to the HTML page
-    return render_template('game.html', players=players)
+    return render_template('game.html', players=players, pot=game.pot.show_pot())
 
 # Define a route to handle player actions in the game loop
 @app.route('/player_action', methods=['POST'])
@@ -55,7 +62,8 @@ def player_action():
     # Perform the player action in the game
     amount = int(request.form['amount'])
     player = players[game.currentPlayer]
-    game.Call(player, amount, game.pot)
+    game.bet(player, amount, game.pot)
+
 
     # Return a response to the HTML page
     return render_template('result.html', players=players, pot=game.pot.show_pot())
@@ -63,13 +71,6 @@ def player_action():
 
 @app.route('/', methods=['GET', 'POST'])
 def main():
-    if request.method == 'POST':
-        # Do actions
-        pass
-    
-    if 'player_id' not in session:
-        return render_template('create_player.html')
-    else:
-        return redirect('/process_form')
+    return redirect('/process_form')
 if __name__ == '__main__':
     app.run(debug=True)

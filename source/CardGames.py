@@ -1,6 +1,7 @@
 
 import random
 import os
+import uuid
 
 cardImages = []
 values = list(range(1,14))
@@ -38,65 +39,6 @@ class Pot:
 
 #------------------------------------------------------------------------------
 
-class Game:
-    def __init__(self, players, pot):
-        self.players = players  # Assuming players is a list of Player objects
-        self.pot = pot  # Pot object
-        self.current_turn = 0  # Index of the current player's turn
-        self.current_raise = 0  # Track the current raise amount
-
-    def next_turn(self):
-        # Advance to the next player's turn, wrapping around to the first player if necessary
-        self.current_turn = (self.current_turn + 1) % len(self.players)
-        print(f"It's now {self.players[self.current_turn].name}'s turn.")
-
-    def raise_bet(self, player_index, amount):
-        player = self.players[player_index]
-        if player.money < amount:
-            print(f"{player.name} does not have enough money to raise.")
-            return False
-        player.money -= amount
-        self.pot.add(amount)
-        self.current_raise = amount
-        print(f"{player.name} raises the bet by {amount}. The pot is now {self.pot.show_pot()}.")
-        self.reset_round(player_index)
-        self.next_turn()  # Automatically advance to the next turn
-        return True
-
-    def reset_round(self, raising_player_index):
-        # Make other players match the raise or fold
-        for index, player in enumerate(self.players):
-            if index == raising_player_index:
-                continue  # Skip the player who made the raise
-
-            print(f"{player.name}, you need to match the raise of {self.current_raise} or fold.")
-          
-
-    def match_raise(self, player_index):
-        # Assume a method where players can match the current raise
-        player = self.players[player_index]
-        if player.money < self.current_raise:
-            print(f"{player.name} doesn't have enough money to match the raise and is folded.")
-        else:
-            player.money -= self.current_raise
-            self.pot.add(self.current_raise)
-            print(f"{player.name} matches the raise. The pot is now {self.pot.show_pot()}.")
-
-    def fold(self, player_index):
-      #fold method that passes over player
-      pass
-      
-
-    def player_action(self, player_index, action, amount=0):
-        # This method can be expanded to handle different player actions (raise, call, fold)
-        if action == "raise":
-            self.raise_bet(player_index, amount)
-        elif action == "call":
-            self.match_raise(player_index)
-        elif action == "fold":
-          self.fold(player_index)
-        # Add more actions as needed
-        self.next_turn()  # Move to the next turn after the action
 
 
 
@@ -183,6 +125,7 @@ class Player:
     self.hand = [] # list of Card objects representiing the player's cards
     self.knownCards = []
     self.money = money # integer for amount of money the player currently has
+    self.id = str(uuid.uuid4())
     
   def sum_cards(self):
       sum = 0
@@ -322,6 +265,7 @@ class Poker:
     self.currentPlayer = 0
 
 
+
   # Add all functions pertaining to the game of poker below
   # Add global variables to the __init__ function above
 
@@ -350,9 +294,66 @@ class Poker:
     idx = self.players.index(player)
     return max(self.bets) - self.bets[idx]
   
+  def bet(self, player: Player, amount: int):
+    idx = self.players.index(player)
+    self.bets[idx] += amount
+    player.makeBet(amount, self.pot)
+  
   # call function--------------------------------------------------------------
 
   def Call(self, player: Player, pot: Pot):
     amount = self.callAmount(player)
     player.makeBet(amount, pot)
 
+  def next_turn(self):
+    # Advance to the next player's turn, wrapping around to the first player if necessary
+    self.currentPlayer = (self.currentPlayer + 1) % len(self.players)
+    print(f"It's now {self.players[self.currentPlayer].name}'s turn.")
+
+  def raise_bet(self, player_index, amount):
+    player = self.players[player_index]
+    if player.money < amount:
+        print(f"{player.name} does not have enough money to raise.")
+        return False
+    player.money -= amount
+    self.pot.add(amount)
+    self.current_raise = amount
+    print(f"{player.name} raises the bet by {amount}. The pot is now {self.pot.show_pot()}.")
+    self.reset_round(player_index)
+    self.next_turn()  # Automatically advance to the next turn
+    return True
+
+  def reset_round(self, raising_player_index):
+    # Make other players match the raise or fold
+    for index, player in enumerate(self.players):
+        if index == raising_player_index:
+            continue  # Skip the player who made the raise
+
+        print(f"{player.name}, you need to match the raise of {self.current_raise} or fold.")
+      
+
+  def match_raise(self, player_index):
+    # Assume a method where players can match the current raise
+    player = self.players[player_index]
+    if player.money < self.current_raise:
+        print(f"{player.name} doesn't have enough money to match the raise and is folded.")
+    else:
+        player.money -= self.current_raise
+        self.pot.add(self.current_raise)
+        print(f"{player.name} matches the raise. The pot is now {self.pot.show_pot()}.")
+
+  def fold(self, player_index):
+    #fold method that passes over player
+    pass
+      
+
+  def player_action(self, player_index, action, amount=0):
+    # This method can be expanded to handle different player actions (raise, call, fold)
+    if action == "raise":
+        self.raise_bet(player_index, amount)
+    elif action == "call":
+        self.match_raise(player_index)
+    elif action == "fold":
+      self.fold(player_index)
+    # Add more actions as needed
+    self.next_turn()  # Move to the next turn after the action

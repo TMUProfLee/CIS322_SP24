@@ -1,23 +1,32 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Poker Game</title>
-</head>
-<body>
-    <h1>Poker Game</h1>
+{% extends 'base.html' %}
+
+{% block content %}
+<center><h1>Poker Game</h1></center>
     <h2>Current Pot: ${{ pot }}</h2>
     <h3>Players:</h3>
     <ul>
         {% for player in players %}
         <li>
             <strong>{{ player.name }}</strong> - Money: ${{ player.money }}
+            {% if player.id == session.player_id %}
             <form action="/player_action" method="post">
                 <input type="number" name="amount" placeholder="Bet">
-                <button type="submit">Call</button>
+                <button class="btn btn-outline btn-info" type="submit">Bet</button>
+            </form>
+            <form action="/player_action" method="post" style="display: inline;">
+                <input type="hidden" name="call" value="True">
+                <button class="btn btn-outline btn-info" type="submit">Call</button>
+            </form>
+            <form action="/player_action" method="post" style="display: inline;">
+                <input type="hidden" name="amount" value="0">
+                <button class="btn btn-outline btn-accent" type="submit">Check</button>
+            </form>
+            <form action="/player_action" method="post" style="display: inline;">
+                <input type="hidden" name="fold" value="True">
+                <button class="btn btn-outline btn-error" type="submit">Fold</button>
+            </form>
+            {% endif %}
         </li>
         {% endfor %}
     </ul>
-</body>
-</html>
+{% endblock %}

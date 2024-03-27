@@ -231,16 +231,24 @@ def Win_screen(win_player):
     else:
       return False
 
-    
+def suit_value_key(card):
+    #defining order of cards by suit
+    suit_order = {"Diamonds": 0, "Spades": 1, "Hearts": 2, "Clubs": 3}
+    return (suit_order[card['suit']], -card['value'])
+
+def hand_sort(cards):
+    #sort function
+    sorted_cards = sorted(cards, key=suit_value_key)
+    #output
+    return(sorted_cards)
+
+def getCard(suit, value):
+    #function to give me the values "suit and value"
+    return {'suit': suit, 'value': value}
+  
+# def main():
+#   print(hand_sort())
 
     
-    
-
-
-def main():
-  win_player = ["nick", "logan"]
-  Win_screen(win_player)
- 
-
-if __name__ == '__main__':
-  main()
+# if __name__ == '__main__':
+#   main()

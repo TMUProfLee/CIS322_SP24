@@ -131,7 +131,7 @@ class Player:
           image = card.image[idx] if self.knownCards[i] else card.cardBack[idx]
           print(image, end="")
       print()
-  
+
 
   def clearHand(self):
     self.hand = []
@@ -205,20 +205,32 @@ class GameSetup:
 
         while self.done != True:
             #Different rule sequence for first turn
-            while first_turn:
+            #while first_turn:
                 #Fugitive places 1 or 2 new hideouts
-                fugitive_choices = self.fugitive_first_turn()
+                #fugitive_choices = self.fugitive_first_turn()
                 #Marshall draws 2 cards; chooses which deck to draw from
-                print(f"{self.marshall.name} is next!")
-                marshall_choices = self.marshall_first_turn()
+                #print(f"{self.marshall.name} is next!")
+                #marshall_choices = self.marshall_first_turn()
                 
             #Outside of first turn
             #Fugitive draws 1 card from any deck. 
             #Can choose to place 1 new hideout, or pass
-            
+            #self.fugitive_repeating_turn()
+              
             #Marshall draws 1 card from any deck.
             #Makes a singular guess to find a hideout (possible expand into guessing multiple hideouts)
-
+            print("<<<Marshall's Turn>>>")
+            response = ""
+            while response != "y" and "n":
+              response = input("Would you like to view your hand? Y/N --> ").strip().lower()
+              if response == "y":
+                self.show_marshall_hand()
+              elif response == "n":
+                break
+            
+            
+            #self.marshall_repeating_turn()
+            
     #Split deck into 3 piles and escape_card/starting_cards
     def split_card(self):
       game_deck=Deck()
@@ -342,6 +354,7 @@ class GameSetup:
       #May have to check if burn is empty string in case fugitive does not want to burn anything
       burn = input("Enter which cards to burn separated only by a comma (1,2,3...)").split(',')
       hideouts = input("Select two viable cards you want to place as hideouts separated only by a comma (1,2,3...): ").split(',')
+
       #Would probably call function to check if hideouts are viable here. If hideouts aren't viable, reprompt fugitive
 
       return burn, hideouts
@@ -374,7 +387,7 @@ class GameSetup:
       # Show the cards marshall drew
       self.marshall.showHand()
       # Display the two cards the fugitive has placed, face down
-      self.display_board_general()
+      self.display_board_general(self.cards_in_play)
 
       # Main guessing loop
       while(True):
@@ -432,9 +445,15 @@ class GameSetup:
       # Print the board at the end of turn
       self.display_board_general()
 
-game = GameSetup()
+    def show_marshall_hand(self):
+      if len(self.marshall.hand) == 0:
+        print("There are no cards in your hand!")
+      else:
+        self.marshall.showHand()
+  
+"""game = GameSetup()
 game.start_game()
-
+"""
 def ReadRules():
   rules = open("source/Rules.txt", "r")
   content = rules.read()

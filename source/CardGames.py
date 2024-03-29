@@ -209,9 +209,9 @@ class GameSetup:
             while first_turn:
                 #Fugitive places 1 or 2 new hideouts
                 validity_check = False
-                fugitive_deck = self.fugitive_first_turn()
+                self.fugitive_first_turn()
                 while validity_check == False:
-                  validity_check = self.check_illegal_card(fugitive_deck)
+                  validity_check = self.check_illegal_card()
                 #Marshall draws 2 cards; chooses which deck to draw from
                 print(f"{self.marshall.name} is next!")
                 marshall_choices = self.marshall_first_turn()
@@ -224,6 +224,13 @@ class GameSetup:
             #Makes a singular guess to find a hideout (possible expand into guessing multiple hideouts)
 
     #Split deck into 3 piles and escape_card/starting_cards
+    
+    def ReadRules(self):
+      rules = open("source/Rules.txt", "r")
+      content = rules.read()
+      print(content)
+      rules.close()
+
     def split_card(self):
       game_deck=Deck()
       #Get card 42
@@ -373,15 +380,33 @@ class GameSetup:
         #check if the hideout placed is a card the player owns
         if card not in fugitive_card_values:
           print("You do not have this card to place!")
+          string = ""
+          for i in self.fugitive_deck:
+            string += str(i.value) + ", "
+
+          string = string[:len(string)-2]
+          print("Here is your starting hand: " + string) 
+          print("Your last placed hideout is: " + str(previous_hideout))
           return False
         else:
           #Check if hideout 
           if ((card - previous_hideout) <= 3) and ((card - previous_hideout) != 0):
             self.cards_in_play.append(card)
             previous_hideout = card
+            for x in self.fugitive_deck:
+              if x.value == card:
+                self.fugitive_deck.remove(x)
+                break
             idx += 1
           else:
             print("Incorrect value, hideout must be greater than 1 and a maximum of three spaces away.")
+            string = ""
+            for i in self.fugitive_deck:
+              string += str(i.value) + ", "
+
+            string = string[:len(string)-2]
+            print("Here is your starting hand: " + string) 
+            print("Your last placed hideout is: " + str(previous_hideout))
             return False
       return True
         
@@ -472,7 +497,7 @@ class GameSetup:
       self.display_board_general()
 
 game = GameSetup()
-game.start_game()
+game.ReadRules()
 
 def ReadRules():
   rules = open("source/Rules.txt", "r")

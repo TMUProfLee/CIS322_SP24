@@ -334,18 +334,18 @@ class GameSetup:
         self.fugitive_deck.append(self.MidRangeDeck.pop())
 
       string = ""
-      for i in fugitive_deck:
+      for i in self.fugitive_deck:
         string += str(i.value) + ", "
 
       string = string[:len(string)-2]
       print("Here is your starting hand: " + string) 
 
       #May have to check if burn is empty string in case fugitive does not want to burn anything
-      burn = input("Enter which cards to burn separated only by a comma (1,2,3...)").split(',')
+      #burn = input("Enter which cards to burn separated only by a comma (1,2,3...)").split(',')
       hideouts = input("Select two viable cards you want to place as hideouts separated only by a comma (1,2,3...): ").split(',')
       #Would probably call function to check if hideouts are viable here. If hideouts aren't viable, reprompt fugitive
 
-      return burn, hideouts
+      return hideouts
       
 
   
@@ -509,5 +509,4 @@ def ReadRules():
   content = rules.read()
   print(content)
   rules.close()
-
 

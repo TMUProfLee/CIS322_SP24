@@ -195,6 +195,7 @@ class GameSetup:
         self.fugitive_deck = []
         self.marshall = Player("", "Marshall")
         self.done = False
+        self.marshall_current_idx = 0
     
     def start_game(self):
         Player1, Player1Role, Player2, _ = self.character_selection()
@@ -311,18 +312,35 @@ class GameSetup:
       return Player1, Player1Role, Player2, Player2Role
 
   
-    # Filler function until we implement the function to check if the guess is correct
     def check_location(self, guess, marshall_current_idx):
-      return True
+      # Loop if guessing multiple locations
+      if type(guess) == list:
+        for i in range(marshall_current_idx, len(self.cards_in_play)):
+          guess_idx = i - marshall_current_idx
+          item = self.cards_in_play[i]
+          # Get top card if current location has burns
+          card = item[0] if type(item) == list else item
+          
+          # If one is wrong return false
+          if not guess[guess_idx] == card.value:
+            return False
+        return True
+      # No loop for single guess
+      item = self.cards_in_play[marshall_current_idx]
+      
+      # Get top card if current location has burns
+      card = item[0] if type(item) == list else item
+      return card.value == guess
 
-    def reveal_cards(self, marshall_current_idx):
-      self.cards_in_play[marshall_current_idx].revealed = True
+    def reveal_cards(self, marshall_current_idx, repeat):
+      for i in range(repeat):
+        self.cards_in_play[marshall_current_idx + i].revealed = True
     
-    def display_board_general(self, cards_in_play):
-      sprints = [stack for stack in cards_in_play if type(stack) == list]
+    def display_board_general(self):
+      sprints = [stack for stack in self.cards_in_play if type(stack) == list]
       has_sprints = False
       for idx in range(6):
-          for stack in cards_in_play:     
+          for stack in self.cards_in_play:     
             if type(stack) == list:
               has_sprints = True
               card = stack[0]
@@ -332,7 +350,7 @@ class GameSetup:
             print(image, end="")
           print()
       if has_sprints:
-        spacing = len([s for s in cards_in_play if type(s) != list])
+        spacing = len([s for s in self.cards_in_play if type(s) != list])
 
         for i in range(1, max([len(stack) for stack in sprints])):
           for idx in range(2, 6):
@@ -452,7 +470,10 @@ class GameSetup:
       # Display the two cards the fugitive has placed, face down
       self.display_board_general(self.cards_in_play)
 
-      # Main guessing loop
+      self.marshall_guess()
+
+
+    def marshall_guess(self):
       while(True):
           # Choose to guess single or all cards
           guess_all = input("Would you like to guess all fugitive locations? (y/n) ").lower()
@@ -461,11 +482,12 @@ class GameSetup:
               # Loop until input is valid
               while(True):
                   guess = input("Enter locations separated only by a comma (1,2,3...) ").split(',')
+                  # Make sure they are guessing all cards
                   if len(guess) < len([card for card in self.cards_in_play if not card.revealed]):
                       print("Must guess all locations")
-                      guess = input("Enter locations separated only by a comma (1,2,3...) ").split(',')
                       continue
                   bad = False
+                  # Check for valid input
                   for ele in guess:
                       try:
                           ele = int(ele)
@@ -493,18 +515,20 @@ class GameSetup:
           else:
               print("Invalid input, try again")
       
-      # Add guesses to a tracker variable
-      self.marshall.add_guess(guess)
-      print("Guesses added")
+      guess = [int(i) for i in guess] if type(guess) == list else guess
       
-      # Check if guess was correct or not
-      marshall_current_idx = 0
-      if self.check_location(guess, marshall_current_idx):
+      guess_visual = '#'
+      if self.check_location(guess, self.marshall_current_idx):
           print("Correct location!")
-          self.reveal_cards(marshall_current_idx)
+          self.reveal_cards(self.marshall_current_idx, len(guess) if type(guess) == list else 1)
+          guess_visual = '*'
       else:
           print("Incorrect guess.")
 
+      # Add guesses to a tracker variable
+      self.marshall.add_guess((guess, guess_visual))
+      print("Guesses added")
+      
       # Print the board at the end of turn
       self.display_board_general()
 
@@ -583,5 +607,5 @@ class GameSetup:
       return NewHideouts
 
 game = GameSetup()
-game.start_game()
+#game.start_game()
 

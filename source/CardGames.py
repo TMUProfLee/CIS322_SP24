@@ -84,7 +84,7 @@ class Deck:
 
 def getCard(value, burn):
   deck = Deck()
-  my_card = Card(value, burn, None, None)
+  my_card = Card(burn, value, None, None)
   for card in deck.cards:
     if card == my_card:
       return card
@@ -192,6 +192,7 @@ class GameSetup:
         self.cards_in_play = []
         self.fugitive_deck = []
         self.fugitive = Player("", "Fugitive")
+        self.fugitive_deck = []
         self.marshall = Player("", "Marshall")
         self.done = False
     
@@ -211,7 +212,10 @@ class GameSetup:
             #Different rule sequence for first turn
             while first_turn:
                 #Fugitive places 1 or 2 new hideouts
-                fugitive_choices = self.fugitive_first_turn()
+                validity_check = False
+                self.fugitive_first_turn()
+                while validity_check == False:
+                  validity_check = self.check_illegal_card()
                 #Marshall draws 2 cards; chooses which deck to draw from
                 print(f"{self.marshall.name} is next!")
                 marshall_choices = self.marshall_first_turn()
@@ -224,6 +228,13 @@ class GameSetup:
             #Makes a singular guess to find a hideout (possible expand into guessing multiple hideouts)
 
     #Split deck into 3 piles and escape_card/starting_cards
+    
+    def ReadRules(self):
+      rules = open("source/Rules.txt", "r")
+      content = rules.read()
+      print(content)
+      rules.close()
+
     def split_card(self):
       game_deck=Deck()
       #Get card 42
@@ -345,11 +356,63 @@ class GameSetup:
 
       #May have to check if burn is empty string in case fugitive does not want to burn anything
       #burn = input("Enter which cards to burn separated only by a comma (1,2,3...)").split(',')
-      hideouts = input("Select two viable cards you want to place as hideouts separated only by a comma (1,2,3...): ").split(',')
       #Would probably call function to check if hideouts are viable here. If hideouts aren't viable, reprompt fugitive
 
-      return hideouts
-      
+      #return fugitive_deck, hideouts
+      print(self.fugitive_deck)
+
+    #check if selected hideout is valid for first turncd
+    def check_illegal_card(self):
+      if len(self.cards_in_play) == 0:
+        previous_hideout = 0
+      else:
+        previous_hideout = self.cards_in_play[-1]
+      hideouts = input("Select two viable cards you want to place as hideouts separated only by a comma (1,2,3...): ").split(',')
+
+      number_of_cards_placed = len(hideouts)
+      idx = 0
+      fugitive_card_values = []
+
+      #pull value of owned cards and add them to list
+      for fug_card in self.fugitive_deck:
+        fugitive_card_values.append(fug_card.value)
+
+      #for number of hideouts placed
+      while idx < number_of_cards_placed:
+        #convert input string to int
+        card = int(hideouts[idx])
+        #check if the hideout placed is a card the player owns
+        if card not in fugitive_card_values:
+          print("You do not have this card to place!")
+          string = ""
+          for i in self.fugitive_deck:
+            string += str(i.value) + ", "
+
+          string = string[:len(string)-2]
+          print("Here is your starting hand: " + string) 
+          print("Your last placed hideout is: " + str(previous_hideout))
+          return False
+        else:
+          #Check if hideout 
+          if ((card - previous_hideout) <= 3) and ((card - previous_hideout) != 0):
+            self.cards_in_play.append(card)
+            previous_hideout = card
+            for x in self.fugitive_deck:
+              if x.value == card:
+                self.fugitive_deck.remove(x)
+                break
+            idx += 1
+          else:
+            print("Incorrect value, hideout must be greater than 1 and a maximum of three spaces away.")
+            string = ""
+            for i in self.fugitive_deck:
+              string += str(i.value) + ", "
+
+            string = string[:len(string)-2]
+            print("Here is your starting hand: " + string) 
+            print("Your last placed hideout is: " + str(previous_hideout))
+            return False
+      return True
 
   
     def marshall_first_turn(self):
@@ -505,7 +568,7 @@ class GameSetup:
       return NewHideouts
 
 game = GameSetup()
-#game.start_game()
+game.start_game()
 
 def ReadRules():
   rules = open("source/Rules.txt", "r")

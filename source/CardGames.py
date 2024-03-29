@@ -144,6 +144,9 @@ class Player:
     else:
       self.guesses.append(guess)
 
+  def show_guesses(self):
+    print(self.guesses)
+
 class Dealer:
   def __init__(self, deck: Deck):
     self.deck = deck
@@ -433,7 +436,7 @@ class GameSetup:
       self.display_board_general()
 
 game = GameSetup()
-game.start_game()
+#game.start_game()
 
 def ReadRules():
   rules = open("source/Rules.txt", "r")

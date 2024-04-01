@@ -18,9 +18,6 @@ def find_root_dir():
 class Pot:
   def __init__(self, pot: int = 0):
     self.pot = pot
-  
-  def __str__(self):
-    return f"The pot is currently {self.pot}."
 
   def add(self, amount: int):
     self.pot += amount
@@ -82,19 +79,12 @@ class Game:
             self.pot.add(self.current_raise)
             print(f"{player.name} matches the raise. The pot is now {self.pot.show_pot()}.")
 
-    def fold(self, player_index):
-      #fold method that passes over player
-      pass
-      
-
     def player_action(self, player_index, action, amount=0):
         # This method can be expanded to handle different player actions (raise, call, fold)
         if action == "raise":
             self.raise_bet(player_index, amount)
         elif action == "call":
             self.match_raise(player_index)
-        elif action == "fold":
-          self.fold(player_index)
         # Add more actions as needed
         self.next_turn()  # Move to the next turn after the action
 
@@ -276,6 +266,15 @@ class Dealer:
       else:
         print("No more cards left in deck to add.")
         break
+      
+  def dealPrivateHand(self, player):
+    """Deals 2 private cards to the player"""
+    if len(self.deck.cards) < 2:
+      raise ValueError("Not enough cards for dealing a private hand.")
+    
+    for _ in range(2):
+      card = self.deck.getCard()
+      player.addCard(card, isKnown=False)
 
   def resetDeck(self):
     self.deck.reset()
@@ -298,6 +297,11 @@ def has_pair(player):
 #---------------------------------------------------------------------------------
 
 
+# call function--------------------------------------------------------------
+
+def Call(player, bet: int, pot):
+    player.makeBet(bet, pot)
+
 
 
 def highest_card(hand):
@@ -313,10 +317,10 @@ def highest_card(hand):
 
 
 class Poker:
-  def __init__(self, players: "list[Player]", dealer: Dealer, pot: Pot):
+  def __init__(self, players: "list[Player]", dealer: Dealer):
     self.players = players
     self.dealer = dealer
-    self.pot = pot
+    self.pot = 0
     self.bets = [0 for _ in range(len(players))]
     self.round = 0
     self.currentPlayer = 0
@@ -327,7 +331,7 @@ class Poker:
 
   # Keep Track of Pot, Bets, and current round
   def addMoneyToPot(self, amount: int):
-    self.pot.add(amount)
+    self.pot += amount
     return self.pot
   
   def addBet(self, player: Player, amount: int):
@@ -350,9 +354,33 @@ class Poker:
     idx = self.players.index(player)
     return max(self.bets) - self.bets[idx]
   
-  # call function--------------------------------------------------------------
 
-  def Call(self, player: Player, pot: Pot):
-    amount = self.callAmount(player)
-    player.makeBet(amount, pot)
+class Identification:
+  def __init__(self):
+    self.hand = [] # Hold values of cards in hand
+    self.name = "" # Name defined by the rank definition functions
+    
+  # Include functions that return what defines the various poker hand ranks.
+    
+  def twoPair(self):
+    """function that identifies 2 sets of 2 same cards through use of dictionary. Returns empty list if fail to identify 2 pairs of the 2 same cards."""
+    # iterate through the hand to count occurrences of each card value
+    count = {} # dictionary to count the occurences
+
+    # make dictionary
+    for card in self.hand: 
+      if card.value in count:
+        count[card.value] += 1
+      else:
+        count[card.value] = 1
+
+    pairs = [value for value,freq in count.items() if freq == 2]
+
+    if len(pairs) == 2:
+      # return this list that contains the values of cards that form 2 pairs in paired_values.
+      pair_cards = [card for card in self.hand if card.value in pairs]
+      return pair_cards
+    else:
+      #return empty list since it's not exactly two pairs.
+      return []
 

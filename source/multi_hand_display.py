@@ -1,4 +1,4 @@
-from CardGames_test import *
+from CardGames import *
 # Sophia Nicolas
 # Display for multiple player hands
 

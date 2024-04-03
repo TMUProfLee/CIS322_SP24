@@ -40,3 +40,10 @@ def test_hand_sort():
 # cards = [ five_spades, four_spades, two_hearts, two_spades, one_spades ]
 # assert Detect_Pair(cards) == True
 
+=======
+    cards = [ five_spades, four_spades, three_spades, two_spades, one_spades ]
+    
+    matthew.setHand( cards, isKnown=True )
+    matthew.showHand()
+    assert matthew.showHand() == None
+

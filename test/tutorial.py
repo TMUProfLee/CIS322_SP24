@@ -1,5 +1,9 @@
 from testing_base import *
+
 #Nick Busman
+=======
+#Logan Crotts
+
 # Create deck and dealer
 deck = Deck()
 dealer = Dealer(deck)

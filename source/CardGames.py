@@ -1,6 +1,8 @@
 
 import random
 import os
+import textwrap
+import time
 
 cardImages = []
 values = list(range(1,14))
@@ -29,6 +31,21 @@ class Card:
       return False
     return self.suit == other.suit and \
       self.value == other.value
+      
+# Added by yoda-dev1
+def highestcard(cards):
+    card_counts = {}
+    highestcardcount = 0
+    highestcard = None
+    for card in cards:
+        if card in card_counts:
+            card_counts[card] += 1
+        else:
+            card_counts[card] =1
+        if card_counts[card] > highestcardcount:
+            highestcardcount =card_counts[card]
+            highestcard = card
+    return highestcardcount
 
 class Deck:
   def __init__(self):
@@ -156,6 +173,7 @@ class Dealer:
   def resetDeck(self):
     self.deck.reset()
     self.deck.shuffle()
+
     
 
 def DisplayHands():
@@ -246,3 +264,73 @@ def getCard(suit, value):
     #function to give me the values "suit and value"
     return {'suit': suit, 'value': value}
   
+=======
+
+# made by yoda dev2
+# this will allow the played to access the shuffled deck once the game starts. 
+class Game:
+  def __init__(self):
+    self.deck.shuffle()
+
+  def four_of_a_kind(self, showHand):
+    card_kind = [card[0] for card in showHand]
+    for card_kind in card_kinds:
+      if card_kinds.count(card_kind) == 4:
+        return True
+      return False
+
+
+#This will hopefully be my function location. -Logan C.
+def DisplayPlayerInfo(PlayerIn):
+  print(PlayerIn.name, "Has $", PlayerIn.money, '$ left')
+
+#def slowPrint(textIn):
+#  for 
+
+#This function makes messages to the user better looking
+def TextFormat(text1):
+  formattedText = textwrap.fill(text1, 50)
+  return formattedText
+
+#This function should display a start screen for the user.
+def StartScreen():
+  fishArt1 = '''      /`·.¸
+     /¸...¸`:·
+ ¸.·´  ¸   `·.¸.·´)
+: © ):´;      ¸  {
+ `·.¸ `·  ¸.·´\`·¸)
+     `\\´´\¸.·´'''
+  fishArt2 = '''      \/)/)
+    _'  oo(_.-. 
+  /'.     .---'
+/'-./    (
+)     ; __)
+\_.'\ : __|
+     )  _/
+    (  (,.
+  mrf'-.-'''
+  WelcomeMsg = str('''Welcome to Go Fish! The goal of go fish is to collect as many quads (four of a kind) as you can. You will ask other players if they have the card you want. If they do not have the card they will tell you to "go fish". If you are told to go fish, you will need to draw a card.''')
+  WelcomeMsgFinal = TextFormat(WelcomeMsg)
+  print(fishArt1)
+  print(WelcomeMsgFinal)
+  print(fishArt2)
+  StartQuestion = input("Would You like to begin the game?(Answer 'yes' or 'no')")
+  return StartQuestion
+
+#StartScreen()  
+
+def main():
+  #initialization section
+  StartGame = StartScreen()
+  #print(StartGame)
+  formattedAnswer = StartGame.upper()
+  #print(formattedAnswer)
+  if formattedAnswer == 'YES':
+    print('Rules Rules Rules Rules Rules Rules Rules Rules Rules Rules Rules Rules ')
+  else:
+    print('sorry you feel that way')
+
+if __name__ == '__main__':
+    main()
+
+

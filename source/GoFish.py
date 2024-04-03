@@ -58,10 +58,10 @@ class GoFish:
             print(Players)
             #if player.deck = []
         #   - This is where were gonna have the game 
-        #   - logic go 
+        #   - logic go  a
 
 
-#Main function will handle only the starting of the program. 
+#Main function will hangit dle only the starting of the program. 
 def main():
     StartGame = StartScreen()
     #playerName = input("What do you want your name to be?: " )

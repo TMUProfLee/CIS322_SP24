@@ -1,5 +1,6 @@
-from flask import Flask, request, render_template, session, redirect, flash
+from flask import Flask, request, render_template, session, redirect, flash, url_for
 from CardGames import Deck, Dealer, Player, Poker, Pot
+from functools import wraps
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key_here'
@@ -12,9 +13,19 @@ game = Poker(players, dealer, Pot())
 
 current_turn = game.currentPlayer
 
+def check_player_turn(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        player_id = session.get('player_id')
+        if player_id != str(players[game.currentPlayer].id):
+            flash('It is not your turn')
+            return redirect(url_for('game'))
+        return f(*args, **kwargs)
+    return decorated_function
+
 # Define a route to handle form submission
-@app.route('/process_form', methods=['POST', 'GET'])
-def process_form():
+@app.route('/game', methods=['POST', 'GET'])
+def game():
     # Check if player_id is already set
     if 'player_id' in session:
         # Assign it to the corresponding player
@@ -50,25 +61,19 @@ def process_form():
     return render_template('game.html', players=players, pot=game.pot.show_pot(), current_turn=game.players[game.currentPlayer].name)
 
 # Define a route to handle player actions in the game loop
-@app.route('/player_action', methods=['POST'])
-def player_action():
-    # Check if the player's identifier matches the current player
-    player_id = session.get('player_id')
-    print(players)
-    if player_id != str(players[game.currentPlayer].id):
-        flash('It is not your turn')
-        return redirect('/process_form')
-
+@app.route('/bet', methods=['POST'])
+@check_player_turn
+def bet():
     # Perform the player action in the game
     amount = int(request.form['amount'])
     player = game.players[game.currentPlayer]
     game.bet(player, amount)
 
     # Redirect to the game page
-    return redirect('/process_form')
+    return redirect('/game')
 
 @app.route('/', methods=['GET', 'POST'])
 def main():
-    return redirect('/process_form')
+    return redirect('/game')
 if __name__ == '__main__':
     app.run(debug=True)

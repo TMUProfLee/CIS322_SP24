@@ -144,7 +144,6 @@ class Player:
       return self.money
     else:
       self.money -= amount
-      pot.add(amount)  # Call function implemented here--------------------------------
       return self.money
 
   # adds one card to player's hand
@@ -357,3 +356,8 @@ class Poker:
       self.fold(player_index)
     # Add more actions as needed
     self.next_turn()  # Move to the next turn after the action
+
+  def add_player(self, player):
+    self.players.append(player)
+    # Reset bets
+    self.bets = [0 for _ in range(len(self.players))]

@@ -12,7 +12,6 @@ game = Poker(players, dealer, Pot())
 
 current_turn = game.currentPlayer
 
-
 # Define a route to handle form submission
 @app.route('/process_form', methods=['POST', 'GET'])
 def process_form():
@@ -37,7 +36,7 @@ def process_form():
 
             # Create a new player and add them to the game
             new_player = Player(input_name, input_money)
-            players.append(new_player)
+            game.add_player(new_player)
 
             # Generate a unique identifier for this player
             session['player_id'] = new_player.id
@@ -48,26 +47,25 @@ def process_form():
             return render_template('create_player.html')
 
     # Return a response to the HTML page
-    return render_template('game.html', players=players, pot=game.pot.show_pot())
+    return render_template('game.html', players=players, pot=game.pot.show_pot(), current_turn=game.players[game.currentPlayer].name)
 
 # Define a route to handle player actions in the game loop
 @app.route('/player_action', methods=['POST'])
 def player_action():
     # Check if the player's identifier matches the current player
     player_id = session.get('player_id')
+    print(players)
     if player_id != str(players[game.currentPlayer].id):
         flash('It is not your turn')
         return redirect('/process_form')
 
     # Perform the player action in the game
     amount = int(request.form['amount'])
-    player = players[game.currentPlayer]
-    game.bet(player, amount, game.pot)
+    player = game.players[game.currentPlayer]
+    game.bet(player, amount)
 
-
-    # Return a response to the HTML page
-    return render_template('result.html', players=players, pot=game.pot.show_pot())
-
+    # Redirect to the game page
+    return redirect('/process_form')
 
 @app.route('/', methods=['GET', 'POST'])
 def main():

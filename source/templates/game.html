@@ -1,8 +1,21 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<script>
+    setInterval(function() {
+        location.reload();
+    }, 10000);
+</script>
+
 <center><h1>Poker Game</h1></center>
     <h2>Current Pot: ${{ pot }}</h2>
+    <h2>Current Bet: ${{ current_bet }}</h2>
+    <h2>Current Turn: {{ current_turn }}</h2>
+    <h2>Community Cards:</h2>
+    <ul>
+        {% for card in community_cards %}
+        <li>{{ card }}</li>
+        {% endfor %}
     <h3>Players:</h3>
     <ul>
         {% for player in players %}

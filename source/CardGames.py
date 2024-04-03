@@ -246,9 +246,3 @@ def getCard(suit, value):
     #function to give me the values "suit and value"
     return {'suit': suit, 'value': value}
   
-# def main():
-#   print(hand_sort())
-
-    
-# if __name__ == '__main__':
-#   main()

@@ -271,10 +271,11 @@ class Dealer:
     """Deals 2 private cards to the player"""
     if len(self.deck.cards) < 2:
       raise ValueError("Not enough cards for dealing a private hand.")
-    
+
     for _ in range(2):
       card = self.deck.getCard()
       player.addCard(card, isKnown=False)
+
 
   def resetDeck(self):
     self.deck.reset()

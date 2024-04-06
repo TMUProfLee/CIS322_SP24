@@ -6,14 +6,14 @@ def test_TwoPair():
     identification = Identification()
     identification.hand = hand
     result = identification.twoPair()
-
+    
     # create expected result which will form two pair
     expected_values = sorted(card.value for card in result)
     expect = [2,2,4,4]
-
+    
     # compare expected results with the actual result
     assert len(result) == 4 and expected_values == expect, "Failed to identify two pairs correctly"
-
+    
 # if hand has one pair.  
 def test_OnePair():
     hand = [Card('Hearts',1,None, None), Card('Diamonds',1, None, None), Card('Hearts',2, None, None), Card('Spades',7, None, None), Card('Diamonds',13, None, None)]

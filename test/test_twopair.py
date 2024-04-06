@@ -29,7 +29,7 @@ def test_NoPair():
     identification.hand = hand
     result = identification.twoPair()
     assert len(result) == 0, "Failed, incorrectly identified no pairs."
-    
+
 # if hand has three of a kind, then failed to identify two pairs
 def test_ThreeKind():
     hand = [Card('Hearts',2, None, None), Card('Diamonds',2, None, None), Card('Hearts',2, None, None), Card('Spades',7, None, None), Card('Diamonds',13, None, None)]

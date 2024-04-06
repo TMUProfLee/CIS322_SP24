@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Poker Game</title>
+</head>
+<body>
+    <h1>Poker Game</h1>
+    <h2>Current Pot: ${{ pot }}</h2>
+    <h3>Players:</h3>
+    <ul>
+        {% for player in players %}
+        <li>
+            <strong>{{ player.name }}</strong> - Money: ${{ player.money }}
+            <form action="/player_action" method="post">
+                <input type="number" name="amount" placeholder="Bet">
+                <button type="submit">Call</button>
+        </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

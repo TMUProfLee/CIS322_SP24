@@ -269,6 +269,16 @@ class Dealer:
       else:
         print("No more cards left in deck to add.")
         break
+      
+  def dealPrivateHand(self, player):
+    """Deals 2 private cards to the player"""
+    if len(self.deck.cards) < 2:
+      raise ValueError("Not enough cards for dealing a private hand.")
+
+    for _ in range(2):
+      card = self.deck.getCard()
+      player.addCard(card, isKnown=False)
+
 
   def resetDeck(self):
     self.deck.reset()
@@ -352,14 +362,13 @@ class Identification:
   def __init__(self):
     self.hand = [] # Hold values of cards in hand
     self.name = "" # Name defined by the rank definition functions
-
   # Include functions that return what defines the various poker hand ranks.
-  
+ 
   def twoPair(self):
     """function that identifies 2 sets of 2 same cards through use of dictionary. Returns empty list if fail to identify 2 pairs of the 2 same cards."""
     # iterate through the hand to count occurrences of each card value
     count = {} # dictionary to count the occurences
-    
+
     # make dictionary
     for card in self.hand: 
       if card.value in count:
@@ -369,6 +378,7 @@ class Identification:
     
     pairs = [value for value,freq in count.items() if freq == 2]
         
+
     if len(pairs) == 2:
       # return this list that contains the values of cards that form 2 pairs in paired_values.
       pair_cards = [card for card in self.hand if card.value in pairs]

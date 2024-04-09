@@ -304,7 +304,10 @@ def has_pair(player):
 # call function--------------------------------------------------------------
 
 def Call(player, bet: int, pot):
-    player.makeBet(bet, pot)
+    if bet > player.money:
+      return "You do not have enough money for this bet."
+    else:
+      player.makeBet(bet, pot)
 
 
 
@@ -335,7 +338,7 @@ class Poker:
 
   # Keep Track of Pot, Bets, and current round
   def addMoneyToPot(self, amount: int):
-    self.pot += amount
+    self.pot.add(amount)
     return self.pot
   
   def addBet(self, player: Player, amount: int):

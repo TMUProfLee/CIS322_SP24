@@ -190,11 +190,11 @@ class GameSetup:
         #Initialize the objects that need to be initialized
         self.escape_card, self.HighRangeDeck, self.MidRangeDeck, self.LowRangeDeck, self.starting_cards = self.split_card()
         self.cards_in_play = []
-        self.fugitive_deck = []
         self.fugitive = Player("", "Fugitive")
         self.fugitive_deck = []
         self.marshall = Player("", "Marshall")
         self.done = False
+        #Most recently correctly guessed hideout
         self.marshall_current_idx = 0
     
     def start_game(self):
@@ -211,34 +211,34 @@ class GameSetup:
 
         while self.done != True:
             #Different rule sequence for first turn
-            #while first_turn:
+            while first_turn:
                 #Fugitive places 1 or 2 new hideouts
                 validity_check = False
                 self.fugitive_first_turn()
                 while validity_check == False:
                   validity_check = self.check_illegal_card()
                 #Marshall draws 2 cards; chooses which deck to draw from
-                #print(f"{self.marshall.name} is next!")
-                #marshall_choices = self.marshall_first_turn()
-                
+                print(f"\n{self.marshall.name} is next!")
+                marshall_choices = self.marshall_first_turn()
+                first_turn = False
             #Outside of first turn
             #Fugitive draws 1 card from any deck. 
             #Can choose to place 1 new hideout, or pass
-            #self.fugitive_repeating_turn()
+            self.fugitive_repeating_turn()
               
             #Marshall draws 1 card from any deck.
             #Makes a singular guess to find a hideout (possible expand into guessing multiple hideouts)
-            print("<<<Marshall's Turn>>>")
+            print("\n***Marshall's Turn***")
             response = ""
             while response != "y" and "n":
-              response = input("Would you like to view your hand? Y/N --> ").strip().lower()
+              response = input("\nWould you like to view your hand? Y/N --> ").strip().lower()
               if response == "y":
                 self.show_marshall_hand()
               elif response == "n":
                 break
+              
             
-            
-            #self.marshall_repeating_turn()
+            self.marshall_repeating_turn()
             
     #Split deck into 3 piles and escape_card/starting_cards
     
@@ -396,8 +396,10 @@ class GameSetup:
         previous_hideout = self.cards_in_play[-1]
       hideouts = input("Select two viable cards you want to place as hideouts separated only by a comma (1,2,3...): ").split(',')
 
-      number_of_cards_placed = len(hideouts)
-      idx = 0
+      
+
+      if len(hideouts) != 2:
+        print("Select two inputs!")
       fugitive_card_values = []
 
       #pull value of owned cards and add them to list
@@ -405,7 +407,7 @@ class GameSetup:
         fugitive_card_values.append(fug_card.value)
 
       #for number of hideouts placed
-      while idx < number_of_cards_placed:
+      for idx in range(len(hideouts)):
         #convert input string to int
         card = int(hideouts[idx])
         #check if the hideout placed is a card the player owns
@@ -422,7 +424,11 @@ class GameSetup:
         else:
           #Check if hideout 
           if ((card - previous_hideout) <= 3) and ((card - previous_hideout) != 0):
-            self.cards_in_play.append(card)
+            real_cards = []
+            for x in self.fugitive_deck:
+              if x.value == card:
+                self.cards_in_play.append(x)
+            
             previous_hideout = card
             for x in self.fugitive_deck:
               if x.value == card:
@@ -446,7 +452,7 @@ class GameSetup:
       # Get deck choice
       while True:
         try:
-          deck = int(input("Select which deck to draw two cards from ['1' (1-14), '2' (15-28), '3' (29-42)] and press enter... "))
+          deck = int(input("\nSelect which deck to draw two cards from ['1' (1-14), '2' (15-28), '3' (29-42)] and press enter... "))
         except ValueError:
           print("Invalid input, try again.")
           continue
@@ -468,7 +474,7 @@ class GameSetup:
       # Show the cards marshall drew
       self.marshall.showHand()
       # Display the two cards the fugitive has placed, face down
-      self.display_board_general(self.cards_in_play)
+      self.display_board_general()
 
       self.marshall_guess()
 
@@ -476,12 +482,12 @@ class GameSetup:
     def marshall_guess(self):
       while(True):
           # Choose to guess single or all cards
-          guess_all = input("Would you like to guess all fugitive locations? (y/n) ").lower()
+          guess_all = input("\nWould you like to guess all fugitive locations? (y/n) ").lower()
           # Guessing all cards
           if guess_all == 'y' or guess_all == 'yes':
               # Loop until input is valid
               while(True):
-                  guess = input("Enter locations separated only by a comma (1,2,3...) ").split(',')
+                  guess = input("\nEnter locations separated only by a comma (1,2,3...) ").split(',')
                   # Make sure they are guessing all cards
                   if len(guess) < len([card for card in self.cards_in_play if not card.revealed]):
                       print("Must guess all locations")
@@ -519,15 +525,15 @@ class GameSetup:
       
       guess_visual = '#'
       if self.check_location(guess, self.marshall_current_idx):
-          print("Correct location!")
+          print("\n**Correct location!**")
           self.reveal_cards(self.marshall_current_idx, len(guess) if type(guess) == list else 1)
           guess_visual = '*'
       else:
-          print("Incorrect guess.")
+          print("\n**Incorrect guess.**")
 
       # Add guesses to a tracker variable
       self.marshall.add_guess((guess, guess_visual))
-      print("Guesses added")
+      print("\nGuesses added")
       
       # Print the board at the end of turn
       self.display_board_general()
@@ -538,12 +544,12 @@ class GameSetup:
       else:
         self.marshall.showHand()
   
-    def FugitiveRepeating(self):
+    def fugitive_repeating_turn(self):
       draw = 0
       NewHideouts = []
       while draw != 1 and draw != 2 and draw != 3:
         try:
-          draw = int(input("Select which deck to draw a card from ['1' (1-14), '2' (15-28), '3' (29-42)]: ").strip())
+          draw = int(input("\n Fugitive, select which deck to draw a card from ['1' (1-14), '2' (15-28), '3' (29-42)]: ").strip())
         except:
           ValueError
       if draw == 1:
@@ -555,17 +561,23 @@ class GameSetup:
 
       card_value = self.fugitive_deck[-1].value
       sprint_value = self.fugitive_deck[-1].sprint_value
-      print("You drew " + str(card_value) + " with a sprint value of " + str(sprint_value) + ".")
+      print("\n**You drew " + str(card_value) + " with a sprint value of " + str(sprint_value) + ".**")
 
       turn = ""
       while turn != "hideout" and turn != "pass":
-        turn = input("Select if you want to place a hideout(s) or pass ['hideout' for hideout or 'pass' for pass]: ").strip().lower()
+        turn = input("\nSelect if you want to place a hideout(s) or pass ['hideout' for hideout or 'pass' for pass]: ").strip().lower()
       if turn == "hideout":
         check = 2
         while check != 0:
           try:
             backup = NewHideouts[:]
-            check = int(input("If you no longer want to place hideouts, type 0 otherwise type 1: ").strip())
+            check = int(input("\nIf you no longer want to place hideouts, type 0 otherwise type 1: ").strip())
+            string = ""
+            for i in self.fugitive_deck:
+              string += str(i.value) + ", "
+
+            string = string[:len(string)-2]
+            print("\nHere is your current hand: " + string) 
           except:
             ValueError
             continue
@@ -574,38 +586,59 @@ class GameSetup:
             good = False
           while good == False:
               bad = False
-              NewHideouts += [input("Select which card you want to place as a hideout followed by the cards you want to burn separated only by a comma (1,2,3...): ").strip().split(',')]
-              for y in NewHideouts:
-                for z in y:
-                  try:
-                      if int(z) > 42 or int(z) < 1:
-                        print("Please input a valid hideout.")
-                        bad = True
-                        good = False
+              hideouts = input("\nSelect one card you want to place as hideout: ").split(',')
+              fugitive_card_values = []
+
+              #pull value of owned cards and add them to list
+              for fug_card in self.fugitive_deck:
+                fugitive_card_values.append(fug_card.value)
+
+              for idx in range(len(hideouts)):
+                #convert input string to int
+                card = int(hideouts[idx])
+                previous_hideout = self.cards_in_play[-1]
+                #check if the hideout placed is a card the player owns
+                if card not in fugitive_card_values:
+                  print("\nYou do not have this card to place!")
+                  string = ""
+                  for i in self.fugitive_deck:
+                    string += str(i.value) + ", "
+
+                  string = string[:len(string)-2]
+                  print("\nHere is your starting hand: " + string) 
+                  print("\nYour last placed hideout is: " + str(previous_hideout))
+                  return False
+                else:
+                  #Check if hideout 
+                  if ((card - previous_hideout.value) <= 3) and ((card - previous_hideout.value) != 0):
+                    real_cards = []
+                    for x in self.fugitive_deck:
+                      if x.value == card:
+                        self.cards_in_play.append(x)
+                    
+                    previous_hideout = card
+                    for x in self.fugitive_deck:
+                      if x.value == card:
+                        self.fugitive_deck.remove(x)
                         break
-                  except:
-                    ValueError
-                    print("Please input a valid hideout.")
-                    bad = True
-                    good = False
-                    NewHideouts = backup   
-                    break      
-                  if len(z) > 1:
-                    for i in z:
-                      if i not in "123456789101112131415161718192021222324252627282930313233343536373839404142":
-                        print("Please input a valid hideout.")
-                        bad = True
-                        good = False
-                        break
-                if bad == True:
-                  NewHideouts = backup
-                  break
-              good = True
-              #Functions to check for illegally placed hideouts and burns would go here
+                    idx += 1
+                    good = True
+                  else:
+                    print("\nIncorrect value, hideout must be greater than 1 and a maximum of three spaces away.")
+                    string = ""
+                    for i in self.fugitive_deck:
+                      string += str(i.value) + ", "
+
+                    string = string[:len(string)-2]
+                    print("\nHere is your starting hand: " + string) 
+                    print("\nYour last placed hideout is: " + str(previous_hideout))
+                    good = True
+                      #Functions to check for illegally placed hideouts and burns would go here
       elif turn == "pass":
-        print("Passing...")
+        print("\nPassing...")
       return NewHideouts
+    
 
 game = GameSetup()
-#game.start_game()
+game.start_game()
 

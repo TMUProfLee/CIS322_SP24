@@ -336,7 +336,7 @@ class GameSetup:
       for i in range(repeat):
         self.cards_in_play[marshall_current_idx + i].revealed = True
     
-    def display_board_general(self):
+    def display_board_general(self, player = 'marshall'):
       sprints = [stack for stack in self.cards_in_play if type(stack) == list]
       has_sprints = False
       for idx in range(6):
@@ -346,7 +346,10 @@ class GameSetup:
               card = stack[0]
             else:
               card = stack
-            image = card.image[idx] if card.revealed else card.cardBack[idx]
+            if player == 'fugitive' or card.revealed:
+              image = card.image[idx]
+            else:
+              image = card.cardBack[idx]
             print(image, end="")
           print()
       if has_sprints:

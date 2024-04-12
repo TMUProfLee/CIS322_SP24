@@ -19,7 +19,7 @@ def check_player_turn(f):
         player_id = session.get('player_id')
         if player_id != str(players[game.currentPlayer].id):
             flash('It is not your turn')
-            return redirect(url_for('game'))
+            return redirect(url_for('gameRoute'))
         return f(*args, **kwargs)
     return decorated_function
 
@@ -67,13 +67,28 @@ def bet():
     # Perform the player action in the game
     amount = int(request.form['amount'])
     player = game.players[game.currentPlayer]
+    if amount == 0:
+        game.check(player)
     game.bet(player, amount)
-
+    if game.checkBets():
+        game.collectBets()
+    game.next_turn()
     # Redirect to the game page
-    return redirect('/game')
+    return redirect(url_for('gameRoute'))
+
+@app.route('/call', methods=['POST'])
+@check_player_turn
+def Call():
+    player = game.players[game.currentPlayer]
+    game.Call(player)
+    if game.checkBets():
+        game.collectBets()
+        game.round += 1
+    game.next_turn()
+    return redirect(url_for('gameRoute'))
 
 @app.route('/', methods=['GET', 'POST'])
 def main():
-    return redirect('/game')
+    return redirect(url_for('gameRoute'))
 if __name__ == '__main__':
     app.run(debug=True)

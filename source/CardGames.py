@@ -260,6 +260,7 @@ class Poker:
     self.dealer = dealer
     self.pot = pot
     self.bets = [0 for _ in range(len(players))]
+    self.checked = [False for _ in range(len(players))]
     self.round = 0
     self.currentPlayer = 0
 
@@ -286,6 +287,8 @@ class Poker:
 
   # Check if all bets are equal
   def checkBets(self):
+    if all(bet == 0 for bet in self.bets) and not all(checked for checked in self.checked):
+      return False
     return len(set(self.bets)) == 1
   
   # Check how much is needed to call
@@ -298,11 +301,15 @@ class Poker:
     self.bets[idx] += amount
     player.makeBet(amount, self.pot)
   
+  def check(self, player: Player):
+    idx = self.players.index(player)
+    self.checked[idx] = True
+  
   # call function--------------------------------------------------------------
 
-  def Call(self, player: Player, pot: Pot):
+  def Call(self, player: Player):
     amount = self.callAmount(player)
-    player.makeBet(amount, pot)
+    player.makeBet(amount, self.pot)
 
   def next_turn(self):
     # Advance to the next player's turn, wrapping around to the first player if necessary

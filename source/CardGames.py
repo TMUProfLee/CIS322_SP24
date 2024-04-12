@@ -21,7 +21,6 @@ class Card:
     self.cardBack = cardBack
     self.sprint_value = sprint_value
     self.value = value
-    #self.burn = burn
     self.image = image
     self.revealed = False
 
@@ -279,15 +278,25 @@ class GameSetup:
 
     def reveal_cards(self, marshall_current_idx, repeat):
       for i in range(repeat):
-        self.cards_in_play[marshall_current_idx + i].revealed = True
+        card = self.cards_in_play[marshall_current_idx + i][0] if type(self.cards_in_play[marshall_current_idx + i])\
+            == list else self.cards_in_play[marshall_current_idx + i]
+        card.revealed = True
     
     def display_board_general(self, player = 'marshall'):
-      sprints = [stack for stack in self.cards_in_play if type(stack) == list]
-      has_sprints = False
+      sprints = []
+      for idx, stack in enumerate(self.cards_in_play):
+        total_gap = 0
+        if type(stack) == list:
+          for prev in range(idx - 1, -1, -1):
+            if type(self.cards_in_play[prev]) == Card:
+              total_gap += 1
+            else:
+              break
+          sprints.append((stack, total_gap))
+
       for idx in range(6):
           for stack in self.cards_in_play:     
             if type(stack) == list:
-              has_sprints = True
               card = stack[0]
             else:
               card = stack
@@ -297,18 +306,17 @@ class GameSetup:
               image = card.cardBack[idx]
             print(image, end="")
           print()
-      if has_sprints:
-        spacing = len([s for s in self.cards_in_play if type(s) != list])
 
-        for i in range(1, max([len(stack) for stack in sprints])):
+      if len(sprints):
+        for i in range(1, max([len(stack[0]) for stack in sprints])):
           for idx in range(2, 6):
-            print(' ' * 7 * spacing, end="")
             for stack in sprints:  
-              if len(stack) > i:
+              print(' ' * 7 * stack[1], end="")
+              if len(stack[0]) > i:
                 if idx == 5:
                   print('|_____|', end="")
                 else:
-                  card = stack[i]
+                  card = stack[0][i]
                   image = card.image[idx]
                   print(image, end="")
               else:
@@ -327,34 +335,45 @@ class GameSetup:
       for x in range(2):
         self.fugitive.addCard(self.MidRangeDeck.pop())
 
-      if len(self.cards_in_play) == 0:
-        previous_hideout = 0
-      else:
-        previous_hideout = self.cards_in_play[-1]
       
-      while True:
-        print("Here is your starting hand:")
-        self.fugitive.showHand()
+      
+      for _ in range(2):
+        if not len(self.cards_in_play):
+          previous_hideout = 0
+        else:
+          previous_hideout = self.cards_in_play[-1] if type(self.cards_in_play[-1]) == Card else self.cards_in_play[-1][0]
+        while True:
+          print("\nHere is your hand:")
+          self.fugitive.showHand()
+          time.sleep(1.5)
 
-        time.sleep(1.5)
-        hideouts = input("\nSelect two viable card values you want to place as hideouts separated only by a comma (1,2,3...): ").split(',')
-        hideouts = [int(i) for i in hideouts]
+          hideouts = input("\nSelect the card value you want to place as a hideout, followed by any sprint cards, separated only by a comma (1,2,3...): ").split(',')
+          hideouts = [int(i) for i in hideouts]
 
-        if len(hideouts) != 2:
-          print("Select two inputs!")
-          continue
-
-        if not self.check_illegal_card(previous_hideout, hideouts):
-          print("Illegal card choice, choose again")
-          continue
-        
-        for num in sorted(hideouts):
-          for x in self.fugitive.hand:
-            if num == x.value:
-              self.cards_in_play.append(x)
-              self.fugitive.hand.remove(x)
-              break
-        break
+          if not self.check_illegal_card(previous_hideout, hideouts):
+            print("Illegal card choice, choose again")
+            continue
+          
+          if len(hideouts) > 1:
+            burn_list = []
+            for num in hideouts:
+              for x in self.fugitive.hand:
+                if num == x.value:
+                  burn_list.append(x)
+                  self.fugitive.hand.remove(x)
+                  break
+            self.cards_in_play.append(burn_list)
+          else:
+            for x in self.fugitive.hand:
+              if hideouts[0] == x.value:
+                self.cards_in_play.append(x)
+                self.fugitive.hand.remove(x)
+                break
+          time.sleep(0.5)
+          print("\nThe board:")
+          self.display_board_general('fugitive')
+          time.sleep(1)
+          break
 
 
 
@@ -370,21 +389,24 @@ class GameSetup:
       if not cmpre <= set(fugitive_card_values):
         return False
 
-      for num in sorted(hideouts):
-        for x in self.fugitive.hand:
-          if num == x.value:
-            card = x
-            break
-        
-        if type(previous_hideout) == Card:
-          prev_hide = previous_hideout.value
+      burn_total = 0
+      for idx, num in enumerate(reversed(hideouts)):
+        if idx != len(hideouts) - 1:
+          burn_total += num
         else:
-          prev_hide = previous_hideout
-        if 1 <= (card.value - prev_hide) <= 3:
-          previous_hideout = card
-        else:
-          return False
-      return True
+          for x in self.fugitive.hand:
+            if num == x.value:
+              card = x
+              break
+
+          if type(previous_hideout) == Card:
+            prev_hide = previous_hideout.value
+          else:
+            prev_hide = previous_hideout
+          if 1 <= (card.value - prev_hide) <= 3 + burn_total:
+              return True
+          else:
+            return False
 
   
     def marshall_first_turn(self):
@@ -437,7 +459,12 @@ class GameSetup:
               while(True):
                   guess = input("\nEnter locations separated only by a comma (1,2,3...) ").split(',')
                   # Make sure they are guessing all cards
-                  if len(guess) < len([card for card in self.cards_in_play if not card.revealed]):
+                  num_unrevealed = 0
+                  for card in self.cards_in_play:
+                    card = card[0] if type(card) == list else card
+                    if not card.revealed:
+                      num_unrevealed += 1
+                  if len(guess) < num_unrevealed:
                       print("Must guess all locations")
                       continue
                   bad = False
@@ -476,7 +503,9 @@ class GameSetup:
       if self.check_location(guess, self.marshall_current_idx):
           print("\n**Correct location!**")
           self.reveal_cards(self.marshall_current_idx, len(guess) if type(guess) == list else 1)
-          self.marshall_current_idx += 1
+          if type(guess) == int:
+            guess = [guess]
+          self.marshall_current_idx += len(guess)
           guess_visual = '*'
           if self.marshall_current_idx == len(self.cards_in_play):
             time.sleep(1)
@@ -546,9 +575,8 @@ class GameSetup:
             print("No cards remaining in that deck")
             time.sleep(1.5)
             continue
-      
 
-      while True:
+      while(True):
         print("\n**Your new hand:**")
         self.fugitive.showHand()
 
@@ -557,51 +585,57 @@ class GameSetup:
         self.display_board_general("fugitive")
 
         time.sleep(2)
-        turn = 2
-        while turn != 0 and turn != 1:
-          try:
-            turn = int(input("\nSelect if you want to place a hideout or pass ['0' for hideout or '1' for pass]: "))
-          except ValueError:
-            continue
-          if turn not in [0,1]:
+        while(True):
+          hideout = input("\nSelect a viable card value you want to place as a hideout, followed by any sprint cards (0 to pass): ").split(",")
+          bad = False
+          # Check for valid input
+          for ele in hideout:
+            try:
+              ele = int(ele)
+            except:
+              TypeError
+              print("Invalid input, try again")
+              bad = True
+              break
+          if bad:
             continue
           break
-        if turn == 0:
-          previous_hideout = self.cards_in_play[-1]
 
-          while(True):
-            while(True):
-              try:
-                hideout = [int(input("\nSelect a viable card value you want to place as a hideout (0 to pass): "))]
-              except ValueError:
-                print("Invalid choice, try again")
-                continue
-              break
-            
-            if hideout == 0:
-              print("\nPassing...") 
-              break
+        hideout = [int(i) for i in hideout]
+        
+        if hideout[0] == 0:
+          print("\nPassing...") 
+          break
+        
+        previous_hideout = self.cards_in_play[-1] if type(self.cards_in_play[-1]) == Card else self.cards_in_play[-1][0]
+        if not self.check_illegal_card(previous_hideout, hideout):
+          print("Illegal card choice, choose again")
+          continue
 
-            if not self.check_illegal_card(previous_hideout, hideout):
-              print("Illegal card choice, choose again")
-              continue
 
+        if len(hideout) > 1:
+          burn_list = []
+          for num in hideout:
             for x in self.fugitive.hand:
-              if hideout[0] == x.value:
-                self.cards_in_play.append(x)
+              if num == x.value:
+                burn_list.append(x)
                 self.fugitive.hand.remove(x)
-                if x.value == 42:
-                  self.done = True
-                  time.sleep(1)
-                  self.display_board_general()
-                  time.sleep(1.5)
-                  print("\n" + self.fugitive.name + "Wins!")
                 break
-            break
-                    #Functions to check for illegally placed hideouts and burns would go here
+              
+          self.cards_in_play.append(burn_list)
         else:
-          print("\nPassing...")  
-          break  
+          for x in self.fugitive.hand:
+            if hideout[0] == x.value:
+              self.cards_in_play.append(x)
+              self.fugitive.hand.remove(x)
+              if x.value == 42:
+                self.done = True
+                time.sleep(1)
+                self.display_board_general()
+                time.sleep(1.5)
+                print("\n" + self.fugitive.name + "Wins!")
+            break
+                #Functions to check for illegally placed hideouts and burns would go here
 
     def print_remaining_cards(self):
       print("\nRemaining Cards:\nLow Deck: {}\tMid Deck: {}\t High Deck: {}".format(len(self.LowRangeDeck), len(self.MidRangeDeck), len(self.HighRangeDeck)))

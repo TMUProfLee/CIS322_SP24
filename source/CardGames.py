@@ -23,7 +23,6 @@ class Card:
     self.value = value
     #self.burn = burn
     self.image = image
-    self.shortImage = []
     self.revealed = False
 
 
@@ -91,6 +90,7 @@ def getCard(value, burn):
       return card
   return None
 
+
 class Player:
   def __init__(self, name, role,):
     self.name = name
@@ -99,24 +99,19 @@ class Player:
     self.guesses = []
     self.role = role  #This would be to distinguish whether the object is either acting as Marshall or Fugitive
 
-  def addCard(self, card: Card, isKnown: bool = True):
+  def addCard(self, card: Card):
     self.hand.append(card)
-    if isKnown:
-      self.knownCards.append(True)
-    else:
-      self.knownCards.append(False)
-
-  def setHand(self, cards: "list[Card]", isKnown: bool = False):
+    self.hand.sort(key=lambda a:a.value)
+    
+  def setHand(self, cards: "list[Card]"):
     self.hand = cards
-    self.knownCards = [isKnown for _ in self.hand]
 
-  def showHand(self, printShort: bool = False):
+  def showHand(self):
     for idx in range(6):
       for i, card in enumerate(self.hand):
         image = card.image[idx]
         print(image, end="")
       print()
-
 
   def clearHand(self):
     self.hand = []
@@ -131,43 +126,6 @@ class Player:
 
   def show_guesses(self):
     print(self.guesses)
-
-class Dealer:
-  def __init__(self, deck: Deck):
-    self.deck = deck
-    self.deck.shuffle()
-
-  def printCards(self, cards: "list[Card]", showFront: bool, printShort: bool = True):
-    for idx in range(6):
-      for i, card in enumerate(cards):
-        if printShort and i < len(cards)-1:
-          image = card.shortImage[idx] if showFront else card.cardBack[idx]
-          print(image, end="")
-        else:
-          image = card.image[idx] if showFront else card.cardBack[idx]
-          print(image, end="")
-      print()
-
-  def dealCards(self, numCards: int, players: "list[Player]"):
-    if numCards * len(players) > self.deck.size:
-      return False
-    for player in players:
-      for _ in range(numCards):
-        player.addCard(self.deck.getCard())
-    return True
-
-  def resetDeck(self):
-    self.deck.reset()
-    self.deck.shuffle()
-
-
-  def highestCard(cardList):
-    highestCard = getCard("Spades", 1)
-    for card in cardList:
-      if card.value >= highestCard.value:
-        highestCard = card
-    return highestCard
-
 
 
 class GameSetup:
@@ -207,6 +165,8 @@ class GameSetup:
         time.sleep(1)
         # Marshall's first turn
         self.marshall_first_turn()
+        if self.done:
+          return
         os.system('cls')
 
         # Repeating turns
@@ -217,6 +177,8 @@ class GameSetup:
           #Can choose to place 1 new hideout, or pass
           self.fugitive_repeating_turn()
             
+          if self.done:
+            break
           #Marshall draws 1 card from any deck.
           #Makes a singular guess to find a hideout (possible expand into guessing multiple hideouts)
           print("\n***Marshall's Turn***")
@@ -356,14 +318,14 @@ class GameSetup:
 
     def fugitive_first_turn(self):
       for c in self.starting_cards:
-        self.fugitive.hand.append(c)
-      self.fugitive.hand.append(self.escape_card)
+        self.fugitive.addCard(c)
+      self.fugitive.addCard(self.escape_card)
 
       for x in range(3):
-        self.fugitive.hand.append(self.LowRangeDeck.pop())
+        self.fugitive.addCard(self.LowRangeDeck.pop())
 
       for x in range(2):
-        self.fugitive.hand.append(self.MidRangeDeck.pop())
+        self.fugitive.addCard(self.MidRangeDeck.pop())
 
       if len(self.cards_in_play) == 0:
         previous_hideout = 0
@@ -420,18 +382,15 @@ class GameSetup:
           prev_hide = previous_hideout
         if 1 <= (card.value - prev_hide) <= 3:
           previous_hideout = card
-          """
-            for x in self.fugitive_deck:
-              if x.value == card:
-                self.fugitive_deck.remove(x)
-                break
-                """
         else:
           return False
       return True
 
   
     def marshall_first_turn(self):
+      print("\nHere are your guesses (* is correct, # is wrong or possibly wrong):")
+      self.marshall.show_guesses()
+      time.sleep(1)
       # Get deck choice
       while True:
         try:
@@ -452,7 +411,7 @@ class GameSetup:
       # Draw two cards from the chosen deck
       for _ in range(2):
           draw_card = deck.pop()
-          self.marshall.addCard(draw_card, isKnown=True)
+          self.marshall.addCard(draw_card)
 
       time.sleep(0.5)
       os.system('cls')
@@ -517,7 +476,15 @@ class GameSetup:
       if self.check_location(guess, self.marshall_current_idx):
           print("\n**Correct location!**")
           self.reveal_cards(self.marshall_current_idx, len(guess) if type(guess) == list else 1)
+          self.marshall_current_idx += 1
           guess_visual = '*'
+          if self.marshall_current_idx == len(self.cards_in_play):
+            time.sleep(1)
+            self.display_board_general()
+            time.sleep(1.5)
+            print("\n" + self.marshall.name + "Wins!")
+            self.done = True
+            return
       else:
           print("\n**Incorrect guess.**")
 
@@ -549,18 +516,36 @@ class GameSetup:
       self.display_board_general("fugitive")
       time.sleep(1.5)
 
-      while draw != 1 and draw != 2 and draw != 3:
-        try:
-          draw = int(input("\n Fugitive, select which deck to draw a card from ['1' (1-14), '2' (15-28), '3' (29-42)]: ").strip())
-        except:
-          ValueError
-      if draw == 1:
-        self.fugitive.hand.append(self.LowRangeDeck.pop())
-      elif draw == 2:
-        self.fugitive.hand.append(self.MidRangeDeck.pop())
-      elif draw == 3:
-        self.fugitive.hand.append(self.HighRangeDeck.pop())
-
+      while(True):
+        while draw != 1 and draw != 2 and draw != 3:
+          try:
+            draw = int(input("\n Fugitive, select which deck to draw a card from ['1' (1-14), '2' (15-28), '3' (29-42)]: ").strip())
+          except:
+            ValueError
+        if draw == 1:
+          if len(self.LowRangeDeck):
+            self.fugitive.addCard(self.LowRangeDeck.pop())
+            break
+          else:
+            print("No cards remaining in that deck")
+            time.sleep(1.5)
+            continue
+        elif draw == 2:
+          if len(self.MidRangeDeck):
+            self.fugitive.addCard(self.MidRangeDeck.pop())
+            break
+          else:
+            print("No cards remaining in that deck")
+            time.sleep(1.5)
+            continue
+        elif draw == 3:
+          if len(self.HighRangeDeck):
+            self.fugitive.addCard(self.HighRangeDeck.pop())
+            break
+          else:
+            print("No cards remaining in that deck")
+            time.sleep(1.5)
+            continue
       
 
       while True:
@@ -587,10 +572,14 @@ class GameSetup:
           while(True):
             while(True):
               try:
-                hideout = [int(input("\nSelect a viable card value you want to place as a hideout: "))]
+                hideout = [int(input("\nSelect a viable card value you want to place as a hideout (0 to pass): "))]
               except ValueError:
                 print("Invalid choice, try again")
                 continue
+              break
+            
+            if hideout == 0:
+              print("\nPassing...") 
               break
 
             if not self.check_illegal_card(previous_hideout, hideout):
@@ -601,12 +590,21 @@ class GameSetup:
               if hideout[0] == x.value:
                 self.cards_in_play.append(x)
                 self.fugitive.hand.remove(x)
+                if x.value == 42:
+                  self.done = True
+                  time.sleep(1)
+                  self.display_board_general()
+                  time.sleep(1.5)
+                  print("\n" + self.fugitive.name + "Wins!")
                 break
             break
                     #Functions to check for illegally placed hideouts and burns would go here
         else:
           print("\nPassing...")  
           break  
+
+    def print_remaining_cards(self):
+      print("\nRemaining Cards:\nLow Deck: {}\tMid Deck: {}\t High Deck: {}".format(len(self.LowRangeDeck), len(self.MidRangeDeck), len(self.HighRangeDeck)))
 
 game = GameSetup()
 game.start_game()

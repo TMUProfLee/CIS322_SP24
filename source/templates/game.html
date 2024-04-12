@@ -22,7 +22,7 @@
         <li>
             <strong>{{ player.name }}</strong> - Money: ${{ player.money }}
             {% if player.id == session.player_id %}
-            <form action="/player_action" method="post">
+            <form action="/bet" method="post">
                 <input type="number" name="amount" placeholder="Bet">
                 <button class="btn btn-outline btn-info" type="submit">Bet</button>
             </form>
@@ -30,10 +30,19 @@
                 <input type="hidden" name="call" value="True">
                 <button class="btn btn-outline btn-info" type="submit">Call</button>
             </form>
-            <form action="/player_action" method="post" style="display: inline;">
-                <input type="hidden" name="amount" value="0">
-                <button class="btn btn-outline btn-accent" type="submit">Check</button>
-            </form>
+            {% if current_bet > 0 %}
+                <!-- Disable the form if current_bet > 0 -->
+                <form action="/bet" method="post" style="display: inline;" disabled>
+                    <input type="hidden" name="amount" value="0">
+                    <button class="btn btn-outline btn-accent" type="submit" disabled>Check</button>
+                </form>
+            {% else %}
+                <!-- Enable the form if current_bet <= 0 -->
+                <form action="/bet" method="post" style="display: inline;">
+                    <input type="hidden" name="amount" value="0">
+                    <button class="btn btn-outline btn-accent" type="submit">Check</button>
+                </form>
+            {% endif %}
             <form action="/player_action" method="post" style="display: inline;">
                 <input type="hidden" name="fold" value="True">
                 <button class="btn btn-outline btn-error" type="submit">Fold</button>

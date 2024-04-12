@@ -25,7 +25,7 @@ def check_player_turn(f):
 
 # Define a route to handle form submission
 @app.route('/game', methods=['POST', 'GET'])
-def game():
+def gameRoute():
     # Check if player_id is already set
     if 'player_id' in session:
         # Assign it to the corresponding player
@@ -58,7 +58,7 @@ def game():
             return render_template('create_player.html')
 
     # Return a response to the HTML page
-    return render_template('game.html', players=players, pot=game.pot.show_pot(), current_turn=game.players[game.currentPlayer].name)
+    return render_template('game.html', players=players, pot=game.pot.show_pot(), current_turn=game.players[game.currentPlayer].name, current_bet=max(game.bets))
 
 # Define a route to handle player actions in the game loop
 @app.route('/bet', methods=['POST'])

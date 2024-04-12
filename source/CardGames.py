@@ -341,7 +341,7 @@ class Poker:
         self.pot.add(self.current_raise)
         print(f"{player.name} matches the raise. The pot is now {self.pot.show_pot()}.")
 
-  def fold(self, player_index):
+  def fold(self):
     #fold method that passes over player
     pass
       
@@ -353,7 +353,7 @@ class Poker:
     elif action == "call":
         self.match_raise(player_index)
     elif action == "fold":
-      self.fold(player_index)
+      self.fold()
     # Add more actions as needed
     self.next_turn()  # Move to the next turn after the action
 
@@ -361,3 +361,8 @@ class Poker:
     self.players.append(player)
     # Reset bets
     self.bets = [0 for _ in range(len(self.players))]
+  
+  def current_bet(self):
+    for bet in self.bets:
+      if bet > 0:
+        return bet

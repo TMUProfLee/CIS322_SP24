@@ -135,6 +135,7 @@ class GameSetup:
         self.fugitive = Player("", "Fugitive")
         self.marshall = Player("", "Marshall")
         self.done = False
+        self.manhunt = False
         #Most recently correctly guessed hideout
         self.marshall_current_idx = 0
     
@@ -183,15 +184,45 @@ class GameSetup:
           print("\n***Marshall's Turn***")
           
           self.marshall_repeating_turn()
-            
-    #Split deck into 3 piles and escape_card/starting_cards
-    
+        
+        if self.manhunt:
+          time.sleep(1)
+          print(self.fugitive.name + " has reached the last hideout!")
+          time.sleep(1)
+          
+          # Check if marshall wants to begin manhun
+          while True:
+            hunt = input(self.marshall.name + ", would you like to begin a manhunt? (y/n): ")
+            if hunt not in ['y', 'n']:
+              continue
+            break
+
+          while True:
+            win = self.marshall_guess()
+            if win == None:
+              continue
+            elif win:
+              os.system('cls')
+              time.sleep(4)
+              print("\nCorrect guess!")
+              time.sleep(1)
+              print("\n**" + self.fugitive.name + " has been caught!**")
+              break
+            else:
+              os.system('cls')
+              time.sleep(4)
+              print("\nIncorrect guess")
+              time.sleep(1)
+              print("\n**" + self.fugitive.name + " got away!**")
+              break         
+
     def ReadRules(self):
       rules = open("source/Rules.txt", "r")
       content = rules.read()
       print(content)
       rules.close()
 
+    #Split deck into 3 piles and escape_card/starting_cards
     def split_card(self):
       game_deck=Deck()
       #Get card 42
@@ -479,7 +510,7 @@ class GameSetup:
           # Choose to guess single or all cards
           guess_all = input("\nWould you like to guess all fugitive locations? (y/n) ").lower()
           # Guessing all cards
-          if guess_all == 'y' or guess_all == 'yes':
+          if not self.manhunt and (guess_all == 'y' or guess_all == 'yes'):
               # Loop until input is valid
               while(True):
                   guess = input("\nEnter locations separated only by a comma (1,2,3...) ").split(',')
@@ -526,7 +557,22 @@ class GameSetup:
       time.sleep(1)
       guess_visual = '#'
       if self.check_location(guess, self.marshall_current_idx):
+          if type(guess) == int:
+            guess = [guess]
+          if guess[0] == 42:
+            return True
+          
+          if self.marshall_current_idx == len(self.cards_in_play):
+            os.system('cls')
+            time.sleep(3)
+            self.display_board_general()
+            time.sleep(1.5)
+            print("\n" + self.fugitive.name + " has been caught!")
+            self.done = True
+            return
+          
           print("\n**Correct location!**")
+
           # Reveal correct cards on the board
           self.reveal_cards(self.marshall_current_idx, len(guess) if type(guess) == list else 1)
 
@@ -539,17 +585,14 @@ class GameSetup:
 
           # Check for win
           guess_visual = '*'
-          if self.marshall_current_idx == len(self.cards_in_play):
-            time.sleep(1)
-            self.display_board_general()
-            time.sleep(1.5)
-            print("\n" + self.marshall.name + "Wins!")
-            self.done = True
-            return
       else:
-          guess_visual = '#'
-          print("\n**Incorrect guess.**")
-
+        if self.manhunt:
+          return False
+        
+        guess_visual = '#'
+        print("\n**Incorrect guess.**")
+        
+          
       time.sleep(0.5)
       # Add guesses to a tracker variable
       self.marshall.add_guess((guess, guess_visual))
@@ -669,21 +712,27 @@ class GameSetup:
           # Append and remove single card
           for x in self.fugitive.hand:
             if hideout[0] == x.value:
-              self.cards_in_play.append(x)
-              self.fugitive.hand.remove(x)
               if x.value == 42:
                 self.done = True
+                self.manhunt = True
                 time.sleep(1)
                 self.display_board_general()
                 time.sleep(1.5)
                 print("\n" + self.fugitive.name + "Wins!")
-            break
-                #Functions to check for illegally placed hideouts and burns would go here
+                return
+
+              self.cards_in_play.append(x)
+              self.fugitive.hand.remove(x)
+              break
+              
+            
+        if self.manhunt:
+          break
 
     # Show how many cards are left in each deck
     def print_remaining_cards(self):
       print("\nRemaining Cards:\nLow Deck: {}\tMid Deck: {}\t High Deck: {}".format(len(self.LowRangeDeck), len(self.MidRangeDeck), len(self.HighRangeDeck)))
 
-game = GameSetup()
-game.start_game()
+#game = GameSetup()
+#game.start_game()
 

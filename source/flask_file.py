@@ -58,7 +58,7 @@ def gameRoute():
             return render_template('create_player.html')
 
     # Return a response to the HTML page
-    return render_template('game.html', players=players, pot=game.pot.show_pot(), current_turn=game.players[game.currentPlayer].name, current_bet=max(game.bets))
+    return render_template('game.html', players=players, pot=game.pot.show_pot(), current_turn=game.players[game.currentPlayer].name, current_bet=max(game.bets), community_cards=game.dealer.hand, round=game.round, player=game.players[game.currentPlayer], player_cards=game.players[game.currentPlayer].hand)
 
 # Define a route to handle player actions in the game loop
 @app.route('/bet', methods=['POST'])

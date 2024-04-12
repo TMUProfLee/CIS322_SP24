@@ -11,11 +11,20 @@
     <h2>Current Pot: ${{ pot }}</h2>
     <h2>Current Bet: ${{ current_bet }}</h2>
     <h2>Current Turn: {{ current_turn }}</h2>
+    <br>
     <h2>Community Cards:</h2>
     <ul>
         {% for card in community_cards %}
         <li>{{ card }}</li>
         {% endfor %}
+    </ul>
+    <br>
+    <h2>Your Cards:</h2>
+    <ul>
+        {% for card in player_cards %}
+        <li>{{ card }}</li>
+        {% endfor %}
+    </ul>
     <h3>Players:</h3>
     <ul>
         {% for player in players %}

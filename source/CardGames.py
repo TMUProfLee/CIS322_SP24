@@ -189,7 +189,8 @@ class Dealer:
   def __init__(self, deck: Deck): 
     self.deck = deck
     self.deck.shuffle()
-    self.hand = [self.deck.getCard()] # intialize dealer's hand default amount to 1
+    self.hand = [] # intialize dealer's hand
+    self.addCardsToDealer(3) # add 3 cards to dealer's hand
 
   # displays a list of cards, either face up or face down. showFront - whether to show front of card (Value). printShort - whether to show only part of the card.
   def printCards(self, cards: "list[Card]", showFront: bool, printShort: bool = True): 
@@ -366,6 +367,8 @@ class Poker:
 
   def add_player(self, player):
     self.players.append(player)
+    # Add two cards to the player's hand
+    self.dealer.dealCards(2, [player])
     # Reset bets
     self.bets = [0 for _ in range(len(self.players))]
   

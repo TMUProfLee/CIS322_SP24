@@ -283,10 +283,12 @@ class GameSetup:
         card.revealed = True
     
     def display_board_general(self, player = 'marshall'):
+      # Grab all the lists inside the cards_in_play list which represent sprints
       sprints = []
       for idx, stack in enumerate(self.cards_in_play):
         total_gap = 0
         if type(stack) == list:
+          # Count all single cards behind to track gap for ascii
           for prev in range(idx - 1, -1, -1):
             if type(self.cards_in_play[prev]) == Card:
               total_gap += 1
@@ -294,28 +296,37 @@ class GameSetup:
               break
           sprints.append((stack, total_gap))
 
+      # Print all cards/top cards
       for idx in range(6):
           for stack in self.cards_in_play:     
             if type(stack) == list:
               card = stack[0]
             else:
               card = stack
-            if player == 'fugitive' or card.revealed:
+            if player == 'fugitive' or card.revealed: # Check if card should be placed face up
               image = card.image[idx]
             else:
               image = card.cardBack[idx]
             print(image, end="")
           print()
 
+      # Print sprint cards under top cards
       if len(sprints):
+        # Loop through cards under top card in sprint stacks
         for i in range(1, max([len(stack[0]) for stack in sprints])):
+          # Loop for the 6 lines of ascii per card --Vertical--
           for idx in range(2, 6):
+            # Loop for each stack of sprints --Horizontal--
             for stack in sprints:  
+              # Print the preceding gap if previous placement(s) were single cards
               print(' ' * 7 * stack[1], end="")
               if len(stack[0]) > i:
+                
                 if idx == 5:
+                  # Replace bottom line of ascii to hide the card number
                   print('|_____|', end="")
                 else:
+                  # Print card ascii face up without numbers
                   card = stack[0][i]
                   image = card.image[idx]
                   print(image, end="")
@@ -325,6 +336,7 @@ class GameSetup:
 
 
     def fugitive_first_turn(self):
+      # Add starting cards to fugitive hand
       for c in self.starting_cards:
         self.fugitive.addCard(c)
       self.fugitive.addCard(self.escape_card)
@@ -336,73 +348,86 @@ class GameSetup:
         self.fugitive.addCard(self.MidRangeDeck.pop())
 
       
-      
+      # Loop through 2 card choices
       for _ in range(2):
+        # Set previous hideout to 0 if first go or the previous card
         if not len(self.cards_in_play):
           previous_hideout = 0
         else:
           previous_hideout = self.cards_in_play[-1] if type(self.cards_in_play[-1]) == Card else self.cards_in_play[-1][0]
+        
         while True:
           print("\nHere is your hand:")
           self.fugitive.showHand()
           time.sleep(1.5)
-
+          
           hideouts = input("\nSelect the card value you want to place as a hideout, followed by any sprint cards, separated only by a comma (1,2,3...): ").split(',')
           hideouts = [int(i) for i in hideouts]
-
+          
+          # Check if hideouts can be placed
           if not self.check_illegal_card(previous_hideout, hideouts):
             print("Illegal card choice, choose again")
             continue
           
           if len(hideouts) > 1:
+            # Append stack of cards because sprints were chosen
             burn_list = []
             for num in hideouts:
               for x in self.fugitive.hand:
                 if num == x.value:
                   burn_list.append(x)
+                  # Remove chosen cards from hand
                   self.fugitive.hand.remove(x)
                   break
             self.cards_in_play.append(burn_list)
           else:
+            # Append and remove single card with no sprints
             for x in self.fugitive.hand:
               if hideouts[0] == x.value:
                 self.cards_in_play.append(x)
                 self.fugitive.hand.remove(x)
                 break
+
           time.sleep(0.5)
           print("\nThe board:")
           self.display_board_general('fugitive')
           time.sleep(1)
           break
 
-
-
     #check if selected hideout is valid for first turncd
     def check_illegal_card(self, previous_hideout, hideouts):
+      # Create set out of hideout choices
       cmpre = set(hideouts)
       
       fugitive_card_values = []
       #pull value of owned cards and add them to list
       for fug_card in self.fugitive.hand:
         fugitive_card_values.append(fug_card.value)
-
+      
+      # Check if hideout set is contained in the hand
       if not cmpre <= set(fugitive_card_values):
         return False
 
       burn_total = 0
       for idx, num in enumerate(reversed(hideouts)):
+        # If current card is anything except top card, add sprint value to counter
         if idx != len(hideouts) - 1:
           burn_total += num
         else:
+          # Set the card to track to top card. Works for single card too
           for x in self.fugitive.hand:
             if num == x.value:
               card = x
               break
-
+          
+          # Set previous hideout to count distance
           if type(previous_hideout) == Card:
             prev_hide = previous_hideout.value
           else:
+            # If start of game and no cards placed yet
             prev_hide = previous_hideout
+          
+          # Check if card is within (3 + burn_total) distance of previous card
           if 1 <= (card.value - prev_hide) <= 3 + burn_total:
               return True
           else:
@@ -502,10 +527,17 @@ class GameSetup:
       guess_visual = '#'
       if self.check_location(guess, self.marshall_current_idx):
           print("\n**Correct location!**")
+          # Reveal correct cards on the board
           self.reveal_cards(self.marshall_current_idx, len(guess) if type(guess) == list else 1)
+
+          # If single guess, convert to list to update index
           if type(guess) == int:
             guess = [guess]
+          
+          # Update index based on how many locations were guessed correctly
           self.marshall_current_idx += len(guess)
+
+          # Check for win
           guess_visual = '*'
           if self.marshall_current_idx == len(self.cards_in_play):
             time.sleep(1)
@@ -515,6 +547,7 @@ class GameSetup:
             self.done = True
             return
       else:
+          guess_visual = '#'
           print("\n**Incorrect guess.**")
 
       time.sleep(0.5)
@@ -535,8 +568,6 @@ class GameSetup:
         self.marshall.showHand()
   
     def fugitive_repeating_turn(self):
-      draw = 0
-
       print("\n**Your hand:**")
       self.fugitive.showHand()
       time.sleep(2)
@@ -545,13 +576,18 @@ class GameSetup:
       self.display_board_general("fugitive")
       time.sleep(1.5)
 
+      # Loop through deck choice
+      draw = 0
       while(True):
+        # Check for valid input
         while draw != 1 and draw != 2 and draw != 3:
           try:
             draw = int(input("\n Fugitive, select which deck to draw a card from ['1' (1-14), '2' (15-28), '3' (29-42)]: ").strip())
           except:
             ValueError
-        if draw == 1:
+
+        if draw == 1: 
+          # Draw from low deck if there are cards left
           if len(self.LowRangeDeck):
             self.fugitive.addCard(self.LowRangeDeck.pop())
             break
@@ -559,7 +595,8 @@ class GameSetup:
             print("No cards remaining in that deck")
             time.sleep(1.5)
             continue
-        elif draw == 2:
+        elif draw == 2: 
+          # Draw from mid deck if there are cards left
           if len(self.MidRangeDeck):
             self.fugitive.addCard(self.MidRangeDeck.pop())
             break
@@ -567,7 +604,8 @@ class GameSetup:
             print("No cards remaining in that deck")
             time.sleep(1.5)
             continue
-        elif draw == 3:
+        elif draw == 3: 
+          # Draw from high deck if there are cards left
           if len(self.HighRangeDeck):
             self.fugitive.addCard(self.HighRangeDeck.pop())
             break
@@ -575,7 +613,8 @@ class GameSetup:
             print("No cards remaining in that deck")
             time.sleep(1.5)
             continue
-
+      
+      # Loop through card choices
       while(True):
         print("\n**Your new hand:**")
         self.fugitive.showHand()
@@ -583,8 +622,8 @@ class GameSetup:
         time.sleep(1)
         print("\nThe board:")
         self.display_board_general("fugitive")
-
         time.sleep(2)
+
         while(True):
           hideout = input("\nSelect a viable card value you want to place as a hideout, followed by any sprint cards (0 to pass): ").split(",")
           bad = False
@@ -603,17 +642,20 @@ class GameSetup:
 
         hideout = [int(i) for i in hideout]
         
+        # Pass condition
         if hideout[0] == 0:
           print("\nPassing...") 
           break
         
+        # Set previous hideout to the top card
         previous_hideout = self.cards_in_play[-1] if type(self.cards_in_play[-1]) == Card else self.cards_in_play[-1][0]
+        # Check if card is valid to place
         if not self.check_illegal_card(previous_hideout, hideout):
           print("Illegal card choice, choose again")
           continue
 
-
         if len(hideout) > 1:
+          # Append and remove card with sprints
           burn_list = []
           for num in hideout:
             for x in self.fugitive.hand:
@@ -624,6 +666,7 @@ class GameSetup:
               
           self.cards_in_play.append(burn_list)
         else:
+          # Append and remove single card
           for x in self.fugitive.hand:
             if hideout[0] == x.value:
               self.cards_in_play.append(x)
@@ -637,6 +680,7 @@ class GameSetup:
             break
                 #Functions to check for illegally placed hideouts and burns would go here
 
+    # Show how many cards are left in each deck
     def print_remaining_cards(self):
       print("\nRemaining Cards:\nLow Deck: {}\tMid Deck: {}\t High Deck: {}".format(len(self.LowRangeDeck), len(self.MidRangeDeck), len(self.HighRangeDeck)))
 

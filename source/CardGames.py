@@ -205,6 +205,7 @@ class GameSetup:
           rules.close()
     
     def start_game(self):
+        game.ReadRules()
         Player1, Player1Role, Player2, _ = self.character_selection()
         if (Player1Role == "fugitive"):
            self.fugitive.name = Player1
@@ -446,7 +447,6 @@ class GameSetup:
       self.display_board_general()
 
 game = GameSetup()
-game.ReadRules()
 game.start_game()
 
 

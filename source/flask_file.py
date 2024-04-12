@@ -67,12 +67,7 @@ def bet():
     # Perform the player action in the game
     amount = int(request.form['amount'])
     player = game.players[game.currentPlayer]
-    if amount == 0:
-        game.check(player)
-    game.bet(player, amount)
-    if game.checkBets():
-        game.collectBets()
-    game.next_turn()
+    round_check()
     # Redirect to the game page
     return redirect(url_for('gameRoute'))
 
@@ -81,11 +76,19 @@ def bet():
 def Call():
     player = game.players[game.currentPlayer]
     game.Call(player)
+    round_check()
+    return redirect(url_for('gameRoute'))
+
+def round_check():
     if game.checkBets():
         game.collectBets()
         game.round += 1
-    game.next_turn()
-    return redirect(url_for('gameRoute'))
+        if game.round == 4:
+            #game.end_round()
+            pass
+        else:
+            game.dealer.addCardsToDealer(1)
+            game.next_turn()
 
 @app.route('/', methods=['GET', 'POST'])
 def main():

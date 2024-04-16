@@ -193,10 +193,8 @@ class GameSetup:
 
     def ReadRules(self):
         choice = ""
-        while choice != "1":
+        while choice != "1" and choice != "0":
           choice = input("Would you like to read the rules (1 for yes or 0 for no)? ")
-          if choice == "0":
-            break
         if choice == "1":
           print(" ")
           rules = open("source/Rules.txt", "r")

@@ -194,10 +194,22 @@ class GameSetup:
         self.fugitive_deck = []
         self.marshall = Player("", "Marshall")
         self.done = False
-        #Most recently correctly guessed hideout
+
+    def ReadRules(self):
+        choice = ""
+        while choice != "1" and choice != "0":
+          choice = input("Would you like to read the rules (1 for yes or 0 for no)? ")
+        if choice == "1":
+          print(" ")
+          rules = open("source/Rules.txt", "r")
+          content = rules.read()
+          print(content)
+          rules.close()
+
         self.marshall_current_idx = 0
     
     def start_game(self):
+        game.ReadRules()
         Player1, Player1Role, Player2, _ = self.character_selection()
         if (Player1Role == "fugitive"):
            self.fugitive.name = Player1
@@ -676,7 +688,6 @@ class GameSetup:
       self.display_board_general()
 
       self.marshall_guess()
-    
 
 game = GameSetup()
 game.start_game()

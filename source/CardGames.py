@@ -194,10 +194,22 @@ class GameSetup:
         self.fugitive_deck = []
         self.marshall = Player("", "Marshall")
         self.done = False
-        #Most recently correctly guessed hideout
+
+    def ReadRules(self):
+        choice = ""
+        while choice != "1" and choice != "0":
+          choice = input("Would you like to read the rules (1 for yes or 0 for no)? ")
+        if choice == "1":
+          print(" ")
+          rules = open("source/Rules.txt", "r")
+          content = rules.read()
+          print(content)
+          rules.close()
+
         self.marshall_current_idx = 0
     
     def start_game(self):
+        game.ReadRules()
         Player1, Player1Role, Player2, _ = self.character_selection()
         if (Player1Role == "fugitive"):
            self.fugitive.name = Player1
@@ -219,16 +231,17 @@ class GameSetup:
                   validity_check = self.check_illegal_card()
                 #Marshall draws 2 cards; chooses which deck to draw from
                 print(f"\n{self.marshall.name} is next!")
-                marshall_choices = self.marshall_first_turn()
+                self.marshall_first_turn()
                 first_turn = False
             #Outside of first turn
             #Fugitive draws 1 card from any deck. 
             #Can choose to place 1 new hideout, or pass
+            print(f"\n***{self.fugitive.name}'s Turn***")
             self.fugitive_repeating_turn()
               
             #Marshall draws 1 card from any deck.
             #Makes a singular guess to find a hideout (possible expand into guessing multiple hideouts)
-            print("\n***Marshall's Turn***")
+            print(f"\n***{self.marshall.name}'s Turn***")
             response = ""
             while response != "y" and "n":
               response = input("\nWould you like to view your hand? Y/N --> ").strip().lower()
@@ -237,7 +250,6 @@ class GameSetup:
               elif response == "n":
                 break
               
-            
             self.marshall_repeating_turn()
             
     #Split deck into 3 piles and escape_card/starting_cards
@@ -337,6 +349,7 @@ class GameSetup:
         self.cards_in_play[marshall_current_idx + i].revealed = True
     
     def display_board_general(self, player = 'marshall'):
+      print("CARDS ON BOARD:")
       sprints = [stack for stack in self.cards_in_play if type(stack) == list]
       has_sprints = False
       for idx in range(6):
@@ -475,8 +488,10 @@ class GameSetup:
           self.marshall.addCard(draw_card, isKnown=True)
 
       # Show the cards marshall drew
+      print("\nThis is your hand:")
       self.marshall.showHand()
       # Display the two cards the fugitive has placed, face down
+      print("\n\n")
       self.display_board_general()
 
       self.marshall_guess()
@@ -528,9 +543,16 @@ class GameSetup:
       
       guess_visual = '#'
       if self.check_location(guess, self.marshall_current_idx):
-          print("\n**Correct location!**")
-          self.reveal_cards(self.marshall_current_idx, len(guess) if type(guess) == list else 1)
-          guess_visual = '*'
+          #if guess was list, then all cards have been guessed correctly and marshall wins
+          if type(guess) == list:
+            print("\n\n***CONGRATULATIONS! YOU GUESSED ALL THE HIDEOUTS AND CAUGHT THE FUGITIVE!***\n\n")
+            exit()
+          #if guess was a single card, then proceed with revealing the single card
+          else:
+            print("\n**Correct location!**")
+            self.reveal_cards(self.marshall_current_idx, len(guess) if type(guess) == list else 1)
+            guess_visual = '*'
+            self.marshall_current_idx = self.marshall_current_idx + 1
       else:
           print("\n**Incorrect guess.**")
 
@@ -552,7 +574,7 @@ class GameSetup:
       NewHideouts = []
       while draw != 1 and draw != 2 and draw != 3:
         try:
-          draw = int(input("\n Fugitive, select which deck to draw a card from ['1' (1-14), '2' (15-28), '3' (29-42)]: ").strip())
+          draw = int(input(f"\n {self.fugitive.name}, select which deck to draw a card from ['1' (1-14), '2' (15-28), '3' (29-42)]: ").strip())
         except:
           ValueError
       if draw == 1:
@@ -573,7 +595,6 @@ class GameSetup:
         check = 2
         while check != 0:
           try:
-            backup = NewHideouts[:]
             check = int(input("\nIf you no longer want to place hideouts, type 0 otherwise type 1: ").strip())
             string = ""
             for i in self.fugitive_deck:
@@ -639,8 +660,37 @@ class GameSetup:
                       #Functions to check for illegally placed hideouts and burns would go here
       elif turn == "pass":
         print("\nPassing...")
-      return NewHideouts
     
+    def marshall_repeating_turn(self):
+      #Obtain user's deck choice
+      while True:
+        try:
+          deck = int(input("\nSelect which deck to draw two cards from ['1' (1-14), '2' (15-28), '3' (29-42)] and press enter... "))
+        except ValueError:
+          print("Invalid input, try again.")
+          continue
+        if deck in [1, 2, 3]:
+          break
+      
+      match deck:
+        case 1:
+          deck = self.LowRangeDeck
+        case 2:
+          deck = self.MidRangeDeck
+        case 3: 
+          deck = self.HighRangeDeck
+      
+      #Draw a card from selected deck
+      self.marshall.addCard(deck.pop(), isKnown=True)
+
+      #Show marshall's hand, including drawn card
+      print("\nThis is your hand:")
+      self.marshall.showHand()
+      #Displaying the board before marshall makes a guess
+      print("\n\n")
+      self.display_board_general()
+
+      self.marshall_guess()
 
 game = GameSetup()
 game.start_game()

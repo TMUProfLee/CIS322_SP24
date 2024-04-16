@@ -125,8 +125,8 @@ class Player:
       self.guesses.append(guess)
 
   def show_guesses(self):
-    print(self.guesses)
-
+    for guess in self.guesses:
+      print(guess, end='')
 
 class GameSetup:
     def __init__(self):
@@ -180,7 +180,6 @@ class GameSetup:
         self.marshall_first_turn()
         if self.done:
           return
-        os.system('cls')
 
         # Repeating turns
         while self.done != True: 
@@ -314,10 +313,11 @@ class GameSetup:
       card = item[0] if type(item) == list else item
       return card.value == guess
 
-    def reveal_cards(self, marshall_current_idx, repeat):
+    def reveal_cards(self, guess):
+      repeat = len(guess) if type(guess) == list else 1
       for i in range(repeat):
-        card = self.cards_in_play[marshall_current_idx + i][0] if type(self.cards_in_play[marshall_current_idx + i])\
-            == list else self.cards_in_play[marshall_current_idx + i]
+        card = self.cards_in_play[self.marshall_current_idx + i][0] if type(self.cards_in_play[self.marshall_current_idx + i])\
+            == list else self.cards_in_play[self.marshall_current_idx + i]
         card.revealed = True
     
     def display_board_general(self, player = 'marshall'):
@@ -472,9 +472,6 @@ class GameSetup:
 
   
     def marshall_first_turn(self):
-      print("\nHere are your guesses (* is correct, # is wrong or possibly wrong):")
-      self.marshall.show_guesses()
-      time.sleep(1)
       # Get deck choice
       while True:
         try:
@@ -497,19 +494,12 @@ class GameSetup:
           draw_card = deck.pop()
           self.marshall.addCard(draw_card)
 
-      # Show the cards marshall drew
-      self.marshall.showHand()
-      # Display the two cards the fugitive has placed, face down
-      print("\n\n")
-      self.display_board_general()
-
-      time.sleep(0.5)
       os.system('cls')
       self.marshall_guess()
 
 
     def marshall_guess(self):
-      time.sleep(1)
+      time.sleep(1.5)
       # Show the cards marshall drew
       self.marshall.showHand()
       time.sleep(1)
@@ -568,6 +558,7 @@ class GameSetup:
       guess_visual = '#'
       if self.check_location(guess, self.marshall_current_idx):
           if type(guess) == list:
+            self.reveal_cards(guess)
             os.system('cls')
             time.sleep(3)
             self.display_board_general()
@@ -583,9 +574,9 @@ class GameSetup:
             return True
           
           print("\n**Correct location!**")
-
+      
           # Reveal correct cards on the board
-          self.reveal_cards(self.marshall_current_idx, len(guess) if type(guess) == list else 1)
+          self.reveal_cards(guess)
 
           # Update index based on how many locations were guessed correctly
           self.marshall_current_idx += len(guess)
@@ -598,9 +589,8 @@ class GameSetup:
         
         guess_visual = '#'
         print("\n**Incorrect guess.**")
-        
-          
-      time.sleep(0.5)
+
+      time.sleep(1.5)
       # Add guesses to a tracker variable
       self.marshall.add_guess((guess, guess_visual))
       print("\nGuesses added")
@@ -609,6 +599,7 @@ class GameSetup:
       # Print the board at the end of turn
       self.display_board_general()
       time.sleep(2)
+      os.system('cls')
 
     def show_marshall_hand(self):
       if len(self.marshall.hand) == 0:
@@ -617,49 +608,50 @@ class GameSetup:
         self.marshall.showHand()
   
     def fugitive_repeating_turn(self):
+      time.sleep(1.5)
       self.fugitive.showHand()
       time.sleep(2)
 
       self.display_board_general("fugitive")
       time.sleep(1.5)
 
-      # Loop through deck choice
-      draw = 0
-      while(True):
-        # Check for valid input
-        while draw != 1 and draw != 2 and draw != 3:
+      cards_left = len(self.LowRangeDeck) or len(self.MidRangeDeck) or len(self.HighRangeDeck)
+      if cards_left:
+        # Loop through deck choice
+        while True:
           try:
             draw = int(input(f"\n {self.fugitive.name}, select which deck to draw a card from ['1' (1-14), '2' (15-28), '3' (29-42)]: ").strip())
-          except:
-            ValueError
+          except ValueError:
+            print("Invalid input, try again")
+            continue
 
-        if draw == 1: 
-          # Draw from low deck if there are cards left
-          if len(self.LowRangeDeck):
-            self.fugitive.addCard(self.LowRangeDeck.pop())
-            break
-          else:
-            print("No cards remaining in that deck")
-            time.sleep(1.5)
-            continue
-        elif draw == 2: 
-          # Draw from mid deck if there are cards left
-          if len(self.MidRangeDeck):
-            self.fugitive.addCard(self.MidRangeDeck.pop())
-            break
-          else:
-            print("No cards remaining in that deck")
-            time.sleep(1.5)
-            continue
-        elif draw == 3: 
-          # Draw from high deck if there are cards left
-          if len(self.HighRangeDeck):
-            self.fugitive.addCard(self.HighRangeDeck.pop())
-            break
-          else:
-            print("No cards remaining in that deck")
-            time.sleep(1.5)
-            continue
+          if draw == 1: 
+            # Draw from low deck if there are cards left
+            if len(self.LowRangeDeck):
+              self.fugitive.addCard(self.LowRangeDeck.pop())
+              break
+            else:
+              print("No cards remaining in that deck")
+              time.sleep(1.5)
+              continue
+          elif draw == 2: 
+            # Draw from mid deck if there are cards left
+            if len(self.MidRangeDeck):
+              self.fugitive.addCard(self.MidRangeDeck.pop())
+              break
+            else:
+              print("No cards remaining in that deck")
+              time.sleep(1.5)
+              continue
+          elif draw == 3: 
+            # Draw from high deck if there are cards left
+            if len(self.HighRangeDeck):
+              self.fugitive.addCard(self.HighRangeDeck.pop())
+              break
+            else:
+              print("No cards remaining in that deck")
+              time.sleep(1.5)
+              continue
       
       # Loop through card choices
       while(True):
@@ -691,6 +683,8 @@ class GameSetup:
         # Pass condition
         if hideout[0] == 0:
           print("\nPassing...") 
+          time.sleep(1.5)
+          os.system('cls')
           break
         
         # Set previous hideout to the top card
@@ -728,38 +722,46 @@ class GameSetup:
               break        
         if self.manhunt:
           break
+
     def marshall_repeating_turn(self):
+      time.sleep(1.5)
+      print("\nHere are your guesses (* is correct, # is wrong or possibly wrong):")
+      self.marshall.show_guesses()
+      time.sleep(1)
       #Obtain user's deck choice
-      while True:
-        try:
-          deck = int(input("\nSelect which deck to draw two cards from ['1' (1-14), '2' (15-28), '3' (29-42)] and press enter... "))
-        except ValueError:
-          print("Invalid input, try again.")
-          continue
-        if deck in [1, 2, 3]:
-          break
+      cards_left = len(self.LowRangeDeck) or len(self.MidRangeDeck) or len(self.HighRangeDeck)
+      if cards_left:
+        self.print_remaining_cards()
+        while True:
+          try:
+            deck = int(input("\nSelect which deck to draw a card from ['1' (1-14), '2' (15-28), '3' (29-42)] and press enter... "))
+          except ValueError:
+            print("Invalid input, try again.")
+            continue
+        
+          match deck:
+            case 1:
+              if len(self.LowRangeDeck):
+                deck = self.LowRangeDeck
+                break
+              else:
+                print("No cards remaining in that deck")
+            case 2:
+              if len(self.MidRangeDeck):
+                deck = self.MidRangeDeck
+                break
+              else:
+                print("No cards remaining in that deck")
+            case 3: 
+              if len(self.HighRangeDeck):
+                deck = self.HighRangeDeck
+                break
+              else:
+                print("No cards remaining in that deck")
       
-      match deck:
-        case 1:
-          deck = self.LowRangeDeck
-        case 2:
-          deck = self.MidRangeDeck
-        case 3: 
-          deck = self.HighRangeDeck
-      
-      #Draw a card from selected deck
-      self.marshall.addCard(deck.pop(), isKnown=True)
-
-      #Show marshall's hand, including drawn card
-      print("\nThis is your hand:")
-      self.marshall.showHand()
-      #Displaying the board before marshall makes a guess
-      print("\n\n")
-      self.display_board_general()
-
+        #Draw a card from selected deck
+        self.marshall.addCard(deck.pop())
       self.marshall_guess()
-
-              
 
     # Show how many cards are left in each deck
     def print_remaining_cards(self):

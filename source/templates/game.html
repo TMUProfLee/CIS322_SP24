@@ -13,15 +13,21 @@
     <h2>Current Turn: {{ current_turn }}</h2>
     <br>
     <h2>Community Cards:</h2>
+    <pre>{{ community_cards }}</pre>
+    <br>
+    <h2>raw value:</h2>
     <ul>
-        {% for card in community_cards %}
+        {% for card in test_com_cards %}
         <li>{{ card }}</li>
         {% endfor %}
     </ul>
     <br>
-    <h2>Your Cards:</h2>
+    <h2>Private Cards:</h2>
+    <pre>{{ player_cards }}</pre>
+    <br>
+   <h2>raw value:</h2>
     <ul>
-        {% for card in player_cards %}
+        {% for card in test_player_cards %}
         <li>{{ card }}</li>
         {% endfor %}
     </ul>

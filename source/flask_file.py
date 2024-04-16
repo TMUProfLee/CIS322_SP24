@@ -48,17 +48,18 @@ def gameRoute():
             # Create a new player and add them to the game
             new_player = Player(input_name, input_money)
             game.add_player(new_player)
-
+            
             # Generate a unique identifier for this player
             session['player_id'] = new_player.id
 
             # DEBUG
             print('Player ID:', session['player_id'])
+            print(game.players[game.currentPlayer].hand)
         else:
             return render_template('create_player.html')
 
     # Return a response to the HTML page
-    return render_template('game.html', players=players, pot=game.pot.show_pot(), current_turn=game.players[game.currentPlayer].name, current_bet=max(game.bets), community_cards=game.dealer.hand, round=game.round, player=game.players[game.currentPlayer], player_cards=game.players[game.currentPlayer].hand)
+    return render_template('game.html', players=players, pot=game.pot.show_pot(), current_turn=game.players[game.currentPlayer].name, current_bet=max(game.bets), community_cards=game.dealer.printCards(game.dealer.hand, True, False), round=game.round, player=game.players[game.currentPlayer], player_cards=game.players[game.currentPlayer].showHand(), test_player_cards=game.players[game.currentPlayer].hand, test_com_cards=game.dealer.hand)
 
 # Define a route to handle player actions in the game loop
 @app.route('/bet', methods=['POST'])

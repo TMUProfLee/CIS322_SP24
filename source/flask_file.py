@@ -1,5 +1,6 @@
-from flask import Flask, request, render_template
-from CardGames import *
+from flask import Flask, request, render_template, session, redirect, flash, url_for
+from CardGames import Deck, Dealer, Player, Poker, Pot
+from functools import wraps
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key_here'
@@ -64,9 +65,33 @@ def gameRoute():
 @check_player_turn
 def bet():
     # Perform the player action in the game
-    Call(player, amount, pot)
-    # Return a response to the HTML page
-    return render_template('result.html', players=players, pot=pot.show_pot())
+    amount = int(request.form['amount'])
+    player = game.players[game.currentPlayer]
+    round_check()
+    # Redirect to the game page
+    return redirect(url_for('gameRoute'))
 
+@app.route('/call', methods=['POST'])
+@check_player_turn
+def Call():
+    player = game.players[game.currentPlayer]
+    game.Call(player)
+    round_check()
+    return redirect(url_for('gameRoute'))
+
+def round_check():
+    if game.checkBets():
+        game.collectBets()
+        game.round += 1
+        if game.round == 4:
+            #game.end_round()
+            pass
+        else:
+            game.dealer.addCardsToDealer(1)
+            game.next_turn()
+
+@app.route('/', methods=['GET', 'POST'])
+def main():
+    return redirect(url_for('gameRoute'))
 if __name__ == '__main__':
     app.run(debug=True)

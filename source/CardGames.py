@@ -1,6 +1,7 @@
 
 import random
 import os
+import uuid
 
 cardImages = []
 values = list(range(1,14))
@@ -79,12 +80,19 @@ class Game:
             self.pot.add(self.current_raise)
             print(f"{player.name} matches the raise. The pot is now {self.pot.show_pot()}.")
 
+    def fold(self, player_index):
+      #fold method that passes over player
+      pass
+      
+
     def player_action(self, player_index, action, amount=0):
         # This method can be expanded to handle different player actions (raise, call, fold)
         if action == "raise":
             self.raise_bet(player_index, amount)
         elif action == "call":
             self.match_raise(player_index)
+        elif action == "fold":
+          self.fold(player_index)
         # Add more actions as needed
         self.next_turn()  # Move to the next turn after the action
 
@@ -176,6 +184,7 @@ class Player:
     self.hand = [] # list of Card objects representiing the player's cards
     self.knownCards = []
     self.money = money # integer for amount of money the player currently has
+    self.id = str(uuid.uuid4())
     
   def sum_cards(self):
       sum = 0
@@ -194,7 +203,6 @@ class Player:
       return self.money
     else:
       self.money -= amount
-      pot.add(amount)  # Call function implemented here--------------------------------
       return self.money
 
   # adds one card to player's hand
@@ -240,7 +248,8 @@ class Dealer:
   def __init__(self, deck: Deck): 
     self.deck = deck
     self.deck.shuffle()
-    self.hand = [self.deck.getCard()] # intialize dealer's hand default amount to 1
+    self.hand = [] # intialize dealer's hand
+    self.addCardsToDealer(3) # add 3 cards to dealer's hand
 
   # displays a list of cards, either face up or face down. showFront - whether to show front of card (Value). printShort - whether to show only part of the card.
   def printCards(self, cards: "list[Card]", showFront: bool, printShort: bool = True): 
@@ -329,8 +338,10 @@ class Poker:
     self.dealer = dealer
     self.pot = 0
     self.bets = [0 for _ in range(len(players))]
+    self.checked = [False for _ in range(len(players))]
     self.round = 0
     self.currentPlayer = 0
+
 
 
   # Add all functions pertaining to the game of poker below
@@ -354,6 +365,8 @@ class Poker:
 
   # Check if all bets are equal
   def checkBets(self):
+    if all(bet == 0 for bet in self.bets) and not all(checked for checked in self.checked):
+      return False
     return len(set(self.bets)) == 1
   
   # Check how much is needed to call
@@ -361,31 +374,9 @@ class Poker:
     idx = self.players.index(player)
     return max(self.bets) - self.bets[idx]
   
-class Identification:
-  def __init__(self):
-    self.hand = [] # Hold values of cards in hand
-    self.name = "" # Name defined by the rank definition functions
-  # Include functions that return what defines the various poker hand ranks.
- 
-  def twoPair(self):
-    """function that identifies 2 sets of 2 same cards through use of dictionary. Returns empty list if fail to identify 2 pairs of the 2 same cards."""
-    # iterate through the hand to count occurrences of each card value
-    count = {} # dictionary to count the occurences
+  # call function--------------------------------------------------------------
 
-    # make dictionary
-    for card in self.hand: 
-      if card.value in count:
-        count[card.value] += 1
-      else:
-        count[card.value] = 1
-    
-    pairs = [value for value,freq in count.items() if freq == 2]
-        
+  def Call(self, player: Player, pot: Pot):
+    amount = self.callAmount(player)
+    player.makeBet(amount, pot)
 
-    if len(pairs) == 2:
-      # return this list that contains the values of cards that form 2 pairs in paired_values.
-      pair_cards = [card for card in self.hand if card.value in pairs]
-      return pair_cards
-    else:
-      #return empty list since it's not exactly two pairs.
-      return []

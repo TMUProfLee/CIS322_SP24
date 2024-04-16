@@ -106,6 +106,7 @@ class Player:
     self.hand = cards
 
   def showHand(self):
+    print("\nYOUR HAND: ")
     for idx in range(6):
       for i, card in enumerate(self.hand):
         image = card.image[idx]
@@ -138,8 +139,20 @@ class GameSetup:
         self.manhunt = False
         #Most recently correctly guessed hideout
         self.marshall_current_idx = 0
-    
+
+    def ReadRules(self):
+        choice = ""
+        while choice != "1" and choice != "0":
+          choice = input("Would you like to read the rules (1 for yes or 0 for no)? ")
+        if choice == "1":
+          print(" ")
+          rules = open("source/Rules.txt", "r")
+          content = rules.read()
+          print(content)
+          rules.close()
+
     def start_game(self):
+        self.ReadRules()
         Player1, Player1Role, Player2, _ = self.character_selection()
         if (Player1Role == "fugitive"):
            self.fugitive.name = Player1
@@ -215,12 +228,6 @@ class GameSetup:
               time.sleep(1)
               print("\n**" + self.fugitive.name + " got away!**")
               break         
-
-    def ReadRules(self):
-      rules = open("source/Rules.txt", "r")
-      content = rules.read()
-      print(content)
-      rules.close()
 
     #Split deck into 3 piles and escape_card/starting_cards
     def split_card(self):
@@ -315,6 +322,7 @@ class GameSetup:
     
     def display_board_general(self, player = 'marshall'):
       # Grab all the lists inside the cards_in_play list which represent sprints
+      print("\nCARDS ON BOARD:")
       sprints = []
       for idx, stack in enumerate(self.cards_in_play):
         total_gap = 0
@@ -334,7 +342,7 @@ class GameSetup:
               card = stack[0]
             else:
               card = stack
-            if player == 'fugitive' or card.revealed: # Check if card should be placed face up
+            if player == 'fugitive' or card.revealed: # Check if  should be placed face up
               image = card.image[idx]
             else:
               image = card.cardBack[idx]
@@ -388,7 +396,6 @@ class GameSetup:
           previous_hideout = self.cards_in_play[-1] if type(self.cards_in_play[-1]) == Card else self.cards_in_play[-1][0]
         
         while True:
-          print("\nHere is your hand:")
           self.fugitive.showHand()
           time.sleep(1.5)
           
@@ -420,7 +427,6 @@ class GameSetup:
                 break
 
           time.sleep(0.5)
-          print("\nThe board:")
           self.display_board_general('fugitive')
           time.sleep(1)
           break
@@ -491,6 +497,12 @@ class GameSetup:
           draw_card = deck.pop()
           self.marshall.addCard(draw_card)
 
+      # Show the cards marshall drew
+      self.marshall.showHand()
+      # Display the two cards the fugitive has placed, face down
+      print("\n\n")
+      self.display_board_general()
+
       time.sleep(0.5)
       os.system('cls')
       self.marshall_guess()
@@ -499,11 +511,9 @@ class GameSetup:
     def marshall_guess(self):
       time.sleep(1)
       # Show the cards marshall drew
-      print("\nYour hand:")
       self.marshall.showHand()
       time.sleep(1)
       # Display the two cards the fugitive has placed, face down
-      print("\nThe board:")
       self.display_board_general()
 
       while(True):
@@ -557,29 +567,26 @@ class GameSetup:
       time.sleep(1)
       guess_visual = '#'
       if self.check_location(guess, self.marshall_current_idx):
-          if type(guess) == int:
-            guess = [guess]
-          if guess[0] == 42:
-            return True
-          
-          if self.marshall_current_idx == len(self.cards_in_play):
+          if type(guess) == list:
             os.system('cls')
             time.sleep(3)
             self.display_board_general()
             time.sleep(1.5)
-            print("\n" + self.fugitive.name + " has been caught!")
+            print("\n\n***CONGRATULATIONS! YOU GUESSED ALL THE HIDEOUTS AND CAUGHT THE FUGITIVE!***\n\n")
             self.done = True
             return
+          else:
+            guess = [guess]
+
+          # If single guess, convert to list to update index
+          if guess[0] == 42:
+            return True
           
           print("\n**Correct location!**")
 
           # Reveal correct cards on the board
           self.reveal_cards(self.marshall_current_idx, len(guess) if type(guess) == list else 1)
 
-          # If single guess, convert to list to update index
-          if type(guess) == int:
-            guess = [guess]
-          
           # Update index based on how many locations were guessed correctly
           self.marshall_current_idx += len(guess)
 
@@ -600,7 +607,6 @@ class GameSetup:
       
       time.sleep(1)
       # Print the board at the end of turn
-      print("\nThe Board:")
       self.display_board_general()
       time.sleep(2)
 
@@ -611,11 +617,9 @@ class GameSetup:
         self.marshall.showHand()
   
     def fugitive_repeating_turn(self):
-      print("\n**Your hand:**")
       self.fugitive.showHand()
       time.sleep(2)
 
-      print("\nThe board")
       self.display_board_general("fugitive")
       time.sleep(1.5)
 
@@ -625,7 +629,7 @@ class GameSetup:
         # Check for valid input
         while draw != 1 and draw != 2 and draw != 3:
           try:
-            draw = int(input("\n Fugitive, select which deck to draw a card from ['1' (1-14), '2' (15-28), '3' (29-42)]: ").strip())
+            draw = int(input(f"\n {self.fugitive.name}, select which deck to draw a card from ['1' (1-14), '2' (15-28), '3' (29-42)]: ").strip())
           except:
             ValueError
 
@@ -663,7 +667,6 @@ class GameSetup:
         self.fugitive.showHand()
 
         time.sleep(1)
-        print("\nThe board:")
         self.display_board_general("fugitive")
         time.sleep(2)
 
@@ -720,19 +723,48 @@ class GameSetup:
                 time.sleep(1.5)
                 print("\n" + self.fugitive.name + "Wins!")
                 return
-
               self.cards_in_play.append(x)
               self.fugitive.hand.remove(x)
-              break
-              
-            
+              break        
         if self.manhunt:
           break
+    def marshall_repeating_turn(self):
+      #Obtain user's deck choice
+      while True:
+        try:
+          deck = int(input("\nSelect which deck to draw two cards from ['1' (1-14), '2' (15-28), '3' (29-42)] and press enter... "))
+        except ValueError:
+          print("Invalid input, try again.")
+          continue
+        if deck in [1, 2, 3]:
+          break
+      
+      match deck:
+        case 1:
+          deck = self.LowRangeDeck
+        case 2:
+          deck = self.MidRangeDeck
+        case 3: 
+          deck = self.HighRangeDeck
+      
+      #Draw a card from selected deck
+      self.marshall.addCard(deck.pop(), isKnown=True)
+
+      #Show marshall's hand, including drawn card
+      print("\nThis is your hand:")
+      self.marshall.showHand()
+      #Displaying the board before marshall makes a guess
+      print("\n\n")
+      self.display_board_general()
+
+      self.marshall_guess()
+
+              
 
     # Show how many cards are left in each deck
     def print_remaining_cards(self):
       print("\nRemaining Cards:\nLow Deck: {}\tMid Deck: {}\t High Deck: {}".format(len(self.LowRangeDeck), len(self.MidRangeDeck), len(self.HighRangeDeck)))
 
-#game = GameSetup()
-#game.start_game()
+game = GameSetup()
+game.start_game()
 

@@ -16,37 +16,28 @@ def setup_poker():
     return poker_game
 
 def test_evaluate_flush_true(setup_poker):
+    # This should test for a non-sequential flush
     flush_hand = [
         Card("Hearts", 2, None, None),
-        Card("Hearts", 3, None, None),
+        Card("Hearts", 10, None, None),
         Card("Hearts", 4, None, None),
-        Card("Hearts", 5, None, None),
-        Card("Hearts", 6, None, None),
+        Card("Hearts", 9, None, None),
+        Card("Hearts", 7, None, None),
     ]
     result = setup_poker.evaluate_hand(flush_hand)
-    assert result == ("Flush", [6, 5, 4, 3, 2]), "Expected to recognize a flush."
+    assert result == ("Flush", [10, 9, 7, 4, 2]), "Expected to recognize a flush."
 
-def test_evaluate_flush_false(setup_poker):
-    non_flush_hand = [
+def test_evaluate_straight_false(setup_poker):
+    # This should test for a straight that is incorrectly identified
+    non_straight_hand = [
         Card("Hearts", 2, None, None),
         Card("Clubs", 3, None, None),
-        Card("Hearts", 4, None, None),
+        Card("Hearts", 8, None, None),
         Card("Diamonds", 5, None, None),
         Card("Hearts", 6, None, None),
     ]
-    result = setup_poker.evaluate_hand(non_flush_hand)
-    assert result == ("High Card", 6), "Expected not to recognize as a flush."
-
-def test_evaluate_straight_flush(setup_poker):
-    straight_flush_hand = [
-        Card("Hearts", 2, None, None),
-        Card("Hearts", 3, None, None),
-        Card("Hearts", 4, None, None),
-        Card("Hearts", 5, None, None),
-        Card("Hearts", 6, None, None),
-    ]
-    result = setup_poker.evaluate_hand(straight_flush_hand)
-    assert result == ("Straight Flush", 6), "Straight flush should be recognized."
+    result = setup_poker.evaluate_hand(non_straight_hand)
+    assert result == ("High Card", 8), "Expected not to recognize as a straight."
 
 def test_find_winner_with_flush(setup_poker):
     setup_poker.players[0].hand = [

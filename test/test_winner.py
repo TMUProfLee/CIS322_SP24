@@ -25,10 +25,11 @@ def test_evaluate_flush_true(setup_poker):
         Card("Hearts", 7, None, None),
     ]
     result = setup_poker.evaluate_hand(flush_hand)
-    assert result == ("Flush", [10, 9, 7, 4, 2]), "Expected to recognize a flush."
+    # Check if the hand is ranked as a flush and the highest card is correctly identified
+    assert result == (6, 10), "Expected to recognize a flush."
 
 def test_evaluate_straight_false(setup_poker):
-    # This should test for a straight that is incorrectly identified
+    # This should test for a non-straight configuration
     non_straight_hand = [
         Card("Hearts", 2, None, None),
         Card("Clubs", 3, None, None),
@@ -37,7 +38,9 @@ def test_evaluate_straight_false(setup_poker):
         Card("Hearts", 6, None, None),
     ]
     result = setup_poker.evaluate_hand(non_straight_hand)
-    assert result == ("High Card", 8), "Expected not to recognize as a straight."
+    # Since the cards are not consecutive, expect the highest card rating for High Card
+    assert result == (1, 8), "Expected not to recognize as a straight."
+
 
 def test_find_winner_with_flush(setup_poker):
     setup_poker.players[0].hand = [

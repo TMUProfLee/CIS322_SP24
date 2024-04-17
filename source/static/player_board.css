@@ -1,0 +1,45 @@
+body {
+  background-color: #222;
+  color: white;
+  display: flex;
+  min-height: 100vh;
+  margin: 0;
+  justify-content: center;
+  align-items: flex-end;
+}
+
+.button {
+  background-color: transparent;
+  color: white;
+  border: 4px dashed white;
+  font-family: Menlo, serif;
+  font-size: 30px;
+  padding: 10px 10px;
+  text-align: center;
+  display: inline-block;
+  margin-bottom: 40px;
+  margin-right: 30px;
+}
+
+h1 {
+  position: absolute;
+  top: 50px;
+  left: 50%; 
+  transform: translateX(-50%); 
+  text-align: center;
+  font-family: Menlo, serif;
+  font-size: 30px; 
+  color: white; 
+  margin-top: 0px;
+}
+
+h2 {
+  position: absolute;
+  top: 350px; 
+  left: 50%; 
+  transform: translateX(-50%); 
+  text-align: center;
+  font-family: Menlo, serif;
+  font-size: 30px; 
+  color: white;
+}

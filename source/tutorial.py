@@ -1,4 +1,4 @@
-from testing_base import *
+from CardGames import *
 
 # Create deck and dealer
 deck = Deck()
@@ -7,6 +7,7 @@ dealer = Dealer(deck)
 # Create players
 players = {}
 while True:
+    
     try:
         NumPlayers = int(input("Enter player count: "))
         break
@@ -22,7 +23,7 @@ dealer.dealCards(5, list(players.values()))
 # Show each player's hand
 for player in players.values():
     print(f'{player.name}:')
-    player.showHand(True)
-    print()
+    p = player.showHand()
+    print(p)
 
 print(has_pair(player))

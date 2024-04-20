@@ -191,11 +191,11 @@ class Player:
   def makeBet(self, amount: int, pot: Pot): # amount - integer number of money to remove from player
     if amount > self.money:
       print("%s does not have enough money to make this bet." % self.name)
-      return self.money
+      return (self.money, 'Insufficient funds to make this bet')
     else:
       self.money -= amount
       pot.add(amount)  # Call function implemented here--------------------------------
-      return self.money
+      return (self.money, None)
 
   # adds one card to player's hand
   def addCard(self, card: Card, isKnown: bool = True):
@@ -305,10 +305,14 @@ def has_pair(player):
 
 def Call(player, bet: int, pot):
     if bet > player.money:
+      print(f"Error: {player.name} attempted to bet {bet} with only {player.money} available.")
       return "You do not have enough money for this bet."
     else:
-      player.makeBet(bet, pot)
-
+      result, error = player.makeBet(bet, pot)
+      if error:
+        print(f"Error from makeBet: {error}")
+        return error
+      return None
 
 
 def highest_card(hand):

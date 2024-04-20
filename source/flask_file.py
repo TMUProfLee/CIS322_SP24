@@ -31,17 +31,23 @@ def process_form():
 # Define a route to handle player actions in the game loop
 @app.route('/player_action', methods=['POST'])
 def player_action():
+    action = request.form['action']
     amount = int(request.form['amount'])
-    player = players.copy()[game.currentPlayer]
-    # Perform the player action in the game
+    player_index = int(request.form.get('player_index', 0))
+    player = players[player_index]
 
-    bet_result = Call(player, amount, pot)
-    if isinstance(bet_result, str):
-        error_message = bet_result  # Store the error message
+    if action == 'raise':
+            response = Call(player, amount, pot)
+            print(f"Action failed with error: {response}")
+            if response:
+                message = response  # Store the error message
+            else:
+                message = 'Raise successful'
+                print(f"Action successful. New pot amount: {pot.show_pot()}")
     else:
-        error_message = None  # No error message
+        message = 'Action not supported'
 
-    return render_template('game.html', players=players, pot=pot.show_pot(), error=error_message)
+    return render_template('game.html', players=players, pot=pot.show_pot(), message=message)
     
 if __name__ == '__main__':
     app.run(debug=True)

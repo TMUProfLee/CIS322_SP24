@@ -361,12 +361,14 @@ class Poker:
     idx = self.players.index(player)
     return max(self.bets) - self.bets[idx]
   
+
 class Identification:
   def __init__(self):
     self.hand = [] # Hold values of cards in hand
     self.name = "" # Name defined by the rank definition functions
+    
   # Include functions that return what defines the various poker hand ranks.
- 
+    
   def twoPair(self):
     """function that identifies 2 sets of 2 same cards through use of dictionary. Returns empty list if fail to identify 2 pairs of the 2 same cards."""
     # iterate through the hand to count occurrences of each card value
@@ -378,9 +380,8 @@ class Identification:
         count[card.value] += 1
       else:
         count[card.value] = 1
-    
+
     pairs = [value for value,freq in count.items() if freq == 2]
-        
 
     if len(pairs) == 2:
       # return this list that contains the values of cards that form 2 pairs in paired_values.
@@ -389,3 +390,4 @@ class Identification:
     else:
       #return empty list since it's not exactly two pairs.
       return []
+

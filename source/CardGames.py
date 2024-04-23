@@ -330,44 +330,55 @@ class Poker:
         self.pot = Pot()
 
     def evaluate_hand(self, hand):
-        values = sorted((card.value for card in hand), reverse=True)
-        suits = [card.suit for card in hand]
-        value_counts = {value: values.count(value) for value in set(values)}
-        is_flush = len(set(suits)) == 1
-        is_straight = len(set(values)) == 5 and (max(values) - min(values) == 4)
-        if is_straight and is_flush:
-            return ("Straight Flush", max(values))
-        if 4 in value_counts.values():
-            return ("Four of a Kind", max(value for value, count in value_counts.items() if count == 4))
-        if sorted(value_counts.values()) == [2, 3]:
-            return ("Full House", max(value for value, count in value_counts.items() if count == 3))
-        if is_flush:
-            return ("Flush", values)
-        if is_straight:
-            return ("Straight", max(values))
-        if 3 in value_counts.values():
-            return ("Three of a Kind", max(value for value, count in value_counts.items() if count == 3))
-        if list(value_counts.values()).count(2) == 2:
-            pairs = sorted((value for value, count in value_counts.items() if count == 2), reverse=True)
-            return ("Two Pair", pairs)
-        if 2 in value_counts.values():
-            return ("Pair", max(value for value, count in value_counts.items() if count == 2))
-        return ("High Card", max(values))
+      values = sorted((card.value for card in hand), reverse=True)
+      suits = [card.suit for card in hand]
+      value_counts = {value: values.count(value) for value in values}
+      is_flush = len(set(suits)) == 1
+      is_straight = len(set(values)) == 5 and max(values) - min(values) == 4
+
+      hand_rankings = {
+          "High Card": 1, "Pair": 2, "Two Pair": 3, "Three of a Kind": 4,
+        "Straight": 5, "Flush": 6, "Full House": 7, "Four of a Kind": 8, "Straight Flush": 9
+      }
+
+    # Check for straight flush
+      if is_straight and is_flush:
+          return (hand_rankings["Straight Flush"], max(values))
+      elif is_flush:
+          return (hand_rankings["Flush"], max(values))
+      elif is_straight:
+          return (hand_rankings["Straight"], max(values))
+      elif 4 in value_counts.values():  # Check for four
+          return (hand_rankings["Four of a Kind"], max(value for value, count in value_counts.items() if count == 4))
+      elif sorted(value_counts.values()) == [2, 3]:  # Check for full house
+          three_val = max(value for value, count in value_counts.items() if count == 3)
+          return (hand_rankings["Full House"], three_val)
+      elif 3 in value_counts.values():  # Check for three
+          return (hand_rankings["Three of a Kind"], max(value for value, count in value_counts.items() if count == 3))
+      elif list(value_counts.values()).count(2) == 2:  # Check for two pairs
+          high_pair = max(value for value, count in value_counts.items() if count == 2)
+          return (hand_rankings["Two Pair"], high_pair)
+      elif 2 in value_counts.values():  # Check for a pair
+          return (hand_rankings["Pair"], max(value for value, count in value_counts.items() if count == 2))
+      else:
+          return (hand_rankings["High Card"], max(values))
+
 
     def find_winner(self):
-        hand_rankings = {"High Card": 0, "Pair": 1, "Two Pair": 2, "Three of a Kind": 3,
-                         "Straight": 4, "Flush": 5, "Full House": 6, "Four of a Kind": 7, "Straight Flush": 8}
-        best_hand = ("No Hand", -1)
-        winners = []
-        for player in self.players:
-            player_hand = self.evaluate_hand(player.hand)
-            player_hand_rank = (hand_rankings[player_hand[0]], player_hand[1])
-            if player_hand_rank > best_hand:
-                best_hand = player_hand_rank
-                winners = [player]
-            elif player_hand_rank == best_hand:
-                winners.append(player)
-        return winners
+      best_hand = (0, 0)  # Initialize with lowest possible ranking 
+      winners = []
+
+      for player in self.players:
+          player_hand_rank = self.evaluate_hand(player.hand)
+        
+          if player_hand_rank > best_hand:
+              best_hand = player_hand_rank
+              winners = [player]
+          elif player_hand_rank == best_hand:
+              winners.append(player)
+
+      return winners
+
 
   # Keep Track of Pot, Bets, and current round
 def addMoneyToPot(self, amount: int):

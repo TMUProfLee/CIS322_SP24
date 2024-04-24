@@ -138,7 +138,7 @@ class Player:
     return self.money
 
   # removes money from player only if player has at least the bet amount currently 
-  def makeBet(self, amount: int, pot: Pot): # amount - integer number of money to remove from player
+  def makeBet(self, amount: int): # amount - integer number of money to remove from player
     if amount > self.money:
       print("%s does not have enough money to make this bet." % self.name)
       return self.money
@@ -376,3 +376,205 @@ class Poker:
     for bet in self.bets:
       if bet > 0:
         return bet
+    
+  def end_game(self):
+    # End the game and determine the winner
+    winner = Winner(self.players, self.dealer)
+    winner.determine_winner()
+    # Add the pot to the winner's money
+    winner.winner.addMoney(self.pot.show_pot())
+    # Reset the pot
+    self.pot = Pot()
+    # Reset the dealer
+    self.dealer.resetDeck()
+    # Reset the bets
+    self.bets = [0 for _ in range(len(self.players))]
+    # Reset the player's hands
+    for player in self.players:
+      player.clearHand()
+    
+    # Add two cards to the player's hand
+    self.dealer.dealCards(2, self.players)
+    return winner.winner
+
+
+class Winner:
+  def __init__(self, players: "list[Player]", dealer: Dealer):
+    self.players = players
+    self.dealer = dealer
+    self.winner = None
+
+  def find_best_hand(self, poker_hand, dealer_hand):
+    # Combine the poker hand and dealer hand
+    all_cards = poker_hand + dealer_hand
+
+    # Check for different hand combinations and determine the best hand
+    best_hand = None
+    best_rank = 0
+
+    # Check for a pair
+    if self.has_pair(all_cards):
+      best_hand = "Pair"
+      best_rank = 1
+
+    # Check for two pairs
+    if self.has_two_pairs(all_cards):
+      best_hand = "Two Pairs"
+      best_rank = 2
+
+    # Check for three of a kind
+    if self.has_three_of_a_kind(all_cards):
+      best_hand = "Three of a Kind"
+      best_rank = 3
+
+    # Check for a straight
+    if self.has_straight(all_cards):
+      best_hand = "Straight"
+      best_rank = 4
+
+    # Check for a flush
+    if self.has_flush(all_cards):
+      best_hand = "Flush"
+      best_rank = 5
+
+    # Check for a full house
+    if self.has_full_house(all_cards):
+      best_hand = "Full House"
+      best_rank = 6
+
+    # Check for four of a kind
+    if self.has_four_of_a_kind(all_cards):
+      best_hand = "Four of a Kind"
+      best_rank = 7
+
+    # Check for a straight flush
+    if self.has_straight_flush(all_cards):
+      best_hand = "Straight Flush"
+      best_rank = 8
+
+    # Check for a royal flush
+    if self.has_royal_flush(all_cards):
+      best_hand = "Royal Flush"
+      best_rank = 9
+
+    return best_hand, best_rank
+
+  def determine_winner(self):
+    # Compare the hands of all players to determine the winner
+    best_rank = 0
+    best_hand = None
+    best_avg_card_value = 0
+
+    for player in self.players:
+      hand, rank = self.find_best_hand(player.hand, self.dealer.hand)
+
+      if rank > best_rank:
+        best_rank = rank
+        best_hand = hand
+        self.winner = player
+        best_avg_card_value = self.calculate_avg_card_value(player.hand)
+
+      elif rank == best_rank:
+        avg_card_value = self.calculate_avg_card_value(player.hand)
+        if avg_card_value > best_avg_card_value:
+          best_hand = hand
+          self.winner = player
+          best_avg_card_value = avg_card_value
+
+    return self.winner
+
+  def calculate_avg_card_value(self, hand):
+    # Calculate the average card value in the hand
+    total_value = sum(card.value for card in hand)
+    avg_card_value = total_value / len(hand)
+    return avg_card_value
+  
+  def has_pair(self, hand):
+    # Check if the hand contains a pair
+    values = [card.value for card in hand]
+    unique_values = set(values)
+
+    if len(values) - len(unique_values) == 1:
+      return True
+
+    return False
+  
+  def has_two_pairs(self, hand):
+    # Check if the hand contains two pairs
+    values = [card.value for card in hand]
+    unique_values = set(values)
+
+    if len(values) - len(unique_values) == 2:
+      return True
+
+    return False
+  
+  def has_three_of_a_kind(self, hand):
+    # Check if the hand contains three of a kind
+    values = [card.value for card in hand]
+
+    for value in values:
+      if values.count(value) == 3:
+        return True
+
+    return False
+  
+  def has_straight(self, hand):
+    # Check if the hand contains a straight
+    values = [card.value for card in hand]
+    values.sort()
+
+    for i in range(len(values) - 1):
+      if values[i] + 1 != values[i + 1]:
+        return False
+
+    return True
+  
+  def has_flush(self, hand):
+    # Check if the hand contains a flush
+    suits = [card.suit for card in hand]
+
+    if len(set(suits)) == 1:
+      return True
+
+    return False
+  
+  def has_full_house(self, hand):
+    # Check if the hand contains a full house
+    values = [card.value for card in hand]
+    unique_values = set(values)
+
+    if len(unique_values) == 2:
+      for value in unique_values:
+        if values.count(value) == 2 or values.count(value) == 3:
+          return True
+
+    return False
+  
+  def has_four_of_a_kind(self, hand):
+    # Check if the hand contains four of a kind
+    values = [card.value for card in hand]
+
+    for value in values:
+      if values.count(value) == 4:
+        return True
+
+    return False
+  
+  def has_straight_flush(self, hand):
+    # Check if the hand contains a straight flush
+    if self.has_straight(hand) and self.has_flush(hand):
+      return True
+
+    return False
+  
+  def has_royal_flush(self, hand):
+    # Check if the hand contains a royal flush
+    values = [card.value for card in hand]
+    values.sort()
+
+    if values == [10, 11, 12, 13, 1] and self.has_flush(hand):
+      return True
+
+    return False
+  

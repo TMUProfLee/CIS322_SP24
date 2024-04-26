@@ -24,7 +24,10 @@ class Pot:
     return self.pot
 
   def subtract(self, amount: int):
-    self.pot -= amount
+    if (self.pot - amount) >= 0:
+      self.pot -= amount
+    else:
+      print("Not enough money in the pot.")
     return self.pot
   
   def show_pot(self):
@@ -107,6 +110,9 @@ class Card:
       
   def __str__(self):
     return f"{self.value} of {self.suit}"
+  
+  def __repr__(self) -> str:
+    return f"Card(suit='{self.suit}', value={self.value})"
 
 class Deck:
   def __init__(self): # builds a deck of cards
@@ -185,10 +191,11 @@ class Player:
   def makeBet(self, amount: int, pot: Pot): # amount - integer number of money to remove from player
     if amount > self.money:
       print("%s does not have enough money to make this bet." % self.name)
-      return self.money
-    self.money -= amount
-    pot.add(amount)  # Call function implemented here--------------------------------
-    return self.money
+      return (self.money, 'Insufficient funds to make this bet')
+    else:
+      self.money -= amount
+      pot.add(amount)  # Call function implemented here--------------------------------
+      return (self.money, None)
 
   # adds one card to player's hand
   def addCard(self, card: Card, isKnown: bool = True):
@@ -262,6 +269,16 @@ class Dealer:
       else:
         print("No more cards left in deck to add.")
         break
+      
+  def dealPrivateHand(self, player):
+    """Deals 2 private cards to the player"""
+    if len(self.deck.cards) < 2:
+      raise ValueError("Not enough cards for dealing a private hand.")
+
+    for _ in range(2):
+      card = self.deck.getCard()
+      player.addCard(card, isKnown=False)
+
 
   def resetDeck(self):
     self.deck.reset()
@@ -270,27 +287,35 @@ class Dealer:
 
 # has_pair function---------------------------------------------------------------
 
-  def has_pair(player):
-      Hand = player.hand
-      values = [card.value for card in Hand]
-      compare = set()
-      print(values, compare)
-      for i in values:
-          if i in compare:
-              return True
-          compare.add(i)
-      else:
-          return False
+def has_pair(player):
+    Hand = player.hand
+    values = [card.value for card in Hand]
+    compare = set()
+    print(values, compare)
+    for i in values:
+        if i in compare:
+            return True
+        compare.add(i)
+    else:
+        return False
+#---------------------------------------------------------------------------------
 
 
 # call function--------------------------------------------------------------
 
-  def Call(player, bet: int, pot):
-    player.makeBet(bet, pot)
+def Call(player, bet: int, pot):
+    if bet > player.money:
+      print(f"Error: {player.name} attempted to bet {bet} with only {player.money} available.")
+      return "You do not have enough money for this bet."
+    else:
+      result, error = player.makeBet(bet, pot)
+      if error:
+        print(f"Error from makeBet: {error}")
+        return error
+      return None
 
 
-
-  def highest_card(hand):
+def highest_card(hand):
     # Check if the hand is empty
       if not hand:
           return None
@@ -317,7 +342,7 @@ class Poker:
 
   # Keep Track of Pot, Bets, and current round
   def addMoneyToPot(self, amount: int):
-    self.pot += amount
+    self.pot.add(amount)
     return self.pot
   
   def addBet(self, player: Player, amount: int):
@@ -339,3 +364,34 @@ class Poker:
   def callAmount(self, player: Player):
     idx = self.players.index(player)
     return max(self.bets) - self.bets[idx]
+  
+
+class Identification:
+  def __init__(self):
+    self.hand = [] # Hold values of cards in hand
+    self.name = "" # Name defined by the rank definition functions
+    
+  # Include functions that return what defines the various poker hand ranks.
+    
+  def twoPair(self):
+    """function that identifies 2 sets of 2 same cards through use of dictionary. Returns empty list if fail to identify 2 pairs of the 2 same cards."""
+    # iterate through the hand to count occurrences of each card value
+    count = {} # dictionary to count the occurences
+
+    # make dictionary
+    for card in self.hand: 
+      if card.value in count:
+        count[card.value] += 1
+      else:
+        count[card.value] = 1
+
+    pairs = [value for value,freq in count.items() if freq == 2]
+
+    if len(pairs) == 2:
+      # return this list that contains the values of cards that form 2 pairs in paired_values.
+      pair_cards = [card for card in self.hand if card.value in pairs]
+      return pair_cards
+    else:
+      #return empty list since it's not exactly two pairs.
+      return []
+

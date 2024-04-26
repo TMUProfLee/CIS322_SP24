@@ -24,3 +24,5 @@ for player in players.values():
     print(f'{player.name}:')
     player.showHand(True)
     print()
+
+print(has_pair(player))
